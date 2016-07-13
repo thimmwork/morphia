@@ -45,6 +45,7 @@ import org.mongodb.morphia.query.UpdateException;
 import org.mongodb.morphia.query.UpdateOperations;
 import org.mongodb.morphia.query.UpdateOpsImpl;
 import org.mongodb.morphia.query.UpdateResults;
+import org.mongodb.morphia.query.ValidationException;
 import org.mongodb.morphia.utils.Assert;
 
 import java.util.ArrayList;
@@ -506,6 +507,13 @@ public class DatastoreImpl implements AdvancedDatastore {
     public DBCollection getCollection(final Class clazz) {
         final String collName = mapper.getCollectionName(clazz);
         return getDB().getCollection(collName);
+    }
+
+    protected DBCollection getCollection(final String kind) {
+        if (kind == null) {
+            return null;
+        }
+        return getDB().getCollection(kind);
     }
 
     private <T> MongoCollection<T> getMongoCollection(final Class<T> clazz) {
@@ -1210,13 +1218,6 @@ public class DatastoreImpl implements AdvancedDatastore {
         return insert(getCollection(collection), ProxyHelper.unwrap(entity), new InsertOptions().writeConcern(wc));
     }
 
-    protected DBCollection getCollection(final String kind) {
-        if (kind == null) {
-            return null;
-        }
-        return getDB().getCollection(kind);
-    }
-
     @Deprecated
     protected Object getId(final Object entity) {
         return mapper.getId(entity);
@@ -1558,5 +1559,77 @@ public class DatastoreImpl implements AdvancedDatastore {
         }
 
         return wc;
+    }
+
+    @Override
+    public <T> MorphiaReference<T> referenceTo(final T entity) {
+        return referenceTo(getCollection(entity).getName(), entity);
+    }
+
+    @Override
+    public <T> List<MorphiaReference<T>> referenceTo(final List<T> entities) {
+        if (entities == null) {
+            return null;
+        }
+        List<MorphiaReference<T>> list = new ArrayList<MorphiaReference<T>>(entities.size());
+        for (T entity : entities) {
+            list.add(referenceTo(entity));
+        }
+        return list;
+    }
+
+    @Override
+    public <T> MorphiaReference<T> referenceTo(final String collection, final T entity) {
+        if (entity == null) {
+            return null;
+        }
+        MappedClass mappedClass = mapper.getMappedClass(entity);
+        MappedField idField = mappedClass.getMappedIdField();
+        boolean typeMongoCompatible = idField.isTypeMongoCompatible();
+        Object id = getKey(entity).getId();
+        if (id == null) {
+            throw new ValidationException("The referenced entity has no ID.  Please save the entity first.");
+        }
+        id = typeMongoCompatible ? id : getMapper().toDBObject(id);
+
+        return new MorphiaReference<T>(id, collection, entity);
+    }
+
+    @Override
+    public <T> List<MorphiaReference<T>> referenceTo(final String collection, final List<T> entities) {
+        if (entities == null) {
+            return null;
+        }
+        List<MorphiaReference<T>> list = new ArrayList<MorphiaReference<T>>(entities.size());
+        for (T entity : entities) {
+            list.add(referenceTo(collection, entity));
+        }
+        return list;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T fetch(final MorphiaReference<T> reference) {
+        if (reference == null) {
+            return null;
+        }
+        T entity = reference.getEntity();
+        DBRef dbRef = reference.getDBRef();
+        if (reference.getEntity() == null) {
+            Object id = dbRef.getId();
+            if (id instanceof DBObject) {
+                ((DBObject) id).removeField(Mapper.CLASS_NAME_FIELDNAME);
+            }
+            entity = (T) createQuery(dbRef.getCollectionName(), null)
+                .field("_id").equal(id)
+                .get();
+            reference.setEntity(entity);
+            if (entity == null) {
+                throw new QueryException(format("Could find an entity matching the ID '%s' in the collection '%s'",
+                                                id, dbRef.getCollectionName()));
+            }
+        }
+
+        return entity;
     }
 }

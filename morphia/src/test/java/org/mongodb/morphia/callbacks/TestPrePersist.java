@@ -27,9 +27,17 @@ import java.util.List;
 
 public class TestPrePersist extends TestBase {
     @Test
-    public void elemMatch() {
+    public void hasThisElement() {
         getDs().createQuery(GroupChat.class)
                .field("members").hasThisElement(new GroupMember("some name", new ObjectId()));
+    }
+
+    @Test
+    public void elemMatch() {
+        getDs().createQuery(GroupChat.class)
+               .field("members").elemMatch(getDs().createQuery(GroupMember.class)
+                                                  .filter("name", "some name")
+                                                  .filter("id", new ObjectId()));
     }
 
     private static class GroupChat {

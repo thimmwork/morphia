@@ -16,25 +16,24 @@
 
 package org.mongodb.morphia.testmodel;
 
-import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Embedded;
 
 import java.io.Serializable;
 
 @Embedded
 public class CompoundId implements Serializable {
-    private ObjectId value;
+    private Long value;
     private String name;
 
     CompoundId() {
     }
 
-    public CompoundId(final String n) {
+    public CompoundId(final String n, final Long value) {
         name = n;
-        value = new ObjectId();
+        this.value = value;
     }
 
-    public ObjectId getValue() {
+    public Long getValue() {
         return value;
     }
 

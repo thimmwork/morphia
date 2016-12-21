@@ -19,7 +19,7 @@ package org.mongodb.morphia.mapping.references;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mongodb.morphia.MorphiaReference;
+import org.mongodb.morphia.Key;
 import org.mongodb.morphia.TestBase;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
@@ -37,7 +37,7 @@ public class TestCompoundIdMorphiaReference extends TestBase {
     public void testOldReferencesWithNew() {
         getMorphia().map(OldContainer.class, Container.class, CompoundId.class);
 
-        final Contained contained = new Contained(new CompoundId("I'm an ID!"), "contained");
+        final Contained contained = new Contained(new CompoundId("I'm an ID!", 42L), "contained");
         final List<Contained> list = compoundList();
 
         getDs().save(contained);
@@ -63,7 +63,7 @@ public class TestCompoundIdMorphiaReference extends TestBase {
     @Test
     public void testReferenceToDifferentCollection() {
         getMorphia().map(OldContainer.class, Container.class, CompoundId.class);
-        final Contained contained = new Contained(new CompoundId("I'm an ID!"), "contained");
+        final Contained contained = new Contained(new CompoundId("I'm an ID!", 42L), "contained");
         final List<Contained> list = compoundList();
         String collection = "somewhereelse";
 
@@ -76,8 +76,8 @@ public class TestCompoundIdMorphiaReference extends TestBase {
 
         container.reference = getAds().referenceTo(collection, contained);
         container.references = getAds().referenceTo(collection, list);
-        for (MorphiaReference<Contained> reference : container.references) {
-            container.map.put(reference.getEntity().name, reference);
+        for (Key<Contained> reference : container.references) {
+            container.map.put(getDs().fetch(reference).name, reference);
         }
         getDs().save(container);
 
@@ -93,32 +93,30 @@ public class TestCompoundIdMorphiaReference extends TestBase {
     @Test
     public void testReferences() {
         getMorphia().map(OldContainer.class, Container.class, CompoundId.class);
-        final Contained contained = new Contained(new CompoundId("I'm an ID!"), "contained");
-        final List<Contained> list = compoundList();
+        final Contained contained = new Contained(new CompoundId("I'm an ID!", 42L), "contained");
+//        final List<Contained> list = compoundList();
         getDs().save(contained);
-        getDs().save(list);
+//        getDs().save(list);
 
         Container container = new Container();
 
-        container.reference = getDs().referenceTo(contained);
-        container.references = getDs().referenceTo(list);
-        for (MorphiaReference<Contained> reference : container.references) {
-            container.map.put(reference.getEntity().name, reference);
-        }
+        container.reference = getDs().getKey(contained);
+//        container.references = getDs().getKeys(list);
+//        for (Key<Contained> reference : container.references) {
+//            container.map.put(reference.getEntity().name, reference);
+//        }
         getDs().save(container);
 
         Container fetched = getDs().createQuery(Container.class).get();
         Assert.assertEquals(contained, getDs().fetch(fetched.reference));
+        Assert.assertEquals(container.references, fetched.references);
         Assert.assertEquals(container.map, fetched.map);
-        for (int i = 0; i < fetched.references.size(); i++) {
-            Assert.assertEquals(getDs().fetch(container.references.get(i)), getDs().fetch(fetched.references.get(i)));
-        }
     }
 
     private List<Contained> compoundList() {
         List<Contained> list = new ArrayList<Contained>();
         for (int i = 0; i < 3; i++) {
-            list.add(new Contained(new CompoundId("" + i), "" + i));
+            list.add(new Contained(new CompoundId("" + i, (long) i), "" + i));
         }
         return list;
     }
@@ -127,11 +125,11 @@ public class TestCompoundIdMorphiaReference extends TestBase {
         @Id
         private ObjectId id;
 
-        private MorphiaReference<Contained> reference;
-        private List<MorphiaReference<Contained>> references;
-        private Map<String, MorphiaReference<Contained>> map = new HashMap<String, MorphiaReference<Contained>>();
-        private List<MorphiaReference<Contained>> idsOnly;
-        private MorphiaReference<Contained> idOnly;
+        private Key<Contained> reference;
+        private List<Key<Contained>> references;
+        private Map<String, Key<Contained>> map = new HashMap<String, Key<Contained>>();
+        private List<Key<Contained>> idsOnly;
+        private Key<Contained> idOnly;
 
         @Override
         public int hashCode() {

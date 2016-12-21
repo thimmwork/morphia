@@ -8,6 +8,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import com.mongodb.client.MongoCollection;
+import org.mongodb.morphia.Key.KeyOptions;
 import org.mongodb.morphia.aggregation.AggregationPipeline;
 import org.mongodb.morphia.annotations.Indexed;
 import org.mongodb.morphia.annotations.Indexes;
@@ -508,6 +509,35 @@ public interface Datastore {
     <T> Key<T> getKey(T entity);
 
     /**
+     * Creates a (type-safe) reference to the entity; if stored this will become a {@link com.mongodb.DBRef}
+     *
+     * @param entity  the entity whose key is to be returned
+     * @param options the options to apply
+     * @param <T>     the type of the entity
+     * @return the Key
+     */
+    <T> Key<T> getKey(T entity, KeyOptions options);
+
+    /**
+     * Creates references to the entities
+     *
+     * @param entities the entities whose keys are to be returned
+     * @param options the options to apply
+     * @param <T>    the type of the entities
+     * @return the Keys
+     */
+    <T> List<Key<T>> getKeys(List<T> entities, KeyOptions options);
+
+    /**
+     * Creates references to the entities
+     *
+     * @param entities the entities whose keys are to be returned
+     * @param <T>    the type of the entities
+     * @return the Keys
+     */
+    <T> List<Key<T>> getKeys(List<T> entities);
+
+    /**
      * Get the underlying MongoClient that allows connection to the MongoDB instance being used.
      *
      * @return the MongoClient being used by this datastore.
@@ -790,29 +820,11 @@ public interface Datastore {
     <T> UpdateResults updateFirst(Query<T> query, T entity, boolean createIfMissing);
 
     /**
-     * Creates a reference to an entity for inclusion
-     *
-     * @param entity The entity for the reference
-     * @param <T>    the type of the entity
-     * @return the new reference to the entity
-     */
-    <T> MorphiaReference<T> referenceTo(T entity);
-
-    /**
-     * Creates references to entities for inclusion.
-     *
-     * @param entities The entities for the reference
-     * @param <T>      the type of the entities
-     * @return the new reference to the entities
-     */
-    <T> List<MorphiaReference<T>> referenceTo(List<T> entities);
-
-    /**
      * Fetches a reference to another entity
      *
      * @param reference the reference to the entity
      * @param <T>       the type of the entity
      * @return The entity for the reference
      */
-    <T> T fetch(MorphiaReference<T> reference);
+    <T> T fetch(Key<T> reference);
 }

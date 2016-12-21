@@ -18,6 +18,7 @@ package org.mongodb.morphia.converters;
 
 import com.mongodb.DBObject;
 import com.mongodb.DBRef;
+import org.mongodb.morphia.Key;
 import org.mongodb.morphia.MorphiaReference;
 import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.mapping.MappedField;
@@ -31,17 +32,20 @@ import static java.lang.String.format;
 public class MorphiaReferenceConverter extends TypeConverter implements SimpleValueConverter {
 
     protected MorphiaReferenceConverter() {
-        super(MorphiaReference.class);
+        super(Key.class);
     }
 
     @Override
     public Object decode(final Class<?> targetClass, final Object fromDBObject, final MappedField mappedField) {
         if (fromDBObject instanceof DBRef) {
             DBRef dbRef = (DBRef) fromDBObject;
-            return new MorphiaReference<Object>(dbRef.getId(), dbRef.getCollectionName(), null);
+            return Key.builder()
+                      .id(dbRef.getId())
+                      .collection(dbRef.getCollectionName())
+                      .build();
         } else {
             Class refClass;
-            if (!mappedField.getType().equals(MorphiaReference.class)) {
+            if (!mappedField.getType().equals(Key.class)) {
                 refClass = mappedField.getTypeParameters().get(0).getSubClass();
             } else {
                 refClass = mappedField.getTypeParameters().get(0).getType();
@@ -50,7 +54,10 @@ public class MorphiaReferenceConverter extends TypeConverter implements SimpleVa
             if (fromDBObject instanceof DBObject) {
                 ((DBObject) fromDBObject).removeField(Mapper.CLASS_NAME_FIELDNAME);
             }
-            return new MorphiaReference<Object>(fromDBObject, mappedClass.getCollectionName(), null).idOnly(true);
+            return Key.builder().id(fromDBObject)
+                .collection(mappedClass.getCollectionName())
+                      .idOnly(true)
+                .build();
         }
     }
 

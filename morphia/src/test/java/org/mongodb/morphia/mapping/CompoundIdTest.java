@@ -18,7 +18,7 @@ public class CompoundIdTest extends TestBase {
     @Test
     public void testDelete() throws Exception {
         final CompoundIdEntity entity = new CompoundIdEntity();
-        entity.id = new CompoundId("test");
+        entity.id = new CompoundId("test", 42L);
 
         getDs().save(entity);
         getDs().delete(CompoundIdEntity.class, entity.id);
@@ -36,7 +36,7 @@ public class CompoundIdTest extends TestBase {
     @Test
     public void testMapping() throws Exception {
         CompoundIdEntity entity = new CompoundIdEntity();
-        entity.id = new CompoundId("test");
+        entity.id = new CompoundId("test", 42L);
 
         getDs().save(entity);
         entity = getDs().get(entity);
@@ -47,7 +47,7 @@ public class CompoundIdTest extends TestBase {
     @Test
     public void testOtherDelete() throws Exception {
         final CompoundIdEntity entity = new CompoundIdEntity();
-        entity.id = new CompoundId("test");
+        entity.id = new CompoundId("test", 42L);
 
         getDs().save(entity);
         ((AdvancedDatastore) getDs()).delete(getDs().getCollection(CompoundIdEntity.class).getName(), CompoundIdEntity.class, entity.id);
@@ -59,11 +59,11 @@ public class CompoundIdTest extends TestBase {
         getDs().getCollection(CompoundIdEntity.class).drop();
 
         final CompoundIdEntity sibling = new CompoundIdEntity();
-        sibling.id = new CompoundId("sibling ID");
+        sibling.id = new CompoundId("sibling ID", 42L);
         getDs().save(sibling);
 
         final CompoundIdEntity entity = new CompoundIdEntity();
-        entity.id = new CompoundId("entity ID");
+        entity.id = new CompoundId("entity ID", 42L);
         entity.e = "some value";
         entity.sibling = sibling;
         getDs().save(entity);

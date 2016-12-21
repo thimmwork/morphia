@@ -466,7 +466,7 @@ public interface AdvancedDatastore extends Datastore {
      * @param <T>        the type of the entity
      * @return the new reference to the entity
      */
-    <T> MorphiaReference<T> referenceTo(String collection, T entity);
+    <T> Key<T> referenceTo(String collection, T entity);
 
     /**
      * Creates references to entities for inclusion.  This entities are stored in the named collection which may differ from the mapped
@@ -477,5 +477,5 @@ public interface AdvancedDatastore extends Datastore {
      * @param <T>        the type of the entities
      * @return the new reference to the entities
      */
-    <T> List<MorphiaReference<T>> referenceTo(String collection, List<T> entities);
+    <T> List<Key<T>> referenceTo(String collection, List<T> entities);
 }

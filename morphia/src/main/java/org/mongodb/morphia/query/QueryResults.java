@@ -112,6 +112,7 @@ public interface QueryResults<T> extends Iterable<T> {
      * @see #fetchEmptyEntities
      */
     MorphiaKeyIterator<T> fetchKeys();
+
     /**
      * Execute the query and get the keys for the objects.
      *

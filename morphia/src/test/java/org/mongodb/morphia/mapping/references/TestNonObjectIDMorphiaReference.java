@@ -19,7 +19,7 @@ package org.mongodb.morphia.mapping.references;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mongodb.morphia.MorphiaReference;
+import org.mongodb.morphia.Key;
 import org.mongodb.morphia.TestBase;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
@@ -77,7 +77,7 @@ public class TestNonObjectIDMorphiaReference extends TestBase {
 
         container.reference = getAds().referenceTo(collection, contained);
         container.references = getAds().referenceTo(collection, list);
-        for (MorphiaReference<Contained> reference : container.references) {
+        for (Key<Contained> reference : container.references) {
             container.map.put(reference.getEntity().name, reference);
         }
         getDs().save(container);
@@ -102,9 +102,9 @@ public class TestNonObjectIDMorphiaReference extends TestBase {
 
         Container container = new Container();
 
-        container.reference = getDs().referenceTo(contained);
-        container.references = getDs().referenceTo(list);
-        for (MorphiaReference<Contained> reference : container.references) {
+        container.reference = getDs().getKey(contained);
+        container.references = getDs().getKeys(list);
+        for (Key<Contained> reference : container.references) {
             container.map.put(reference.getEntity().name, reference);
         }
         getDs().save(container);
@@ -129,11 +129,11 @@ public class TestNonObjectIDMorphiaReference extends TestBase {
         @Id
         private ObjectId id;
 
-        private MorphiaReference<Contained> reference;
-        private List<MorphiaReference<Contained>> references;
-        private Map<String, MorphiaReference<Contained>> map = new HashMap<String, MorphiaReference<Contained>>();
-        private List<MorphiaReference<Contained>> idsOnly;
-        private MorphiaReference<Contained> idOnly;
+        private Key<Contained> reference;
+        private List<Key<Contained>> references;
+        private Map<String, Key<Contained>> map = new HashMap<String, Key<Contained>>();
+        private List<Key<Contained>> idsOnly;
+        private Key<Contained> idOnly;
 
         @Override
         public int hashCode() {

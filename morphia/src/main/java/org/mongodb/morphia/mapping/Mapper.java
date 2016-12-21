@@ -20,6 +20,7 @@ import org.bson.BasicBSONEncoder;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.EntityInterceptor;
 import org.mongodb.morphia.Key;
+import org.mongodb.morphia.Key.KeyOptions;
 import org.mongodb.morphia.annotations.Converters;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.NotSaved;
@@ -381,6 +382,18 @@ public class Mapper {
      * @return the Key
      */
     public <T> Key<T> getKey(final T entity) {
+        return getKey(entity, new KeyOptions());
+    }
+
+    /**
+     * Gets the Key for an entity
+     *
+     * @param entity  the entity to process
+     * @param options the options to apply
+     * @param <T>     the type of the entity
+     * @return the Key
+     */
+    public <T> Key<T> getKey(final T entity, final KeyOptions options) {
         T unwrapped = entity;
         if (unwrapped instanceof ProxiedEntityReference) {
             final ProxiedEntityReference proxy = (ProxiedEntityReference) unwrapped;
@@ -394,7 +407,14 @@ public class Mapper {
 
         final Object id = getId(unwrapped);
         final Class<T> aClass = (Class<T>) unwrapped.getClass();
-        return id == null ? null : new Key<T>(aClass, getCollectionName(aClass), id);
+        return id == null ? null : Key.<T>builder()
+            .id(id)
+            .type(aClass)
+            .database(options.database())
+            .collection(getCollectionName(aClass))
+            .entity(unwrapped)
+            .idOnly(options.idOnly())
+            .build();
     }
 
     /**
@@ -533,9 +553,6 @@ public class Mapper {
         }
         if (key.getType() == null && key.getCollection() == null) {
             throw new IllegalStateException("How can it be missing both?");
-        }
-        if (key.getCollection() == null) {
-            key.setCollection(getCollectionName(key.getType()));
         }
 
         Object id = key.getId();

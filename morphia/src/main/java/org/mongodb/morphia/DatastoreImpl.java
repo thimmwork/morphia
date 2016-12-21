@@ -20,6 +20,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.CreateCollectionOptions;
 import com.mongodb.client.model.DBCollectionUpdateOptions;
 import com.mongodb.client.model.ValidationOptions;
+import org.mongodb.morphia.Key.KeyOptions;
 import org.mongodb.morphia.aggregation.AggregationPipeline;
 import org.mongodb.morphia.aggregation.AggregationPipelineImpl;
 import org.mongodb.morphia.annotations.CappedAt;
@@ -564,10 +565,39 @@ public class DatastoreImpl implements AdvancedDatastore {
     }
 
     @Override
-    @Deprecated
-    // use mapper instead.
     public <T> Key<T> getKey(final T entity) {
-        return mapper.getKey(entity);
+        return getKey(entity, new KeyOptions());
+    }
+
+    @Override
+    public <T> Key<T> getKey(final T entity, final KeyOptions options) {
+        return mapper.getKey(entity, options);
+    }
+
+    @Override
+    public <T> List<Key<T>> getKeys(final List<T> entities) {
+        if (entities == null) {
+            return null;
+        }
+        KeyOptions options = new KeyOptions();
+        List<Key<T>> list = new ArrayList<Key<T>>(entities.size());
+        for (T entity : entities) {
+            list.add(getKey(entity, options));
+        }
+        return list;
+    }
+
+
+    @Override
+    public <T> List<Key<T>> getKeys(final List<T> entities, final KeyOptions options) {
+        if (entities == null) {
+            return null;
+        }
+        List<Key<T>> list = new ArrayList<Key<T>>(entities.size());
+        for (T entity : entities) {
+            list.add(getKey(entity, options));
+        }
+        return list;
     }
 
     @Override
@@ -1562,24 +1592,7 @@ public class DatastoreImpl implements AdvancedDatastore {
     }
 
     @Override
-    public <T> MorphiaReference<T> referenceTo(final T entity) {
-        return referenceTo(getCollection(entity).getName(), entity);
-    }
-
-    @Override
-    public <T> List<MorphiaReference<T>> referenceTo(final List<T> entities) {
-        if (entities == null) {
-            return null;
-        }
-        List<MorphiaReference<T>> list = new ArrayList<MorphiaReference<T>>(entities.size());
-        for (T entity : entities) {
-            list.add(referenceTo(entity));
-        }
-        return list;
-    }
-
-    @Override
-    public <T> MorphiaReference<T> referenceTo(final String collection, final T entity) {
+    public <T> Key<T> referenceTo(final String collection, final T entity) {
         if (entity == null) {
             return null;
         }
@@ -1592,15 +1605,19 @@ public class DatastoreImpl implements AdvancedDatastore {
         }
         id = typeMongoCompatible ? id : getMapper().toDBObject(id);
 
-        return new MorphiaReference<T>(id, collection, entity);
+        return Key.<T>builder()
+                  .collection(collection)
+                  .id(id)
+                  .entity(entity)
+                  .build();
     }
 
     @Override
-    public <T> List<MorphiaReference<T>> referenceTo(final String collection, final List<T> entities) {
+    public <T> List<Key<T>> referenceTo(final String collection, final List<T> entities) {
         if (entities == null) {
             return null;
         }
-        List<MorphiaReference<T>> list = new ArrayList<MorphiaReference<T>>(entities.size());
+        List<Key<T>> list = new ArrayList<Key<T>>(entities.size());
         for (T entity : entities) {
             list.add(referenceTo(collection, entity));
         }
@@ -1609,13 +1626,13 @@ public class DatastoreImpl implements AdvancedDatastore {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T fetch(final MorphiaReference<T> reference) {
+    public <T> T fetch(final Key<T> reference) {
         if (reference == null) {
             return null;
         }
         T entity = reference.getEntity();
-        DBRef dbRef = reference.getDBRef();
-        if (reference.getEntity() == null) {
+        if (entity == null) {
+            DBRef dbRef = reference.getDBRef();
             Object id = dbRef.getId();
             if (id instanceof DBObject) {
                 ((DBObject) id).removeField(Mapper.CLASS_NAME_FIELDNAME);

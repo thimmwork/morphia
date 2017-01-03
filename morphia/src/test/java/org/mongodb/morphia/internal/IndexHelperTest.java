@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mongodb.morphia;
+package org.mongodb.morphia.internal;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -27,6 +27,7 @@ import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mongodb.morphia.TestBase;
 import org.mongodb.morphia.annotations.Collation;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;

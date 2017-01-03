@@ -3,6 +3,7 @@ package org.mongodb.morphia.query;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import org.mongodb.morphia.internal.MapperPathTarget;
 import org.mongodb.morphia.internal.PathTarget;
 import org.mongodb.morphia.mapping.MappedField;
 import org.mongodb.morphia.mapping.Mapper;
@@ -112,7 +113,7 @@ public class UpdateOpsImpl<T> implements UpdateOperations<T> {
             throw new QueryException("Values cannot be null or empty.");
         }
 
-        PathTarget pathTarget = new PathTarget(mapper, mapper.getMappedClass(clazz), field);
+        PathTarget<MappedField> pathTarget = new MapperPathTarget(mapper, mapper.getMappedClass(clazz), field);
         if (!validateNames) {
             pathTarget.disableValidation();
         }
@@ -272,7 +273,7 @@ public class UpdateOpsImpl<T> implements UpdateOperations<T> {
         }
 
         Object val = value;
-        PathTarget pathTarget = new PathTarget(mapper, mapper.getMappedClass(clazz), f);
+        PathTarget<MappedField> pathTarget = new MapperPathTarget(mapper, mapper.getMappedClass(clazz), f);
         if (!validateNames) {
             pathTarget.disableValidation();
         }

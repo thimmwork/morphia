@@ -44,11 +44,11 @@ public class PathTargetTest extends TestBase {
         Mapper mapper = getMorphia().getMapper();
         MappedClass mappedClass = mapper.getMappedClass(ParentType.class);
 
-        PathTarget pathTarget = new PathTarget(mapper, mappedClass, "name");
+        PathTarget pathTarget = new MapperPathTarget(mapper, mappedClass, "name");
         Assert.assertEquals("n", pathTarget.translatedPath());
         Assert.assertEquals(mappedClass.getMappedFieldByJavaField("name"), pathTarget.getTarget());
 
-        pathTarget = new PathTarget(mapper, mappedClass, "n");
+        pathTarget = new MapperPathTarget(mapper, mappedClass, "n");
         Assert.assertEquals("n", pathTarget.translatedPath());
         Assert.assertEquals(mappedClass.getMappedField("n"), pathTarget.getTarget());
     }
@@ -58,7 +58,7 @@ public class PathTargetTest extends TestBase {
         getMorphia().map(ParentType.class, EmbeddedType.class);
         Mapper mapper = getMorphia().getMapper();
 
-        PathTarget pathTarget = new PathTarget(mapper, mapper.getMappedClass(ParentType.class), "embedded.number");
+        PathTarget pathTarget = new MapperPathTarget(mapper, mapper.getMappedClass(ParentType.class), "embedded.number");
         Assert.assertEquals("embedded.number", pathTarget.translatedPath());
         Assert.assertEquals(mapper.getMappedClass(EmbeddedType.class).getMappedFieldByJavaField("number"), pathTarget.getTarget());
     }
@@ -68,7 +68,7 @@ public class PathTargetTest extends TestBase {
         getMorphia().map(ParentType.class, EmbeddedType.class, EmbeddedSubtype.class);
         Mapper mapper = getMorphia().getMapper();
 
-        PathTarget pathTarget = new PathTarget(mapper, mapper.getMappedClass(ParentType.class), "embedded.flag");
+        PathTarget pathTarget = new MapperPathTarget(mapper, mapper.getMappedClass(ParentType.class), "embedded.flag");
         Assert.assertEquals("embedded.flag", pathTarget.translatedPath());
         Assert.assertEquals(mapper.getMappedClass(EmbeddedSubtype.class).getMappedFieldByJavaField("flag"), pathTarget.getTarget());
     }
@@ -79,19 +79,19 @@ public class PathTargetTest extends TestBase {
         Mapper mapper = getMorphia().getMapper();
         MappedClass mappedClass = mapper.getMappedClass(EntityWithListsAndArrays.class);
 
-        PathTarget pathTarget = new PathTarget(mapper, mappedClass, "listEmbeddedType.1.number");
+        PathTarget pathTarget = new MapperPathTarget(mapper, mappedClass, "listEmbeddedType.1.number");
         Assert.assertEquals("listEmbeddedType.1.number", pathTarget.translatedPath());
         Assert.assertEquals(mapper.getMappedClass(EmbeddedType.class).getMappedFieldByJavaField("number"), pathTarget.getTarget());
 
         try {
-            new PathTarget(mapper, mappedClass, "listEmbeddedType.$").translatedPath();
+            new MapperPathTarget(mapper, mappedClass, "listEmbeddedType.$").translatedPath();
             fail("The dangling $ should have failed.");
         } catch (ValidationException ignored) {
 
         }
 
         try {
-            new PathTarget(mapper, mappedClass, "listEmbeddedType.1").translatedPath();
+            new MapperPathTarget(mapper, mappedClass, "listEmbeddedType.1").translatedPath();
             fail("The dangling 1 should have failed.");
         } catch (ValidationException ignored) {
         }
@@ -103,11 +103,11 @@ public class PathTargetTest extends TestBase {
         Mapper mapper = getMorphia().getMapper();
         MappedClass mappedClass = mapper.getMappedClass(Student.class);
 
-        PathTarget pathTarget = new PathTarget(mapper, mappedClass, "grades.$.data.name");
+        PathTarget pathTarget = new MapperPathTarget(mapper, mappedClass, "grades.$.data.name");
         Assert.assertEquals("grades.$.data.name", pathTarget.translatedPath());
         Assert.assertEquals(mapper.getMappedClass(Grade.class).getMappedFieldByJavaField("data"), pathTarget.getTarget());
 
-        pathTarget = new PathTarget(mapper, mapper.getMappedClass(Article.class), "translations");
+        pathTarget = new MapperPathTarget(mapper, mapper.getMappedClass(Article.class), "translations");
         Assert.assertEquals("translations", pathTarget.translatedPath());
     }
 
@@ -117,11 +117,11 @@ public class PathTargetTest extends TestBase {
         Mapper mapper = getMorphia().getMapper();
         MappedClass mappedClass = mapper.getMappedClass(WithNested.class);
 
-        PathTarget pathTarget = new PathTarget(mapper, mappedClass, "nested.value");
+        PathTarget pathTarget = new MapperPathTarget(mapper, mappedClass, "nested.value");
         Assert.assertEquals("nested.value", pathTarget.translatedPath());
         Assert.assertEquals(mapper.getMappedClass(AnotherNested.class).getMappedFieldByJavaField("value"), pathTarget.getTarget());
 
-        pathTarget = new PathTarget(mapper, mappedClass, "nested.field");
+        pathTarget = new MapperPathTarget(mapper, mappedClass, "nested.field");
         Assert.assertEquals("nested.field", pathTarget.translatedPath());
         Assert.assertEquals(mapper.getMappedClass(NestedImpl.class).getMappedFieldByJavaField("field"), pathTarget.getTarget());
     }
@@ -132,7 +132,7 @@ public class PathTargetTest extends TestBase {
         Mapper mapper = getMorphia().getMapper();
         MappedClass mappedClass = mapper.getMappedClass(WithNested.class);
 
-        final PathTarget pathTarget = new PathTarget(mapper, mappedClass, "nested.field.fail");
+        final PathTarget pathTarget = new MapperPathTarget(mapper, mappedClass, "nested.field.fail");
         pathTarget.disableValidation();
         Assert.assertEquals("nested.field.fail", pathTarget.translatedPath());
         Assert.assertNull(pathTarget.getTarget());

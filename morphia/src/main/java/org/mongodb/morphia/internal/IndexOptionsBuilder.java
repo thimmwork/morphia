@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mongodb.morphia;
+package org.mongodb.morphia.internal;
 
 import org.mongodb.morphia.annotations.Collation;
 import org.mongodb.morphia.annotations.Index;
@@ -22,7 +22,7 @@ import org.mongodb.morphia.annotations.IndexOptions;
 import org.mongodb.morphia.annotations.Indexed;
 
 @SuppressWarnings("deprecation")
-class IndexOptionsBuilder extends AnnotationBuilder<IndexOptions> implements IndexOptions {
+public class IndexOptionsBuilder extends AnnotationBuilder<IndexOptions> implements IndexOptions {
     @Override
     public Class<IndexOptions> annotationType() {
         return IndexOptions.class;
@@ -83,57 +83,57 @@ class IndexOptionsBuilder extends AnnotationBuilder<IndexOptions> implements Ind
         return get("collation");
     }
 
-    IndexOptionsBuilder background(final boolean background) {
+    public IndexOptionsBuilder background(final boolean background) {
         put("background", background);
         return this;
     }
 
-    IndexOptionsBuilder disableValidation(final boolean disableValidation) {
+    public IndexOptionsBuilder disableValidation(final boolean disableValidation) {
         put("disableValidation", disableValidation);
         return this;
     }
 
-    IndexOptionsBuilder dropDups(final boolean dropDups) {
+    public IndexOptionsBuilder dropDups(final boolean dropDups) {
         put("dropDups", dropDups);
         return this;
     }
 
-    IndexOptionsBuilder expireAfterSeconds(final int expireAfterSeconds) {
+    public IndexOptionsBuilder expireAfterSeconds(final int expireAfterSeconds) {
         put("expireAfterSeconds", expireAfterSeconds);
         return this;
     }
 
-    IndexOptionsBuilder language(final String language) {
+    public IndexOptionsBuilder language(final String language) {
         put("language", language);
         return this;
     }
 
-    IndexOptionsBuilder languageOverride(final String languageOverride) {
+    public IndexOptionsBuilder languageOverride(final String languageOverride) {
         put("languageOverride", languageOverride);
         return this;
     }
 
-    IndexOptionsBuilder name(final String name) {
+    public IndexOptionsBuilder name(final String name) {
         put("name", name);
         return this;
     }
 
-    IndexOptionsBuilder sparse(final boolean sparse) {
+    public IndexOptionsBuilder sparse(final boolean sparse) {
         put("sparse", sparse);
         return this;
     }
 
-    IndexOptionsBuilder unique(final boolean unique) {
+    public IndexOptionsBuilder unique(final boolean unique) {
         put("unique", unique);
         return this;
     }
 
-    IndexOptionsBuilder partialFilter(final String partialFilter) {
+    public IndexOptionsBuilder partialFilter(final String partialFilter) {
         put("partialFilter", partialFilter);
         return this;
     }
 
-    IndexOptionsBuilder collation(final Collation collation) {
+    public IndexOptionsBuilder collation(final Collation collation) {
         put("collation", collation);
         return this;
     }

@@ -26,6 +26,8 @@ import org.mongodb.morphia.annotations.NotSaved;
 import org.mongodb.morphia.annotations.PostPersist;
 import org.mongodb.morphia.annotations.Validation;
 import org.mongodb.morphia.annotations.Version;
+import org.mongodb.morphia.internal.IndexBuilder;
+import org.mongodb.morphia.internal.IndexHelper;
 import org.mongodb.morphia.logging.Logger;
 import org.mongodb.morphia.logging.MorphiaLoggerFactory;
 import org.mongodb.morphia.mapping.MappedClass;

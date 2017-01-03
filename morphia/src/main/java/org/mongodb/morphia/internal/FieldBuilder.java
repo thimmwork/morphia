@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.mongodb.morphia;
+package org.mongodb.morphia.internal;
 
 import org.mongodb.morphia.annotations.Field;
 import org.mongodb.morphia.utils.IndexType;
 
-class FieldBuilder extends AnnotationBuilder<Field> implements Field {
+public class FieldBuilder extends AnnotationBuilder<Field> implements Field {
     @Override
     public Class<Field> annotationType() {
         return Field.class;
@@ -40,17 +40,17 @@ class FieldBuilder extends AnnotationBuilder<Field> implements Field {
         return get("weight");
     }
 
-    FieldBuilder type(final IndexType type) {
+    public FieldBuilder type(final IndexType type) {
         put("type", type);
         return this;
     }
 
-    FieldBuilder value(final String value) {
+    public FieldBuilder value(final String value) {
         put("value", value);
         return this;
     }
 
-    FieldBuilder weight(final int weight) {
+    public FieldBuilder weight(final int weight) {
         put("weight", weight);
         return this;
     }

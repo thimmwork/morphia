@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mongodb.morphia;
+package org.mongodb.morphia.internal;
 
 import org.mongodb.morphia.mapping.MappingException;
 
@@ -25,7 +25,7 @@ import java.util.Map;
 
 import static java.lang.String.format;
 
-abstract class AnnotationBuilder<T extends Annotation> implements Annotation {
+public abstract class AnnotationBuilder<T extends Annotation> implements Annotation {
     private final Map<String, Object> values = new HashMap<String, Object>();
 
     AnnotationBuilder() {

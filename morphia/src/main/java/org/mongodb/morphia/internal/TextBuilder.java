@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.mongodb.morphia;
+package org.mongodb.morphia.internal;
 
 import org.mongodb.morphia.annotations.IndexOptions;
 import org.mongodb.morphia.annotations.Text;
 
-class TextBuilder extends AnnotationBuilder<Text> implements Text {
+public class TextBuilder extends AnnotationBuilder<Text> implements Text {
     @Override
     public Class<Text> annotationType() {
         return Text.class;
@@ -35,12 +35,12 @@ class TextBuilder extends AnnotationBuilder<Text> implements Text {
         return get("value");
     }
 
-    TextBuilder options(final IndexOptions options) {
+    public TextBuilder options(final IndexOptions options) {
         put("options", options);
         return this;
     }
 
-    TextBuilder value(final int value) {
+    public TextBuilder value(final int value) {
         put("value", value);
         return this;
     }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mongodb.morphia;
+package org.mongodb.morphia.internal;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -51,17 +51,17 @@ import java.util.concurrent.TimeUnit;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static org.mongodb.morphia.AnnotationBuilder.toMap;
+import static org.mongodb.morphia.internal.AnnotationBuilder.toMap;
 import static org.mongodb.morphia.utils.IndexType.fromValue;
 
-final class IndexHelper {
+public final class IndexHelper {
     private static final Logger LOG = MorphiaLoggerFactory.get(IndexHelper.class);
     private static final EncoderContext ENCODER_CONTEXT = EncoderContext.builder().build();
 
     private final Mapper mapper;
     private final MongoDatabase database;
 
-    IndexHelper(final Mapper mapper, final MongoDatabase database) {
+    public IndexHelper(final Mapper mapper, final MongoDatabase database) {
         this.mapper = mapper;
         this.database = database;
     }
@@ -92,7 +92,7 @@ final class IndexHelper {
         }
     }
 
-    Index convert(final Text text, final String nameToStore) {
+    public Index convert(final Text text, final String nameToStore) {
         return new IndexBuilder()
             .options(text.options())
             .fields(Collections.<Field>singletonList(new FieldBuilder()
@@ -102,7 +102,7 @@ final class IndexHelper {
     }
 
     @SuppressWarnings("deprecation")
-    Index convert(final Indexed indexed, final String nameToStore) {
+    public Index convert(final Indexed indexed, final String nameToStore) {
         if (indexed.dropDups() || indexed.options().dropDups()) {
             LOG.warning("Support for dropDups has been removed from the server.  Please remove this setting.");
         }
@@ -250,7 +250,7 @@ final class IndexHelper {
         return writer.getDocument();
     }
 
-    BsonDocument calculateKeys(final MappedClass mc, final Index index) {
+    public BsonDocument calculateKeys(final MappedClass mc, final Index index) {
         BsonDocument keys = new BsonDocument();
         for (Field field : index.fields()) {
             String path;
@@ -271,7 +271,7 @@ final class IndexHelper {
     }
 
     @SuppressWarnings("deprecation")
-    com.mongodb.client.model.IndexOptions convert(final IndexOptions options, final boolean background) {
+    public com.mongodb.client.model.IndexOptions convert(final IndexOptions options, final boolean background) {
         if (options.dropDups()) {
             LOG.warning("Support for dropDups has been removed from the server.  Please remove this setting.");
         }
@@ -302,7 +302,7 @@ final class IndexHelper {
         return indexOptions;
     }
 
-    com.mongodb.client.model.Collation convert(final Collation collation) {
+    public com.mongodb.client.model.Collation convert(final Collation collation) {
         return com.mongodb.client.model.Collation.builder()
                                                  .locale(collation.locale())
                                                  .backwards(collation.backwards())
@@ -316,7 +316,7 @@ final class IndexHelper {
                                                  .build();
     }
 
-    String findField(final MappedClass mc, final IndexOptions options, final List<String> path) {
+    public String findField(final MappedClass mc, final IndexOptions options, final List<String> path) {
         String segment = path.get(0);
         if (segment.equals("$**")) {
             return segment;
@@ -360,7 +360,7 @@ final class IndexHelper {
         return namePath;
     }
 
-    void createIndex(final MongoCollection collection, final MappedClass mc, final boolean background) {
+    public void createIndex(final MongoCollection collection, final MappedClass mc, final boolean background) {
         if (!mc.isInterface() && !mc.isAbstract()) {
             for (Index index : collectIndexes(mc, Collections.<MappedClass>emptyList())) {
                 createIndex(collection, mc, index, background);
@@ -368,7 +368,7 @@ final class IndexHelper {
         }
     }
 
-    void createIndex(final MongoCollection collection, final MappedClass mc, final Index index, final boolean background) {
+    public void createIndex(final MongoCollection collection, final MappedClass mc, final Index index, final boolean background) {
         Index normalized = IndexBuilder.normalize(index);
 
         BsonDocument keys = calculateKeys(mc, normalized);

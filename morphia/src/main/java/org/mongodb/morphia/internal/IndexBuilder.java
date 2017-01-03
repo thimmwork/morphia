@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mongodb.morphia;
+package org.mongodb.morphia.internal;
 
 import org.mongodb.morphia.annotations.Field;
 import org.mongodb.morphia.annotations.Index;
@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
-class IndexBuilder extends AnnotationBuilder<Index> implements Index {
-    IndexBuilder() {
+public class IndexBuilder extends AnnotationBuilder<Index> implements Index {
+    public IndexBuilder() {
     }
 
     IndexBuilder(final Index original) {
@@ -123,7 +123,7 @@ class IndexBuilder extends AnnotationBuilder<Index> implements Index {
         return this;
     }
 
-    IndexBuilder fields(final Field... fields) {
+    public IndexBuilder fields(final Field... fields) {
         put("fields", fields);
         return this;
     }
@@ -131,7 +131,7 @@ class IndexBuilder extends AnnotationBuilder<Index> implements Index {
     /**
      * Options to apply to the index.  Use of this field will ignore any of the deprecated options defined on {@link Index} directly.
      */
-    IndexBuilder options(final IndexOptions options) {
+    public IndexBuilder options(final IndexOptions options) {
         put("options", options);
         return this;
     }
@@ -139,7 +139,7 @@ class IndexBuilder extends AnnotationBuilder<Index> implements Index {
     /**
      * Create the index in the background
      */
-    IndexBuilder background(final boolean background) {
+    public IndexBuilder background(final boolean background) {
         put("background", background);
         return this;
     }
@@ -147,7 +147,7 @@ class IndexBuilder extends AnnotationBuilder<Index> implements Index {
     /**
      * disables validation for the field name
      */
-    IndexBuilder disableValidation(final boolean disableValidation) {
+    public IndexBuilder disableValidation(final boolean disableValidation) {
         put("disableValidation", disableValidation);
         return this;
     }
@@ -155,7 +155,7 @@ class IndexBuilder extends AnnotationBuilder<Index> implements Index {
     /**
      * Tells the unique index to drop duplicates silently when creating; only the first will be kept
      */
-    IndexBuilder dropDups(final boolean dropDups) {
+    public IndexBuilder dropDups(final boolean dropDups) {
         put("dropDups", dropDups);
         return this;
     }
@@ -163,7 +163,7 @@ class IndexBuilder extends AnnotationBuilder<Index> implements Index {
     /**
      * defines the time to live for documents in the collection
      */
-    IndexBuilder expireAfterSeconds(final int expireAfterSeconds) {
+    public IndexBuilder expireAfterSeconds(final int expireAfterSeconds) {
         put("expireAfterSeconds", expireAfterSeconds);
         return this;
     }
@@ -171,7 +171,7 @@ class IndexBuilder extends AnnotationBuilder<Index> implements Index {
     /**
      * The name of the index to create; default is to let the mongodb create a name (in the form of key1_1/-1_key2_1/-1...)
      */
-    IndexBuilder name(final String name) {
+    public IndexBuilder name(final String name) {
         put("name", name);
         return this;
     }
@@ -179,7 +179,7 @@ class IndexBuilder extends AnnotationBuilder<Index> implements Index {
     /**
      * Create the index with the sparse option
      */
-    IndexBuilder sparse(final boolean sparse) {
+    public IndexBuilder sparse(final boolean sparse) {
         put("sparse", sparse);
         return this;
     }
@@ -187,7 +187,7 @@ class IndexBuilder extends AnnotationBuilder<Index> implements Index {
     /**
      * Creates the index as a unique value index; inserting duplicates values in this field will cause errors
      */
-    IndexBuilder unique(final boolean unique) {
+    public IndexBuilder unique(final boolean unique) {
         put("unique", unique);
         return this;
     }
@@ -195,7 +195,7 @@ class IndexBuilder extends AnnotationBuilder<Index> implements Index {
     /**
      * List of fields (prepended with "-" for desc; defaults to asc).
      */
-    IndexBuilder value(final String value) {
+    public IndexBuilder value(final String value) {
         put("value", value);
         return this;
     }

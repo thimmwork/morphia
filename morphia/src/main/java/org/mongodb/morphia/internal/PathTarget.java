@@ -40,7 +40,7 @@ public abstract class PathTarget<T> {
      *
      * @param path path
      */
-    protected PathTarget(final String path) {
+    PathTarget(final String path) {
         segments = asList(path.split("\\."));
         this.path = path;
     }

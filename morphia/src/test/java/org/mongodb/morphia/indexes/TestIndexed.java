@@ -175,14 +175,11 @@ public class TestIndexed extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testMultipleIndexedFields() {
         final MappedClass mc = getMorphia().getMapper().getMappedClass(Ad.class);
         getMorphia().map(Ad.class);
 
         assertThat(getDb().getCollection(mc.getCollectionName()).getIndexInfo(), doesNotHaveIndexNamed("lastMod_1_active_-1"));
-        getDs().ensureIndex(Ad.class, "lastMod, -active");
-        assertThat(getDb().getCollection(mc.getCollectionName()).getIndexInfo(), hasIndexNamed("lastMod_1_active_-1"));
     }
 
     @Test
@@ -200,11 +197,6 @@ public class TestIndexed extends TestBase {
 
         // this should throw...
         getDs().save(new UniqueIndexOnValue("v"));
-    }
-    @Test(expected = MappingException.class)
-    public void testMixedIndexDefinitions() throws Exception {
-        getMorphia().map(MixedIndexDefinitions.class);
-        getDs().ensureIndexes(MixedIndexDefinitions.class);
     }
 
     @SuppressWarnings("unused")
@@ -285,7 +277,7 @@ public class TestIndexed extends TestBase {
     private static class MixedIndexDefinitions {
         @Id
         private ObjectId id;
-        @Indexed(unique = true, options = @IndexOptions(dropDups = true))
+        @Indexed(options = @IndexOptions(unique = true))
         private String name;
     }
 }

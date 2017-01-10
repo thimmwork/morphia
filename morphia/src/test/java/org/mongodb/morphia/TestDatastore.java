@@ -32,6 +32,7 @@ import org.mongodb.morphia.annotations.Reference;
 import org.mongodb.morphia.annotations.Transient;
 import org.mongodb.morphia.generics.model.ChildEmbedded;
 import org.mongodb.morphia.generics.model.ChildEntity;
+import org.mongodb.morphia.internal.DatastoreImpl;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateException;
@@ -69,22 +70,6 @@ public class TestDatastore extends TestBase {
     @Test(expected = UpdateException.class)
     public void saveNull() {
         getDs().save((Hotel) null);
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void saveVarargs() {
-        Iterable<Key<FacebookUser>> keys = getDs().save(new FacebookUser(1, "user 1"),
-                                                        new FacebookUser(2, "user 2"),
-                                                        new FacebookUser(3, "user 3"),
-                                                        new FacebookUser(4, "user 4"));
-        long id = 1;
-        for (final Key<FacebookUser> key : keys) {
-            assertEquals(id++, key.getId());
-        }
-        assertEquals(5, id);
-        assertEquals(4, getDs().getCount(FacebookUser.class));
-
     }
 
     @Test
@@ -151,15 +136,6 @@ public class TestDatastore extends TestBase {
         // expect
         assertNotNull(getDs().get(FacebookUser.class, id));
         assertNotNull(getDs().exists(key));
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testExistsWhenSecondaryPreferredOld() throws Exception {
-        if (isReplicaSet()) {
-            final Key<FacebookUser> key = getDs().save(new FacebookUser(System.currentTimeMillis(), "user 1"), W2);
-            assertNotNull("Should exist when using secondaryPreferred", getAds().exists(key, secondaryPreferred()));
-        }
     }
 
     @Test
@@ -375,47 +351,6 @@ public class TestDatastore extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
-    public void testFindAndModifyOld() {
-        getDs().getCollection(FacebookUser.class).drop();
-        getDs().save(asList(new FacebookUser(1, "John Doe"),
-                            new FacebookUser(2, "john doe")));
-
-        Query<FacebookUser> query = getDs().find(FacebookUser.class)
-                                           .field("username").equal("john doe");
-        UpdateOperations<FacebookUser> updateOperations = getDs().createUpdateOperations(FacebookUser.class)
-            .inc("loginCount");
-        FacebookUser results = getDs().findAndModify(query, updateOperations);
-        assertEquals(0, getDs().find(FacebookUser.class).filter("id", 1).get().loginCount);
-        assertEquals(1, getDs().find(FacebookUser.class).filter("id", 2).get().loginCount);
-        assertEquals(1, results.loginCount);
-
-        results = getDs().findAndModify(query, updateOperations, true);
-        assertEquals(0, getDs().find(FacebookUser.class).filter("id", 1).get().loginCount);
-        assertEquals(2, getDs().find(FacebookUser.class).filter("id", 2).get().loginCount);
-        assertEquals(1, results.loginCount);
-
-        results = getDs().findAndModify(getDs().find(FacebookUser.class)
-                                               .field("id").equal(3L)
-                                               .field("username").equal("Jon Snow"), updateOperations, true, true);
-        assertNull(results);
-        FacebookUser user = getDs().find(FacebookUser.class).filter("id", 3).get();
-        assertEquals(1, user.loginCount);
-        assertEquals("Jon Snow", user.username);
-
-
-        results = getDs().findAndModify(getDs().find(FacebookUser.class)
-                                               .field("id").equal(4L)
-                                               .field("username").equal("Ron Swanson"), updateOperations, false, true);
-        assertNotNull(results);
-        user = getDs().find(FacebookUser.class).filter("id", 4).get();
-        assertEquals(1, results.loginCount);
-        assertEquals("Ron Swanson", results.username);
-        assertEquals(1, user.loginCount);
-        assertEquals("Ron Swanson", user.username);
-    }
-
-    @Test
     public void testFindAndModify() {
         getDs().getCollection(FacebookUser.class).drop();
         getDs().save(asList(new FacebookUser(1, "John Doe"),
@@ -531,7 +466,6 @@ public class TestDatastore extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testEnforceWriteConcern() {
         DatastoreImpl ds = (DatastoreImpl) getDs();
         Query<FacebookUser> query = ds.find(FacebookUser.class);
@@ -578,7 +512,6 @@ public class TestDatastore extends TestBase {
         ensureEntityWriteConcern();
     }
 
-    @SuppressWarnings("deprecation")
     private void ensureEntityWriteConcern() {
         DatastoreImpl datastore = (DatastoreImpl) getAds();
         assertEquals(ACKNOWLEDGED, datastore.enforceWriteConcern(new InsertOptions(), Simple.class)

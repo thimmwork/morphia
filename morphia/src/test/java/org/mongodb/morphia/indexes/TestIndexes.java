@@ -51,10 +51,6 @@ public class TestIndexes extends TestBase {
         indexOptionColl.drop();
         assertEquals(0, indexOptionColl.getIndexInfo().size());
 
-        final DBCollection depIndexColl = getDs().getCollection(TestWithDeprecatedIndex.class);
-        depIndexColl.drop();
-        assertEquals(0, depIndexColl.getIndexInfo().size());
-
         final DBCollection hashIndexColl = getDs().getCollection(TestWithHashedIndex.class);
         hashIndexColl.drop();
         assertEquals(0, hashIndexColl.getIndexInfo().size());
@@ -82,10 +78,6 @@ public class TestIndexes extends TestBase {
                 }
             }
         }
-
-        datastore.ensureIndexes(TestWithDeprecatedIndex.class, true);
-        assertEquals(2, depIndexColl.getIndexInfo().size());
-        assertBackground(depIndexColl.getIndexInfo());
 
         datastore.ensureIndexes(TestWithHashedIndex.class);
         assertEquals(2, hashIndexColl.getIndexInfo().size());
@@ -118,14 +110,6 @@ public class TestIndexes extends TestBase {
             numericOrdering = true, strength = CollationStrength.IDENTICAL)),
         fields = {@Field(value = "name")})})
     public static class TestWithIndexOption {
-        private String name;
-
-    }
-
-    @Entity(noClassnameStored = true)
-    @Indexes({@Index("name")})
-    public static class TestWithDeprecatedIndex {
-
         private String name;
 
     }

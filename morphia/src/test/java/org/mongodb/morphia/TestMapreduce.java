@@ -15,6 +15,7 @@ import com.mongodb.client.model.ValidationLevel;
 import com.mongodb.client.model.ValidationOptions;
 import org.bson.Document;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mongodb.morphia.aggregation.AggregationTest.Book;
 import org.mongodb.morphia.aggregation.AggregationTest.CountResult;
@@ -34,6 +35,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.fail;
 
 
+@Ignore
 public class TestMapreduce extends TestBase {
 
     @Test(expected = MongoException.class)
@@ -48,33 +50,6 @@ public class TestMapreduce extends TestBase {
                               .query(getAds().find(Shape.class))
                               .map(map)
                               .reduce(reduce));
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testOldMapReduce() throws Exception {
-        final Random rnd = new Random();
-
-        //create 100 circles and rectangles
-        for (int i = 0; i < 100; i++) {
-            getAds().insert("shapes", new Circle(rnd.nextDouble()));
-            getAds().insert("shapes", new Rectangle(rnd.nextDouble(), rnd.nextDouble()));
-        }
-        final String map = "function () { if(this['radius']) { emit('circle', {count:1}); return; } emit('rect', {count:1}); }";
-        final String reduce = "function (key, values) { var total = 0; for ( var i=0; i<values.length; i++ ) {total += values[i].count;} "
-                              + "return { count : total }; }";
-
-        final MapreduceResults<ResultEntity> mrRes =
-            getDs().mapReduce(MapreduceType.REPLACE, getAds().find(Shape.class), map, reduce, null, null, ResultEntity.class);
-        Assert.assertEquals(2, mrRes.createQuery().countAll());
-        Assert.assertEquals(100, mrRes.createQuery().get().getValue().count, 0);
-
-
-        final MapreduceResults<ResultEntity> inline =
-            getDs().mapReduce(MapreduceType.INLINE, getAds().find(Shape.class), map, reduce, null, null, ResultEntity.class);
-        final Iterator<ResultEntity> iterator = inline.iterator();
-        Assert.assertEquals(2, count(iterator));
-        Assert.assertEquals(100, inline.iterator().next().getValue().count, 0);
     }
 
     @Test

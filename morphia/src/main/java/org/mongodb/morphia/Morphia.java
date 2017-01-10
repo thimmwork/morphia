@@ -19,6 +19,7 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.internal.DatastoreImpl;
 import org.mongodb.morphia.logging.Logger;
 import org.mongodb.morphia.logging.MorphiaLoggerFactory;
 import org.mongodb.morphia.mapping.Mapper;
@@ -85,9 +86,8 @@ public class Morphia {
      * @param dbName      the name of the database
      * @return a Datastore that you can use to interact with MongoDB
      */
-    @SuppressWarnings("deprecation")
     public Datastore createDatastore(final MongoClient mongoClient, final String dbName) {
-        return new DatastoreImpl(this, mongoClient, dbName);
+        return new DatastoreImpl(getMapper(), mongoClient, dbName);
     }
 
     /**
@@ -98,9 +98,8 @@ public class Morphia {
      * @param dbName      the name of the database
      * @return a Datastore that you can use to interact with MongoDB
      */
-    @SuppressWarnings("deprecation")
     public Datastore createDatastore(final MongoClient mongoClient, final Mapper mapper, final String dbName) {
-        return new DatastoreImpl(this, mapper, mongoClient, dbName);
+        return new DatastoreImpl(mapper, mongoClient, dbName);
     }
 
     /**
@@ -147,16 +146,6 @@ public class Morphia {
     }
 
     /**
-     * @return false.  Setting this value has no value functionally or performance-wise.
-     * @deprecated
-     * @see <a href="https://github.com/mongodb/morphia/issues/1052">Issue #1052</a>
-     */
-    @Deprecated
-    public boolean getUseBulkWriteOperations() {
-        return false;
-    }
-
-    /**
      * Check whether a specific class is mapped by this instance.
      *
      * @param entityClass the class we want to check
@@ -164,27 +153,6 @@ public class Morphia {
      */
     public boolean isMapped(final Class entityClass) {
         return mapper.isMapped(entityClass);
-    }
-
-    /**
-     * @return false.  Setting this value has no value functionally or performance-wise.
-     * @deprecated
-     * @see <a href="https://github.com/mongodb/morphia/issues/1052">Issue #1052</a>
-     */
-    @Deprecated
-    public boolean isUseBulkWriteOperations() {
-        return false;
-    }
-
-    /**
-     * Configures Morphia to use bulk writes.  Only useful with MongoDB 2.6+.
-     *
-     * @param useBulkWriteOperations true if Morphia should use bulk writes
-     * @see <a href="https://github.com/mongodb/morphia/issues/1052">Issue #1052</a>
-     * @deprecated Setting this value has no value functionally or performance-wise.
-     */
-    @Deprecated
-    public void setUseBulkWriteOperations(final boolean useBulkWriteOperations) {
     }
 
     /**

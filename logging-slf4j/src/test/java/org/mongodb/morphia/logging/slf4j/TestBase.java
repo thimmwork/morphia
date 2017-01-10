@@ -8,7 +8,6 @@ import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 
 
-@SuppressWarnings("deprecation")
 public abstract class TestBase {
 
     private DB db;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mongodb.morphia;
+package org.mongodb.morphia.internal;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -51,7 +51,7 @@ import java.util.concurrent.TimeUnit;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static org.mongodb.morphia.AnnotationBuilder.toMap;
+import static org.mongodb.morphia.internal.AnnotationBuilder.toMap;
 import static org.mongodb.morphia.utils.IndexType.fromValue;
 
 final class IndexHelper {
@@ -101,11 +101,7 @@ final class IndexHelper {
                                                          .weight(text.value())));
     }
 
-    @SuppressWarnings("deprecation")
     Index convert(final Indexed indexed, final String nameToStore) {
-        if (indexed.dropDups() || indexed.options().dropDups()) {
-            LOG.warning("Support for dropDups has been removed from the server.  Please remove this setting.");
-        }
         final Map<String, Object> newOptions = extractOptions(indexed.options());
         if (!extractOptions(indexed).isEmpty() && !newOptions.isEmpty()) {
             throw new MappingException("Mixed usage of deprecated @Indexed values with the new @IndexOption values is not "
@@ -125,7 +121,6 @@ final class IndexHelper {
                    .fields(fields);
     }
 
-    @SuppressWarnings("deprecation")
     private List<Index> collectFieldIndexes(final MappedClass mc) {
         List<Index> list = new ArrayList<Index>();
         for (final MappedField mf : mc.getPersistenceFields()) {
@@ -193,22 +188,15 @@ final class IndexHelper {
             if (annotations != null) {
                 for (final Indexes indexes : annotations) {
                     for (final Index index : indexes.value()) {
-                        Index updated = index;
-                        if (index.fields().length == 0) {
-                            LOG.warning(format("This index on '%s' is using deprecated configuration options.  Please update to use the "
-                                                   + "fields value on @Index: %s", mc.getClazz().getName(), index.toString()));
-                            updated = new IndexBuilder()
-                                .migrate(index);
-                        }
                         List<Field> fields = new ArrayList<Field>();
-                        for (Field field : updated.fields()) {
+                        for (Field field : index.fields()) {
                             fields.add(new FieldBuilder()
                                            .value(findField(mc, index.options(), asList(field.value().split("\\."))))
                                            .type(field.type())
                                            .weight(field.weight()));
                         }
 
-                        list.add(replaceFields(updated, fields));
+                        list.add(replaceFields(index, fields));
                     }
                 }
             }
@@ -270,11 +258,7 @@ final class IndexHelper {
         return keys;
     }
 
-    @SuppressWarnings("deprecation")
     com.mongodb.client.model.IndexOptions convert(final IndexOptions options, final boolean background) {
-        if (options.dropDups()) {
-            LOG.warning("Support for dropDups has been removed from the server.  Please remove this setting.");
-        }
         com.mongodb.client.model.IndexOptions indexOptions = new com.mongodb.client.model.IndexOptions()
             .background(options.background() || background)
             .sparse(options.sparse())
@@ -369,11 +353,9 @@ final class IndexHelper {
     }
 
     void createIndex(final MongoCollection collection, final MappedClass mc, final Index index, final boolean background) {
-        Index normalized = IndexBuilder.normalize(index);
-
-        BsonDocument keys = calculateKeys(mc, normalized);
-        com.mongodb.client.model.IndexOptions indexOptions = convert(normalized.options(), background);
-        calculateWeights(normalized, indexOptions);
+        BsonDocument keys = calculateKeys(mc, index);
+        com.mongodb.client.model.IndexOptions indexOptions = convert(index.options(), background);
+        calculateWeights(index, indexOptions);
 
         collection.createIndex(keys, indexOptions);
     }

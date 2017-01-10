@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package org.mongodb.morphia;
+package org.mongodb.morphia.internal;
 
 import org.mongodb.morphia.annotations.Collation;
 import org.mongodb.morphia.annotations.Index;
 import org.mongodb.morphia.annotations.IndexOptions;
 import org.mongodb.morphia.annotations.Indexed;
 
-@SuppressWarnings("deprecation")
 class IndexOptionsBuilder extends AnnotationBuilder<IndexOptions> implements IndexOptions {
     @Override
     public Class<IndexOptions> annotationType() {
@@ -36,11 +35,6 @@ class IndexOptionsBuilder extends AnnotationBuilder<IndexOptions> implements Ind
     @Override
     public boolean disableValidation() {
         return get("disableValidation");
-    }
-
-    @Override
-    public boolean dropDups() {
-        return get("dropDups");
     }
 
     @Override

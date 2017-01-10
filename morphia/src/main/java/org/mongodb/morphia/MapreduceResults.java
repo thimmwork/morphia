@@ -5,8 +5,6 @@ import com.mongodb.MapReduceCommand.OutputType;
 import com.mongodb.MapReduceOutput;
 import org.mongodb.morphia.annotations.NotSaved;
 import org.mongodb.morphia.annotations.Transient;
-import org.mongodb.morphia.logging.Logger;
-import org.mongodb.morphia.logging.MorphiaLoggerFactory;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.mapping.MappingException;
 import org.mongodb.morphia.mapping.cache.EntityCache;
@@ -21,9 +19,7 @@ import java.util.Iterator;
  * @param <T> the type of the results
  */
 @NotSaved
-@SuppressWarnings("deprecation")
 public class MapreduceResults<T> implements Iterable<T> {
-    private static final Logger LOG = MorphiaLoggerFactory.get(MapreduceResults.class);
     private final Stats counts = new Stats();
     private MapReduceOutput output;
     private String outputCollectionName;
@@ -43,7 +39,7 @@ public class MapreduceResults<T> implements Iterable<T> {
      *
      * @param output the output of the operation
      */
-    public MapreduceResults(final MapReduceOutput output) {
+    MapreduceResults(final MapReduceOutput output) {
         this.output = output;
         outputCollectionName = output.getCollectionName();
     }
@@ -73,47 +69,14 @@ public class MapreduceResults<T> implements Iterable<T> {
     }
 
     /**
-     * @return will always return null
-     */
-    @Deprecated
-    public String getError() {
-        LOG.warning("MapreduceResults.getError() will always return null.");
-        return null;
-    }
-
-    /**
      * Creates an Iterator over the results of the operation.  This method should probably not be called directly as it requires more
      * context to use properly.  Using {@link #iterator()} will return the proper Iterator regardless of the type of map reduce operation
      * performed.
      *
      * @return the Iterator
-     * @see MapreduceType
      */
     public Iterator<T> getInlineResults() {
         return new MorphiaIterator<T, T>(datastore, output.results().iterator(), mapper, clazz, null, cache);
-    }
-
-    /**
-     * @return the type of the operation
-     * @deprecated use {@link #getOutputType()} instead
-     */
-    @Deprecated
-    public MapreduceType getType() {
-        if (outputType == OutputType.REDUCE) {
-            return MapreduceType.REDUCE;
-        } else if (outputType == OutputType.MERGE) {
-            return MapreduceType.MERGE;
-        } else if (outputType == OutputType.INLINE) {
-            return MapreduceType.INLINE;
-        } else {
-            return MapreduceType.REPLACE;
-        }
-
-    }
-
-    @Deprecated
-    void setType(final MapreduceType type) {
-        this.outputType = type.toOutputType();
     }
 
     /**
@@ -130,17 +93,8 @@ public class MapreduceResults<T> implements Iterable<T> {
      * @param outputType the output type
      * @since 1.3
      */
-    public void setOutputType(final OutputType outputType) {
+    void setOutputType(final OutputType outputType) {
         this.outputType = outputType;
-    }
-
-    /**
-     * @return will always return true
-     */
-    @Deprecated
-    public boolean isOk() {
-        LOG.warning("MapreduceResults.isOk() will always return true.");
-        return true;
     }
 
     /**
@@ -162,7 +116,7 @@ public class MapreduceResults<T> implements Iterable<T> {
      * @param cache     the cache of entities seen so far
      * @see OutputType
      */
-    public void setInlineRequiredOptions(final Datastore datastore, final Class<T> clazz, final Mapper mapper, final EntityCache cache) {
+    void setInlineRequiredOptions(final Datastore datastore, final Class<T> clazz, final Mapper mapper, final EntityCache cache) {
         this.mapper = mapper;
         this.datastore = datastore;
         this.clazz = clazz;

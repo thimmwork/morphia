@@ -20,8 +20,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.CursorType;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
-import com.mongodb.MongoException;
-import com.mongodb.MongoInternalException;
+import com.mongodb.MongoQueryException;
 import com.mongodb.ReadPreference;
 import com.mongodb.client.model.CollationStrength;
 import org.bson.types.CodeWScope;
@@ -39,6 +38,7 @@ import org.mongodb.morphia.annotations.CappedAt;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
+import org.mongodb.morphia.annotations.IndexOptions;
 import org.mongodb.morphia.annotations.Indexed;
 import org.mongodb.morphia.annotations.PrePersist;
 import org.mongodb.morphia.annotations.Property;
@@ -87,26 +87,6 @@ import static org.mongodb.morphia.query.Sort.naturalDescending;
 public class TestQuery extends TestBase {
 
     @Test
-    @SuppressWarnings("deprecation")
-    public void batchSize() {
-        QueryImpl<Photo> query = (QueryImpl<Photo>) getDs().find(Photo.class)
-                                                           .batchSize(42);
-        Assert.assertEquals(42, query.getBatchSize());
-        Assert.assertEquals(42, query.getOptions().getBatchSize());
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void cursorTimeOut() {
-        QueryImpl<Photo> query = (QueryImpl<Photo>) getDs().find(Photo.class)
-                                                           .enableCursorTimeout();
-        Assert.assertFalse(query.getOptions().isNoCursorTimeout());
-
-        query.disableCursorTimeout();
-        Assert.assertTrue(query.getOptions().isNoCursorTimeout());
-    }
-
-    @Test
     public void genericMultiKeyValueQueries() {
         getMorphia().map(GenericKeyValue.class);
         getDs().ensureIndexes(GenericKeyValue.class);
@@ -121,28 +101,14 @@ public class TestQuery extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void maxScan() {
         getDs().save(asList(new Pic("pic1"), new Pic("pic2"), new Pic("pic3"), new Pic("pic4")));
 
-        assertEquals(2, getDs().find(Pic.class)
-                               .maxScan(2)
-                               .asList()
-                               .size());
         assertEquals(2, getDs().find(Pic.class)
                                .asList(new FindOptions()
                                            .modifier("$maxScan", 2))
                                .size());
         assertEquals(4, getDs().find(Pic.class).asList().size());
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void maxTime() {
-        Query<ContainsRenamedFields> query = getDs().find(ContainsRenamedFields.class)
-                                                    .maxTime(15, TimeUnit.MINUTES);
-
-        assertEquals(900, ((QueryImpl) query).getMaxTime(TimeUnit.SECONDS));
     }
 
     @Test
@@ -157,16 +123,6 @@ public class TestQuery extends TestBase {
         final Query<KeyValue> query = getDs().find(KeyValue.class).field("key").hasAnyOf(keys);
         Assert.assertTrue(query.toString().replaceAll("\\s", "").contains("{\"$in\":[\"key1\",\"key2\"]"));
         assertEquals(query.get().id, value.id);
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void oldReadPreference() {
-        QueryImpl<Photo> query = (QueryImpl<Photo>) getDs().find(Photo.class)
-                                                           .queryNonPrimary();
-        Assert.assertEquals(ReadPreference.secondaryPreferred(), query.getOptions().getReadPreference());
-        query.queryPrimaryOnly();
-        Assert.assertEquals(ReadPreference.primary(), query.getOptions().getReadPreference());
     }
 
     @Test
@@ -191,18 +147,6 @@ public class TestQuery extends TestBase {
                         .modifier("$snapshot", true));
     }
 
-    @Test
-    @SuppressWarnings("deprecation")
-    public void snapshotOld() {
-        QueryImpl<Photo> query = (QueryImpl<Photo>) getDs().find(Photo.class)
-                                                           .enableSnapshotMode();
-        Assert.assertTrue(query.getOptions().getModifiers().containsField("$snapshot"));
-        query.get();
-
-        query.disableSnapshotMode();
-        Assert.assertFalse(query.getOptions().getModifiers().containsField("$snapshot"));
-    }
-
     @Override
     @After
     public void tearDown() {
@@ -225,20 +169,6 @@ public class TestQuery extends TestBase {
                     .order("-w")
                     .get(new FindOptions()
                              .limit(1));
-        assertNotNull(r1);
-        assertEquals(10, r1.getWidth(), 0);
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testAliasedFieldSortOld() {
-        getDs().save(asList(new Rectangle(1, 10), new Rectangle(3, 8), new Rectangle(6, 10), new Rectangle(10, 10), new Rectangle(10, 1)));
-
-        Rectangle r1 = getDs().find(Rectangle.class).limit(1).order("w").get();
-        assertNotNull(r1);
-        assertEquals(1, r1.getWidth(), 0);
-
-        r1 = getDs().find(Rectangle.class).limit(1).order("-w").get();
         assertNotNull(r1);
         assertEquals(10, r1.getWidth(), 0);
     }
@@ -336,27 +266,6 @@ public class TestQuery extends TestBase {
         getDs().find(Pic.class)
                .asList(new FindOptions()
                            .modifier("$comment", expectedComment));
-
-        DBCollection profileCollection = getDb().getCollection("system.profile");
-        assertNotEquals(0, profileCollection.count());
-        DBObject profileRecord = profileCollection.findOne(new BasicDBObject("op", "query")
-                                                               .append("ns", getDs().getCollection(Pic.class).getFullName()));
-        final Object commentPre32 = ((DBObject) profileRecord.get("query")).get("$comment");
-        final Object commentPost32 = ((DBObject) profileRecord.get("query")).get("comment");
-        assertTrue(profileRecord.toString(), expectedComment.equals(commentPre32) || expectedComment.equals(commentPost32));
-
-        turnOffProfilingAndDropProfileCollection();
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testCommentsShowUpInLogsOld() {
-        getDs().save(asList(new Pic("pic1"), new Pic("pic2"), new Pic("pic3"), new Pic("pic4")));
-
-        getDb().command(new BasicDBObject("profile", 2));
-        String expectedComment = "test comment";
-
-        getDs().find(Pic.class).comment(expectedComment).asList();
 
         DBCollection profileCollection = getDb().getCollection("system.profile");
         assertNotEquals(0, profileCollection.count());
@@ -476,7 +385,6 @@ public class TestQuery extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testCorrectQueryForNotWithSizeEqIssue514() {
         Query<PhotoWithKeywords> query = getAds()
             .find(PhotoWithKeywords.class)
@@ -548,28 +456,6 @@ public class TestQuery extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
-    public void testElemMatchQueryOld() {
-        getDs().save(asList(new PhotoWithKeywords(), new PhotoWithKeywords("Scott", "Joe", "Sarah")));
-        assertNotNull(getDs().find(PhotoWithKeywords.class)
-                             .field("keywords")
-                             .hasThisElement(new Keyword("Scott"))
-                             .get());
-        // TODO add back when $and is done (> 1.5)  this needs multiple $elemMatch clauses
-        //        query = getDs().find(PhotoWithKeywords.class)
-        //                       .field("keywords")
-        //                       .hasThisElement(new Keyword[]{new Keyword("Scott"), new Keyword("Joe")});
-        //        System.out.println("************ query = " + query);
-        //        PhotoWithKeywords pwkScottSarah = query.get();
-        //        assertNotNull(pwkScottSarah);
-        assertNull(getDs().find(PhotoWithKeywords.class)
-                          .field("keywords")
-                          .hasThisElement(new Keyword("Randy"))
-                          .get());
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
     public void testElemMatchVariants() {
         final PhotoWithKeywords pwk1 = new PhotoWithKeywords();
         final PhotoWithKeywords pwk2 = new PhotoWithKeywords("Kevin");
@@ -584,11 +470,6 @@ public class TestQuery extends TestBase {
 
         assertEquals(asList(key3, key4), getDs().find(PhotoWithKeywords.class)
                                                 .field("keywords")
-                                                .hasThisElement(new Keyword("Scott"))
-                                                .asKeyList());
-
-        assertEquals(asList(key3, key4), getDs().find(PhotoWithKeywords.class)
-                                                .field("keywords")
                                                 .elemMatch(getDs()
                                                                .find(Keyword.class)
                                                                .field("keyword").equal("Scott"))
@@ -596,20 +477,10 @@ public class TestQuery extends TestBase {
 
         assertEquals(singletonList(key4), getDs().find(PhotoWithKeywords.class)
                                                  .field("keywords")
-                                                 .hasThisElement(new Keyword(14))
-                                                 .asKeyList());
-
-        assertEquals(singletonList(key4), getDs().find(PhotoWithKeywords.class)
-                                                 .field("keywords")
                                                  .elemMatch(getDs()
                                                                 .find(Keyword.class)
                                                                 .field("score").equal(14))
                                                  .asKeyList());
-
-        assertEquals(asList(key1, key2), getDs().find(PhotoWithKeywords.class)
-                                                .field("keywords")
-                                                .doesNotHaveThisElement(new Keyword("Scott"))
-                                                .asKeyList());
 
         assertEquals(asList(key1, key2), getDs().find(PhotoWithKeywords.class)
                                                 .field("keywords").not()
@@ -657,7 +528,6 @@ public class TestQuery extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testFluentAndOrQuery() {
         getDs().save(new PhotoWithKeywords("scott", "hernandez"));
 
@@ -671,7 +541,6 @@ public class TestQuery extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testFluentAndQuery1() {
         getDs().save(new PhotoWithKeywords("scott", "hernandez"));
 
@@ -965,23 +834,6 @@ public class TestQuery extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
-    public void testNegativeBatchSizeOld() {
-        getDs().delete(getDs().find(PhotoWithKeywords.class));
-        getDs().save(asList(new PhotoWithKeywords("scott", "hernandez"),
-                            new PhotoWithKeywords("scott", "hernandez"),
-                            new PhotoWithKeywords("scott", "hernandez"),
-                            new PhotoWithKeywords("1", "2"),
-                            new PhotoWithKeywords("3", "4"),
-                            new PhotoWithKeywords("5", "6")));
-        assertEquals(2, getDs().find(PhotoWithKeywords.class)
-                               .batchSize(-2)
-                               .asList()
-                               .size());
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
     public void testNoLifeCycleEventsOnParameters() throws Exception {
         final ContainsPic cpk = new ContainsPic();
         final Pic p = new Pic("some pic");
@@ -995,10 +847,6 @@ public class TestQuery extends TestBase {
                              .field("pic").equal(queryPic);
         assertFalse(queryPic.isPrePersist());
         assertNotNull(query.get());
-
-        getDs().find(ContainsPic.class)
-               .field("pic").hasThisElement(queryPic);
-        assertFalse(queryPic.isPrePersist());
     }
 
     @Test
@@ -1036,7 +884,6 @@ public class TestQuery extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testNotGeneratesCorrectQueryForGreaterThan() {
         final Query<Keyword> query = getDs().find(Keyword.class);
         query.criteria("score").not().greaterThan(7);
@@ -1044,7 +891,6 @@ public class TestQuery extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testNotGeneratesCorrectQueryForRegex() {
         final Query<PhotoWithKeywords> query = getAds().find(PhotoWithKeywords.class);
         query.criteria("keywords.keyword").not().startsWith("ralph");
@@ -1055,7 +901,6 @@ public class TestQuery extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testProject() {
         getDs().save(new ContainsRenamedFields("Frank", "Zappa"));
 
@@ -1178,7 +1023,7 @@ public class TestQuery extends TestBase {
 
         try {
             getDs().find(ContainsPic.class).filter("pic.name", "foo").get();
-            assertNull("query validation should have thrown an exception");
+            fail("query validation should have thrown an exception");
         } catch (ValidationException e) {
             assertTrue(e.getMessage().contains("Cannot use dot-"));
         }
@@ -1235,54 +1080,18 @@ public class TestQuery extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
-    public void testRetrievedFields() {
-        getDs().save(new ContainsRenamedFields("Frank", "Zappa"));
-
-        ContainsRenamedFields found = getDs()
-            .find(ContainsRenamedFields.class)
-            .retrievedFields(true, "first_name")
-            .get();
-        assertNotNull(found.firstName);
-        assertNull(found.lastName);
-
-        found = getDs()
-            .find(ContainsRenamedFields.class)
-            .retrievedFields(true, "firstName")
-            .get();
-        assertNotNull(found.firstName);
-        assertNull(found.lastName);
-
-        try {
-            getDs()
-                .find(ContainsRenamedFields.class)
-                .retrievedFields(true, "bad field name")
-                .get();
-            fail("Validation should have caught the bad field");
-        } catch (ValidationException e) {
-            // success!
-        }
-
-        DBObject fields = getDs()
-            .find(ContainsRenamedFields.class)
-            .retrievedFields(true, "_id", "first_name").getFieldsObject();
-        assertNull(fields.get(Mapper.CLASS_NAME_FIELDNAME));
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
     public void testReturnOnlyIndexedFields() {
         getDs().save(asList(new Pic("pic1"), new Pic("pic2"), new Pic("pic3"), new Pic("pic4")));
-        getDs().ensureIndex(Pic.class, "name");
+        getDs().ensureIndexes(Pic.class);
 
         // When
         // find a document by using a search on the field in the index
 
         // Then
         Pic foundItem = getDs().find(Pic.class)
-                               .returnKey()
                                .field("name").equal("pic2")
-                               .get();
+                               .get(new FindOptions()
+                                    .modifier("$returnKey", true));
         assertNotNull(foundItem);
         assertThat("Name should be populated", foundItem.getName(), is("pic2"));
         assertNull("ID should not be populated", foundItem.getId());
@@ -1306,7 +1115,6 @@ public class TestQuery extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testSizeEqQuery() {
         assertEquals(new BasicDBObject("keywords", new BasicDBObject("$size", 3)), getDs().find(PhotoWithKeywords.class)
                                                                                           .field("keywords")
@@ -1384,7 +1192,6 @@ public class TestQuery extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testThatElemMatchQueriesOnlyChecksRequiredFields() {
         final PhotoWithKeywords pwk1 = new PhotoWithKeywords(new Keyword("california"), new Keyword("nevada"), new Keyword("arizona"));
         final PhotoWithKeywords pwk2 = new PhotoWithKeywords("Joe", "Sarah");
@@ -1401,16 +1208,10 @@ public class TestQuery extends TestBase {
         // NOT:
         // find({ keywords: { $elemMatch: { keyword: "Scott", score: 12 } } })
         assertNotNull(getDs().find(PhotoWithKeywords.class)
-                             .field("keywords")
-                             .hasThisElement(new Keyword("Scott")).get());
-        assertNotNull(getDs().find(PhotoWithKeywords.class)
                              .field("keywords").elemMatch(getDs().find(Keyword.class)
                                                                  .filter("keyword", "Scott"))
                              .get());
 
-        assertNull(getDs().find(PhotoWithKeywords.class)
-                          .field("keywords").hasThisElement(new Keyword("Randy"))
-                          .get());
         assertNull(getDs().find(PhotoWithKeywords.class)
                           .field("keywords").elemMatch(getDs().find(Keyword.class)
                                                               .filter("keyword", "Randy"))
@@ -1432,20 +1233,12 @@ public class TestQuery extends TestBase {
         assertNotNull(getDs().find(PhotoWithKeywords.class).where("this.keywords != null").get());
     }
 
-    @Test
+    @Test(expected = MongoQueryException.class)
     public void testWhereWithInvalidStringQuery() {
         getDs().save(new PhotoWithKeywords());
         final CodeWScope hasKeyword = new CodeWScope("keywords != null", new BasicDBObject());
-        try {
-            // must fail
-            assertNotNull(getDs().find(PhotoWithKeywords.class).where(hasKeyword.getCode()).get());
-            fail("Invalid javascript magically isn't invalid anymore?");
-        } catch (MongoInternalException e) {
-            // fine
-        } catch (MongoException e) {
-            // fine
-        }
-
+        // must fail
+        getDs().find(PhotoWithKeywords.class).where(hasKeyword.getCode()).get();
     }
 
     @Test
@@ -1661,6 +1454,7 @@ public class TestQuery extends TestBase {
     public static class Pic {
         @Id
         private ObjectId id;
+        @Indexed
         private String name;
         private boolean prePersist = false;
 
@@ -1736,7 +1530,7 @@ public class TestQuery extends TestBase {
         /**
          * The list of keys for this value.
          */
-        @Indexed(unique = true)
+        @Indexed(options = @IndexOptions(unique = true))
         private List<Object> key;
         /**
          * The id of the value document
@@ -1751,7 +1545,7 @@ public class TestQuery extends TestBase {
         @Id
         private ObjectId id;
 
-        @Indexed(unique = true)
+        @Indexed(options = @IndexOptions(unique = true))
         private List<Object> key;
 
         @Embedded
@@ -1765,7 +1559,7 @@ public class TestQuery extends TestBase {
         /**
          * The list of keys for this value.
          */
-        @Indexed(unique = true)
+        @Indexed(options = @IndexOptions(unique = true))
         @Reference
         private List<Pic> key;
         /**

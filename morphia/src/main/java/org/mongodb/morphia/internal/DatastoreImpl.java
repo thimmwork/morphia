@@ -1,4 +1,20 @@
-package org.mongodb.morphia;
+/*
+ * Copyright 2017 MongoDB, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.mongodb.morphia.internal;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
@@ -9,8 +25,6 @@ import com.mongodb.DBDecoderFactory;
 import com.mongodb.DBObject;
 import com.mongodb.DBRef;
 import com.mongodb.DefaultDBDecoder;
-import com.mongodb.MapReduceCommand;
-import com.mongodb.MapReduceCommand.OutputType;
 import com.mongodb.MongoClient;
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
@@ -20,6 +34,15 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.CreateCollectionOptions;
 import com.mongodb.client.model.DBCollectionUpdateOptions;
 import com.mongodb.client.model.ValidationOptions;
+import org.mongodb.morphia.AdvancedDatastore;
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.DeleteOptions;
+import org.mongodb.morphia.FindAndModifyOptions;
+import org.mongodb.morphia.InsertOptions;
+import org.mongodb.morphia.Key;
+import org.mongodb.morphia.MapReduceOptions;
+import org.mongodb.morphia.MapreduceResults;
+import org.mongodb.morphia.UpdateOptions;
 import org.mongodb.morphia.aggregation.AggregationPipeline;
 import org.mongodb.morphia.aggregation.AggregationPipelineImpl;
 import org.mongodb.morphia.annotations.CappedAt;
@@ -38,6 +61,7 @@ import org.mongodb.morphia.mapping.cache.EntityCache;
 import org.mongodb.morphia.mapping.lazy.proxy.ProxyHelper;
 import org.mongodb.morphia.query.CountOptions;
 import org.mongodb.morphia.query.DefaultQueryFactory;
+import org.mongodb.morphia.query.FindOptions;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.QueryException;
 import org.mongodb.morphia.query.QueryFactory;
@@ -45,7 +69,6 @@ import org.mongodb.morphia.query.UpdateException;
 import org.mongodb.morphia.query.UpdateOperations;
 import org.mongodb.morphia.query.UpdateOpsImpl;
 import org.mongodb.morphia.query.UpdateResults;
-import org.mongodb.morphia.utils.Assert;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,20 +84,14 @@ import static com.mongodb.BasicDBObject.parse;
 import static com.mongodb.BasicDBObjectBuilder.start;
 import static com.mongodb.DBCollection.ID_FIELD_NAME;
 import static java.lang.String.format;
-import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
 /**
  * A generic (type-safe) wrapper around mongodb collections
- *
- * @deprecated This is an internal implementation of a published API.  No public alternative planned.
  */
-@Deprecated
-@SuppressWarnings("deprecation")
 public class DatastoreImpl implements AdvancedDatastore {
     private static final Logger LOG = MorphiaLoggerFactory.get(DatastoreImpl.class);
 
-    private final Morphia morphia;
     private final MongoClient mongoClient;
     private final MongoDatabase database;
     private final IndexHelper indexHelper;
@@ -88,52 +105,22 @@ public class DatastoreImpl implements AdvancedDatastore {
     /**
      * Create a new DatastoreImpl
      *
-     * @param morphia     the Morphia instance
-     * @param mongoClient the connection to the MongoDB instance
-     * @param dbName      the name of the database for this data store.
-     * @deprecated This is not meant to be directly instantiated by end user code.  Use
-     * {@link Morphia#createDatastore(MongoClient, Mapper, String)}
-     */
-    @Deprecated
-    public DatastoreImpl(final Morphia morphia, final MongoClient mongoClient, final String dbName) {
-        this(morphia, morphia.getMapper(), mongoClient, dbName);
-    }
-
-    /**
-     * Create a new DatastoreImpl
-     *
-     * @param morphia     the Morphia instance
      * @param mapper      an initialised Mapper
      * @param mongoClient the connection to the MongoDB instance
      * @param dbName      the name of the database for this data store.
-     * @deprecated This is not meant to be directly instantiated by end user code.  Use
-     * {@link Morphia#createDatastore(MongoClient, Mapper, String)}
      */
-    @Deprecated
-    public DatastoreImpl(final Morphia morphia, final Mapper mapper, final MongoClient mongoClient, final String dbName) {
-        this(morphia, mapper, mongoClient, mongoClient.getDatabase(dbName));
+    public DatastoreImpl(final Mapper mapper, final MongoClient mongoClient, final String dbName) {
+        this(mapper, mongoClient, mongoClient.getDatabase(dbName));
     }
 
-    private DatastoreImpl(final Morphia morphia, final Mapper mapper, final MongoClient mongoClient, final MongoDatabase database) {
-        this.morphia = morphia;
+    @SuppressWarnings("deprecation")
+    private DatastoreImpl(final Mapper mapper, final MongoClient mongoClient, final MongoDatabase database) {
         this.mapper = mapper;
         this.mongoClient = mongoClient;
         this.database = database;
         this.db = mongoClient.getDB(database.getName());
         this.defConcern = mongoClient.getWriteConcern();
         this.indexHelper = new IndexHelper(mapper, database);
-    }
-
-    /**
-     * Creates a copy of this Datastore and all its configuration but with a new database
-     *
-     * @param database the new database to use for operations
-     * @return the new Datastore instance
-     * @deprecated use {@link Morphia#createDatastore(MongoClient, Mapper, String)}
-     */
-    @Deprecated
-    public DatastoreImpl copy(final String database) {
-        return new DatastoreImpl(morphia, mapper, mongoClient, database);
     }
 
     /**
@@ -169,8 +156,8 @@ public class DatastoreImpl implements AdvancedDatastore {
             dbColl = getCollection(query.getEntityClass());
         }
 
-        if (query.getSortObject() != null || query.getOffset() != 0 || query.getLimit() > 0) {
-            throw new QueryException("Delete does not allow sort/offset/limit query options.");
+        if (query.getSortObject() != null) {
+            throw new QueryException("Delete does not allow a sort.");
         }
 
         return dbColl.remove(query.getQueryObject(), enforceWriteConcern(options, query.getEntityClass()).getOptions());
@@ -202,14 +189,8 @@ public class DatastoreImpl implements AdvancedDatastore {
     }
 
     @Override
-    @Deprecated
-    public <T> WriteResult delete(final Query<T> query, final WriteConcern wc) {
-        return delete(query, new DeleteOptions().writeConcern(wc));
-    }
-
-    @Override
     public <T> WriteResult delete(final T entity) {
-        return delete(entity, getWriteConcern(entity));
+        return delete(entity, new DeleteOptions().writeConcern(getWriteConcern(entity)));
     }
 
     /**
@@ -230,12 +211,6 @@ public class DatastoreImpl implements AdvancedDatastore {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    @Deprecated
-    public <T> WriteResult delete(final T entity, final WriteConcern wc) {
-        return delete(entity, new DeleteOptions().writeConcern(wc));
     }
 
     @Override
@@ -275,7 +250,8 @@ public class DatastoreImpl implements AdvancedDatastore {
         }
     }
 
-    void process(final MappedClass mc, final Validation validation) {
+
+    public void process(final MappedClass mc, final Validation validation) {
         if (validation != null) {
             String collectionName = mc.getCollectionName();
             CommandResult result = getDB()
@@ -308,22 +284,6 @@ public class DatastoreImpl implements AdvancedDatastore {
     @Override
     public <T> Query<T> find(final Class<T> clazz) {
         return createQuery(clazz);
-    }
-
-    @Override
-    @Deprecated
-    public <T, V> Query<T> find(final Class<T> clazz, final String property, final V value) {
-        final Query<T> query = createQuery(clazz);
-        return query.filter(property, value);
-    }
-
-    @Override
-    @Deprecated
-    public <T, V> Query<T> find(final Class<T> clazz, final String property, final V value, final int offset, final int size) {
-        final Query<T> query = createQuery(clazz);
-        query.offset(offset);
-        query.limit(size);
-        return query.filter(property, value);
     }
 
     @Override
@@ -384,24 +344,6 @@ public class DatastoreImpl implements AdvancedDatastore {
             .returnNew(true));
     }
 
-    @Override
-    @Deprecated
-    public <T> T findAndModify(final Query<T> query, final UpdateOperations<T> operations, final boolean oldVersion) {
-        return findAndModify(query, operations, new FindAndModifyOptions()
-            .returnNew(!oldVersion)
-            .upsert(false));
-    }
-
-    @Override
-    @Deprecated
-    public <T> T findAndModify(final Query<T> query, final UpdateOperations<T> operations, final boolean oldVersion,
-                               final boolean createIfMissing) {
-        return findAndModify(query, operations, new FindAndModifyOptions()
-            .returnNew(!oldVersion)
-            .upsert(createIfMissing));
-
-    }
-
     private <T> void updateForVersioning(final Query<T> query, final UpdateOperations<T> operations) {
         final MappedClass mc = mapper.getMappedClass(query.getEntityClass());
 
@@ -418,7 +360,9 @@ public class DatastoreImpl implements AdvancedDatastore {
 
     @Override
     public <T, V> T get(final Class<T> clazz, final V id) {
-        return find(getCollection(clazz).getName(), clazz, Mapper.ID_KEY, id, 0, 1, true).get();
+        return find(getCollection(clazz).getName(), clazz)
+            .filter(Mapper.ID_KEY, id)
+            .get();
     }
 
     @Override
@@ -492,10 +436,8 @@ public class DatastoreImpl implements AdvancedDatastore {
     /**
      * @param obj the value to search with
      * @return the DBCollection
-     * @deprecated this is an internal method.  no replacement is planned.
      */
-    @Deprecated
-    public DBCollection getCollection(final Object obj) {
+    DBCollection getCollection(final Object obj) {
         if (obj == null) {
             return null;
         }
@@ -556,8 +498,6 @@ public class DatastoreImpl implements AdvancedDatastore {
     }
 
     @Override
-    @Deprecated
-    // use mapper instead.
     public <T> Key<T> getKey(final T entity) {
         return mapper.getKey(entity);
     }
@@ -579,6 +519,7 @@ public class DatastoreImpl implements AdvancedDatastore {
 
     @Override
     public <T> MapreduceResults<T> mapReduce(final MapReduceOptions<T> options) {
+/*
         DBCollection collection = options.getQuery().getCollection();
 
         final EntityCache cache = createCache();
@@ -593,84 +534,9 @@ public class DatastoreImpl implements AdvancedDatastore {
         }
 
         return results;
+*/
 
-    }
-
-    @Override
-    @Deprecated
-    public <T> MapreduceResults<T> mapReduce(final MapreduceType type, final Query query, final String map, final String reduce,
-                                             final String finalize, final Map<String, Object> scopeFields, final Class<T> outputType) {
-
-        final DBCollection dbColl = query.getCollection();
-
-        final String outColl = mapper.getCollectionName(outputType);
-
-        final MapReduceCommand cmd = new MapReduceCommand(dbColl, map, reduce, outColl, type.toOutputType(), query.getQueryObject());
-
-        if (query.getLimit() > 0) {
-            cmd.setLimit(query.getLimit());
-        }
-        if (query.getSortObject() != null) {
-            cmd.setSort(query.getSortObject());
-        }
-
-        if (finalize != null && finalize.length() != 0) {
-            cmd.setFinalize(finalize);
-        }
-
-        if (scopeFields != null && !scopeFields.isEmpty()) {
-            cmd.setScope(scopeFields);
-        }
-
-        return mapReduce(type, query, outputType, cmd);
-    }
-
-    @Override
-    @Deprecated
-    public <T> MapreduceResults<T> mapReduce(final MapreduceType type, final Query query, final Class<T> outputType,
-                                             final MapReduceCommand baseCommand) {
-
-        Assert.parametersNotNull("map", baseCommand.getMap());
-        Assert.parameterNotEmpty("map", baseCommand.getMap());
-        Assert.parametersNotNull("reduce", baseCommand.getReduce());
-        Assert.parameterNotEmpty("reduce", baseCommand.getReduce());
-
-        if (query.getOffset() != 0 || query.getFieldsObject() != null) {
-            throw new QueryException("mapReduce does not allow the offset/retrievedFields query options.");
-        }
-
-        final OutputType outType = type.toOutputType();
-
-        final DBCollection dbColl = query.getCollection();
-
-        final MapReduceCommand cmd = new MapReduceCommand(dbColl, baseCommand.getMap(), baseCommand.getReduce(),
-                                                          baseCommand.getOutputTarget(), outType, query.getQueryObject());
-        cmd.setFinalize(baseCommand.getFinalize());
-        cmd.setScope(baseCommand.getScope());
-
-        if (query.getLimit() > 0) {
-            cmd.setLimit(query.getLimit());
-        }
-        if (query.getSortObject() != null) {
-            cmd.setSort(query.getSortObject());
-        }
-
-        if (LOG.isTraceEnabled()) {
-            LOG.info("Executing " + cmd.toString());
-        }
-
-        final EntityCache cache = createCache();
-        MapreduceResults<T> results = new MapreduceResults<T>(dbColl.mapReduce(baseCommand));
-
-        results.setType(type);
-        if (MapreduceType.INLINE.equals(type)) {
-            results.setInlineRequiredOptions(this, outputType, getMapper(), cache);
-        } else {
-            results.setQuery(newQuery(outputType, getDB().getCollection(results.getOutputCollectionName())));
-        }
-
-        return results;
-
+        throw new UnsupportedOperationException("update this method for 2.0");
     }
 
     @Override
@@ -732,7 +598,6 @@ public class DatastoreImpl implements AdvancedDatastore {
                : save(entities, getWriteConcern(iterator.next()));
     }
 
-    @Override
     public <T> Iterable<Key<T>> save(final Iterable<T> entities, final WriteConcern wc) {
         return save(entities, new InsertOptions().writeConcern(wc));
     }
@@ -748,21 +613,8 @@ public class DatastoreImpl implements AdvancedDatastore {
     }
 
     @Override
-    @Deprecated
-    public <T> Iterable<Key<T>> save(final T... entities) {
-        return save(asList(entities), new InsertOptions());
-    }
-
-    @Override
     public <T> Key<T> save(final T entity) {
         return save(entity, new InsertOptions());
-    }
-
-    @Override
-    @Deprecated
-    public <T> Key<T> save(final T entity, final WriteConcern wc) {
-        return save(entity, new InsertOptions()
-            .writeConcern(wc));
     }
 
     @Override
@@ -918,26 +770,6 @@ public class DatastoreImpl implements AdvancedDatastore {
     }
 
     @Override
-    @Deprecated
-    public <T, V> WriteResult delete(final String kind, final Class<T> clazz, final V id, final WriteConcern wc) {
-        return delete(find(kind, clazz).filter(Mapper.ID_KEY, id), new DeleteOptions().writeConcern(wc));
-    }
-
-    @Override
-    @Deprecated
-    public <T> void ensureIndex(final Class<T> type, final String fields) {
-        ensureIndex(type, null, fields, false, false);
-    }
-
-    @Override
-    @Deprecated
-    public <T> void ensureIndex(final Class<T> clazz, final String name, final String fields, final boolean unique,
-                                final boolean dropDupsOnCreate) {
-        MappedClass mappedClass = getMapper().getMappedClass(clazz);
-        ensureIndex(mappedClass.getCollectionName(), clazz, name, fields, unique, dropDupsOnCreate);
-    }
-
-    @Override
     public void ensureIndexes() {
         ensureIndexes(false);
     }
@@ -960,27 +792,6 @@ public class DatastoreImpl implements AdvancedDatastore {
     }
 
     @Override
-    @Deprecated
-    public <T> void ensureIndex(final String collection, final Class<T> type, final String fields) {
-        ensureIndex(collection, type, null, fields, false, false);
-    }
-
-    @Override
-    @Deprecated
-    public <T> void ensureIndex(final String collection, final Class<T> clazz, final String name, final String fields, final boolean unique,
-                                final boolean dropDupsOnCreate) {
-        if (dropDupsOnCreate) {
-            LOG.warning("Support for dropDups has been removed from the server.  Please remove this setting.");
-        }
-
-        indexHelper.createIndex(getMongoCollection(collection, clazz), getMapper().getMappedClass(clazz),
-                                new IndexBuilder()
-                                    .fields(fields)
-                                    .name(name)
-                                    .unique(unique), false);
-    }
-
-    @Override
     public <T> void ensureIndexes(final String collection, final Class<T> clazz) {
         ensureIndexes(collection, clazz, false);
     }
@@ -992,22 +803,13 @@ public class DatastoreImpl implements AdvancedDatastore {
 
     @Override
     public Key<?> exists(final Object entityOrKey, final ReadPreference readPreference) {
-        final Query<?> query = buildExistsQuery(entityOrKey);
-        if (readPreference != null) {
-            query.useReadPreference(readPreference);
-        }
-        return query.getKey();
+        return buildExistsQuery(entityOrKey).getKey(new FindOptions()
+                                                        .readPreference(readPreference));
     }
 
     @Override
     public <T> Query<T> find(final String collection, final Class<T> clazz) {
         return createQuery(collection, clazz);
-    }
-
-    @Override
-    public <T, V> Query<T> find(final String collection, final Class<T> clazz, final String property, final V value, final int offset,
-                                final int size) {
-        return find(collection, clazz, property, value, offset, size, true);
     }
 
     @Override
@@ -1018,11 +820,7 @@ public class DatastoreImpl implements AdvancedDatastore {
 
     @Override
     public <T, V> T get(final String collection, final Class<T> clazz, final V id) {
-        final List<T> results = find(collection, clazz, Mapper.ID_KEY, id, 0, 1).asList();
-        if (results == null || results.isEmpty()) {
-            return null;
-        }
-        return results.get(0);
+        return find(collection, clazz).filter(Mapper.ID_KEY, id).get();
     }
 
     @Override
@@ -1057,7 +855,6 @@ public class DatastoreImpl implements AdvancedDatastore {
         return insert(entity, getWriteConcern(entity));
     }
 
-    @Override
     public <T> Key<T> insert(final T entity, final WriteConcern wc) {
         return insert(entity, new InsertOptions().writeConcern(wc));
     }
@@ -1066,17 +863,6 @@ public class DatastoreImpl implements AdvancedDatastore {
     public <T> Key<T> insert(final T entity, final InsertOptions options) {
         final T unwrapped = ProxyHelper.unwrap(entity);
         return insert(getCollection(unwrapped), unwrapped, options);
-    }
-
-    @Override
-    @Deprecated
-    public <T> Iterable<Key<T>> insert(final T... entities) {
-        return insert(asList(entities));
-    }
-
-    @Override
-    public <T> Iterable<Key<T>> insert(final Iterable<T> entities, final WriteConcern wc) {
-        return insert(entities, new InsertOptions().writeConcern(wc));
     }
 
     @Override
@@ -1093,14 +879,6 @@ public class DatastoreImpl implements AdvancedDatastore {
     }
 
     @Override
-    @Deprecated
-    public <T> Iterable<Key<T>> insert(final String collection, final Iterable<T> entities, final WriteConcern wc) {
-        return insert(getDB().getCollection(collection), entities, new InsertOptions()
-            .writeConcern(wc));
-    }
-
-    @Override
-    @Deprecated
     public <T> Iterable<Key<T>> insert(final String collection, final Iterable<T> entities, final InsertOptions options) {
         return insert(getDB().getCollection(collection), entities, options);
     }
@@ -1116,7 +894,6 @@ public class DatastoreImpl implements AdvancedDatastore {
         return save(collection, entity, getWriteConcern(unwrapped));
     }
 
-    @Override
     public <T> Key<T> save(final String collection, final T entity, final WriteConcern wc) {
         return save(getCollection(collection), ProxyHelper.unwrap(entity), new InsertOptions().writeConcern(wc));
     }
@@ -1124,48 +901,6 @@ public class DatastoreImpl implements AdvancedDatastore {
     @Override
     public <T> Key<T> save(final String collection, final T entity, final InsertOptions options) {
         return save(getCollection(collection), ProxyHelper.unwrap(entity), options);
-    }
-
-    /**
-     * Deletes entities based on the query, with the WriteConcern
-     *
-     * @param clazz the clazz to query against when finding documents to delete
-     * @param id    the ID to look for
-     * @param wc    the WriteConcern to use when deleting
-     * @param <T>   the type to delete
-     * @param <V>   the type of the key
-     * @return results of the delete
-     * @deprecated use {@link #delete(Class, Object, DeleteOptions)}
-     */
-    @Deprecated
-    public <T, V> WriteResult delete(final Class<T> clazz, final V id, final WriteConcern wc) {
-        return delete(createQuery(clazz).filter(Mapper.ID_KEY, id), new DeleteOptions().writeConcern(wc));
-    }
-
-    /**
-     * Find all instances by type in a different collection than what is mapped on the class given skipping some documents and returning a
-     * fixed number of the remaining.
-     *
-     * @param collection The collection use when querying
-     * @param clazz      the class to use for mapping the results
-     * @param property   the document property to query against
-     * @param value      the value to check for
-     * @param offset     the number of results to skip
-     * @param size       the maximum number of results to return
-     * @param validate   if true, validate the query
-     * @param <T>        the type to query
-     * @param <V>        the type to filter value
-     * @return the query
-     */
-    public <T, V> Query<T> find(final String collection, final Class<T> clazz, final String property, final V value, final int offset,
-                                final int size, final boolean validate) {
-        final Query<T> query = find(collection, clazz);
-        if (!validate) {
-            query.disableValidation();
-        }
-        query.offset(offset);
-        query.limit(size);
-        return query.filter(property, value).enableValidation();
     }
 
     /**
@@ -1217,11 +952,6 @@ public class DatastoreImpl implements AdvancedDatastore {
         return getDB().getCollection(kind);
     }
 
-    @Deprecated
-    protected Object getId(final Object entity) {
-        return mapper.getId(entity);
-    }
-
     protected <T> Key<T> insert(final DBCollection dbColl, final T entity, final InsertOptions options) {
         final LinkedHashMap<Object, DBObject> involvedObjects = new LinkedHashMap<Object, DBObject>();
         dbColl.insert(singletonList(entityToDBObj(entity, involvedObjects)), enforceWriteConcern(options, entity.getClass())
@@ -1230,7 +960,7 @@ public class DatastoreImpl implements AdvancedDatastore {
         return postSaveOperations(singletonList(entity), involvedObjects, dbColl).get(0);
     }
 
-    <T> FindAndModifyOptions enforceWriteConcern(final FindAndModifyOptions options, final Class<T> klass) {
+    public <T> FindAndModifyOptions enforceWriteConcern(final FindAndModifyOptions options, final Class<T> klass) {
         if (options.getWriteConcern() == null) {
             return options
                 .copy()
@@ -1239,7 +969,7 @@ public class DatastoreImpl implements AdvancedDatastore {
         return options;
     }
 
-    <T> InsertOptions enforceWriteConcern(final InsertOptions options, final Class<T> klass) {
+    public <T> InsertOptions enforceWriteConcern(final InsertOptions options, final Class<T> klass) {
         if (options.getWriteConcern() == null) {
             return options
                 .copy()
@@ -1248,7 +978,7 @@ public class DatastoreImpl implements AdvancedDatastore {
         return options;
     }
 
-    <T> UpdateOptions enforceWriteConcern(final UpdateOptions options, final Class<T> klass) {
+    public <T> UpdateOptions enforceWriteConcern(final UpdateOptions options, final Class<T> klass) {
         if (options.getWriteConcern() == null) {
             return options
                 .copy()
@@ -1257,7 +987,7 @@ public class DatastoreImpl implements AdvancedDatastore {
         return options;
     }
 
-    <T> DeleteOptions enforceWriteConcern(final DeleteOptions options, final Class<T> klass) {
+    public <T> DeleteOptions enforceWriteConcern(final DeleteOptions options, final Class<T> klass) {
         if (options.getWriteConcern() == null) {
             return options
                 .copy()
@@ -1510,12 +1240,6 @@ public class DatastoreImpl implements AdvancedDatastore {
 
         if (query.getSortObject() != null && query.getSortObject().keySet() != null && !query.getSortObject().keySet().isEmpty()) {
             throw new QueryException("sorting is not allowed for updates.");
-        }
-        if (query.getOffset() > 0) {
-            throw new QueryException("a query offset is not allowed for updates.");
-        }
-        if (query.getLimit() > 0) {
-            throw new QueryException("a query limit is not allowed for updates.");
         }
 
         DBObject queryObject = query.getQueryObject();

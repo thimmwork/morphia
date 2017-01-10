@@ -38,7 +38,7 @@ public class InsertOptions {
             .writeConcern(getWriteConcern());
     }
 
-    com.mongodb.InsertOptions getOptions() {
+    public com.mongodb.InsertOptions getOptions() {
         return options;
     }
 

@@ -44,10 +44,8 @@ import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertTrue;
 import static org.mongodb.morphia.converters.DefaultConverters.JAVA_8;
 
-@SuppressWarnings("Since15")
 public class TestSerializedFormat extends TestBase {
     @Test
-    @SuppressWarnings("deprecation")
     public void testQueryFormat() {
         Assume.assumeTrue("This test requires Java 8", JAVA_8);
         Query<ReferenceType> query = getDs().find(ReferenceType.class)
@@ -85,7 +83,7 @@ public class TestSerializedFormat extends TestBase {
                                             .field("referenceMap.foo").equal(new ReferenceType(1, "chance"))
                                             .field("referenceMap.bar").equal(new EmbeddedReferenceType(1, "chance"));
 
-        DBObject dbObject = ((QueryImpl) query).getQueryObject();
+        DBObject dbObject = query.getQueryObject();
         Assert.assertEquals(BasicDBObject.parse(readFully("/QueryStructure.json")), dbObject);
     }
 

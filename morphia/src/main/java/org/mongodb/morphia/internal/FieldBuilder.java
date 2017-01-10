@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mongodb.morphia;
+package org.mongodb.morphia.internal;
 
 import org.mongodb.morphia.annotations.Field;
 import org.mongodb.morphia.utils.IndexType;

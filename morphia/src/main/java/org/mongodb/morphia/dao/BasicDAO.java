@@ -5,6 +5,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
 import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.DeleteOptions;
 import org.mongodb.morphia.InsertOptions;
 import org.mongodb.morphia.Key;
 import org.mongodb.morphia.Morphia;
@@ -25,20 +26,10 @@ import java.util.List;
  * @author Olafur Gauti Gudmundsson
  * @author Scott Hernandez
  */
-@SuppressWarnings({"WeakerAccess", "deprecation", "unused"})
+@SuppressWarnings("unused")
 public class BasicDAO<T, K> implements DAO<T, K> {
-    //CHECKSTYLE:OFF
-    /**
-     * @deprecated use {@link #getEntityClass()}
-     */
-    @Deprecated
-    protected Class<T> entityClazz;
-    /**
-     * @deprecated use {@link #getDatastore()}
-     */
-    @Deprecated
-    protected org.mongodb.morphia.DatastoreImpl ds;
-    //CHECKSTYLE:ON
+    private Class<T> entityClazz;
+    private Datastore ds;
 
     /**
      * Create a new BasicDAO
@@ -60,7 +51,7 @@ public class BasicDAO<T, K> implements DAO<T, K> {
      * @param ds          the Datastore which gives access to the MongoDB instance for this DAO
      */
     public BasicDAO(final Class<T> entityClass, final Datastore ds) {
-        this.ds = (org.mongodb.morphia.DatastoreImpl) ds;
+        this.ds = ds;
         initType(entityClass);
     }
 
@@ -81,7 +72,7 @@ public class BasicDAO<T, K> implements DAO<T, K> {
 
     @SuppressWarnings("unchecked")
     protected BasicDAO(final Datastore ds) {
-        this.ds = (org.mongodb.morphia.DatastoreImpl) ds;
+        this.ds = ds;
         initType(((Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]));
     }
 
@@ -117,7 +108,8 @@ public class BasicDAO<T, K> implements DAO<T, K> {
 
     @Override
     public WriteResult delete(final T entity, final WriteConcern wc) {
-        return ds.delete(entity, wc);
+        return ds.delete(entity, new DeleteOptions()
+            .writeConcern(wc));
     }
 
     @Override
@@ -245,31 +237,14 @@ public class BasicDAO<T, K> implements DAO<T, K> {
         return ds.updateFirst(query, ops);
     }
 
-    /**
-     * @return the Datastore used by this DAO
-     * @deprecated use {@link #getDatastore()}
-     */
-    @Deprecated
-    public org.mongodb.morphia.DatastoreImpl getDs() {
-        return ds;
-    }
-
-    /**
-     * @return the entity class
-     * @deprecated use {@link #getEntityClass()} instead
-     */
-    @Deprecated
-    public Class<T> getEntityClazz() {
-        return entityClazz;
-    }
-
     protected void initDS(final MongoClient mongoClient, final Morphia mor, final String db) {
-        ds = (org.mongodb.morphia.DatastoreImpl) mor.createDatastore(mongoClient, db);
+        ds = mor.createDatastore(mongoClient, db);
     }
 
     protected void initType(final Class<T> type) {
         entityClazz = type;
-        ds.getMapper().addMappedClass(type);
+        // TODO:  update for 2.0
+//        ds.getMapper().addMappedClass(type);
     }
 
     /**

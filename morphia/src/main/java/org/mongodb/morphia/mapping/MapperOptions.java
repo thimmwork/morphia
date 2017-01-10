@@ -13,14 +13,8 @@ import org.mongodb.morphia.mapping.cache.EntityCacheFactory;
  *
  * @author Scott Hernandez
  */
-@SuppressWarnings("deprecation")
 public class MapperOptions {
     private static final Logger LOG = MorphiaLoggerFactory.get(MapperOptions.class);
-    /**
-     * @deprecated this is actually the default and proper behavior.  this setting is redundant
-     */
-    @Deprecated
-    private boolean actLikeSerializer;
     private boolean ignoreFinals; //ignore final fields.
     private boolean storeNulls;
     private boolean storeEmpties;
@@ -33,7 +27,6 @@ public class MapperOptions {
     private CustomMapper defaultMapper = embeddedMapper;
     private CustomMapper referenceMapper = new ReferenceMapper();
     private CustomMapper valueMapper = new ValueMapper();
-    private org.mongodb.morphia.mapping.lazy.DatastoreProvider datastoreProvider = null;
 
     /**
      * Creates a default options instance.
@@ -47,7 +40,6 @@ public class MapperOptions {
      * @param options the MapperOptions to copy
      */
     public MapperOptions(final MapperOptions options) {
-        setActLikeSerializer(options.isActLikeSerializer());
         setIgnoreFinals(options.isIgnoreFinals());
         setStoreNulls(options.isStoreNulls());
         setStoreEmpties(options.isStoreEmpties());
@@ -75,27 +67,6 @@ public class MapperOptions {
      */
     public void setCacheFactory(final EntityCacheFactory cacheFactory) {
         this.cacheFactory = cacheFactory;
-    }
-
-    /**
-     * @return the DatastoreProvider Morphia should use
-     * @deprecated unused
-     */
-    @Deprecated
-    public org.mongodb.morphia.mapping.lazy.DatastoreProvider getDatastoreProvider() {
-        return datastoreProvider;
-    }
-
-    /**
-     * Sets the DatastoreProvider Morphia should use
-     *
-     * @param datastoreProvider the DatastoreProvider to use
-     * @deprecated unused
-     */
-    @Deprecated
-    public void setDatastoreProvider(final org.mongodb.morphia.mapping.lazy.DatastoreProvider datastoreProvider) {
-        LOG.warning("DatastoreProviders are no longer needed or used.");
-        this.datastoreProvider = datastoreProvider;
     }
 
     /**
@@ -179,26 +150,6 @@ public class MapperOptions {
      */
     public void setValueMapper(final CustomMapper pValueMapper) {
         valueMapper = pValueMapper;
-    }
-
-    /**
-     * @return true if Morphia should ignore transient fields
-     * @deprecated this is actually the default and proper behavior.  this setting is redundant
-     */
-    @Deprecated
-    public boolean isActLikeSerializer() {
-        return actLikeSerializer;
-    }
-
-    /**
-     * Instructs Morphia to follow JDK serialization semantics and ignore values marked up with the transient keyword
-     *
-     * @param actLikeSerializer true if Morphia should ignore transient fields
-     * @deprecated this is actually the default and proper behavior.  this setting is redundant
-     */
-    @Deprecated
-    public void setActLikeSerializer(final boolean actLikeSerializer) {
-        this.actLikeSerializer = actLikeSerializer;
     }
 
     /**

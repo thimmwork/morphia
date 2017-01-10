@@ -11,7 +11,6 @@ import org.mongodb.morphia.utils.Assert;
 import java.util.Collections;
 
 
-@SuppressWarnings("deprecation")
 public class TestQueryParams extends TestBase {
     private FieldEnd<?> e;
 
@@ -49,11 +48,6 @@ public class TestQueryParams extends TestBase {
     @Test(expected = Assert.AssertionFailedException.class)
     public void testHasNoneOfNull() {
         e.hasNoneOf(null);
-    }
-
-    @Test(expected = Assert.AssertionFailedException.class)
-    public void testHasThisNullElement() {
-        e.hasThisElement(null);
     }
 
     @Test(expected = Assert.AssertionFailedException.class)

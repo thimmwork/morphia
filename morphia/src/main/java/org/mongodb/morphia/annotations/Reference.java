@@ -34,12 +34,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Reference {
-    /**
-     * Specify the concrete class to instantiate.
-     *
-     * @deprecated unimplemented
-     */
-    @Deprecated Class<?> concreteClass() default Object.class;
 
     /**
      * Specifies whether only _id should be stored versus storing a DBRef

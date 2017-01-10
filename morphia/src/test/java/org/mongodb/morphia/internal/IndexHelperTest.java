@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mongodb.morphia;
+package org.mongodb.morphia.internal;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -27,6 +27,7 @@ import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mongodb.morphia.TestBase;
 import org.mongodb.morphia.annotations.Collation;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
@@ -242,54 +243,6 @@ public class IndexHelperTest extends TestBase {
     }
 
     @Test
-    public void oldIndexForm() {
-        MongoCollection<Document> indexes = getDatabase().getCollection("indexes");
-        MappedClass mappedClass = getMorphia().getMapper().getMappedClass(IndexedClass.class);
-
-        indexes.drop();
-        Index index = new IndexBuilder()
-            .name("index_name")
-            .background(true)
-            .disableValidation(true)
-            .dropDups(true)
-            .expireAfterSeconds(42)
-            .sparse(true)
-            .unique(true)
-            .value("indexName, -text");
-        indexHelper.createIndex(indexes, mappedClass, index, false);
-        List<DBObject> indexInfo = getDs().getCollection(IndexedClass.class)
-                                          .getIndexInfo();
-        for (DBObject dbObject : indexInfo) {
-            if (dbObject.get("name").equals("index_indexName")) {
-                checkIndex(dbObject);
-            }
-        }
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void oldIndexedForm() {
-        Indexed indexed = new IndexedBuilder()
-            .name("index_name")
-            .background(true)
-            .dropDups(true)
-            .expireAfterSeconds(42)
-            .sparse(true)
-            .unique(true)
-            .value(IndexDirection.DESC);
-        assertEquals(indexed.options().name(), "");
-
-        Index converted = indexHelper.convert(indexed, "oldstyle");
-        assertEquals(converted.options().name(), "index_name");
-        assertTrue(converted.options().background());
-        assertTrue(converted.options().dropDups());
-        assertTrue(converted.options().sparse());
-        assertTrue(converted.options().unique());
-        assertEquals(new FieldBuilder().value("oldstyle").type(IndexType.DESC), converted.fields()[0]);
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
     public void convertTextIndex() {
         TextBuilder text = new TextBuilder()
             .value(4)
@@ -304,7 +257,6 @@ public class IndexHelperTest extends TestBase {
         Index index = indexHelper.convert(text, "search_field");
         assertEquals(index.options().name(), "index_name");
         assertTrue(index.options().background());
-        assertTrue(index.options().dropDups());
         assertTrue(index.options().sparse());
         assertTrue(index.options().unique());
         assertEquals(new FieldBuilder()
@@ -316,7 +268,6 @@ public class IndexHelperTest extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void normalizeIndexed() {
         Indexed indexed = new IndexedBuilder()
             .value(IndexDirection.DESC)
@@ -330,7 +281,6 @@ public class IndexHelperTest extends TestBase {
         Index converted = indexHelper.convert(indexed, "oldstyle");
         assertEquals(converted.options().name(), "index_name");
         assertTrue(converted.options().background());
-        assertTrue(converted.options().dropDups());
         assertTrue(converted.options().sparse());
         assertTrue(converted.options().unique());
         assertEquals(new FieldBuilder().value("oldstyle").type(IndexType.DESC), converted.fields()[0]);

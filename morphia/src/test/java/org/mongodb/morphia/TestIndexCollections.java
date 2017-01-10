@@ -54,7 +54,6 @@ public class TestIndexCollections extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testSingleFieldIndex() {
         AdvancedDatastore ads = getAds();
         DB db = getDb();
@@ -65,8 +64,6 @@ public class TestIndexCollections extends TestBase {
                   new BasicDBObject("field2", -1),
                   new BasicDBObject("f3", 1));
 
-        ads.ensureIndex("a_2", SingleFieldIndex.class, "-field2");
-        ads.ensureIndexes("a_2", SingleFieldIndex.class);
         testIndex(db.getCollection("a_2").getIndexInfo(),
                   new BasicDBObject("field", 1),
                   new BasicDBObject("field2", 1),
@@ -74,7 +71,6 @@ public class TestIndexCollections extends TestBase {
                   new BasicDBObject("f3", 1));
 
 
-        ads.ensureIndex("a_3", SingleFieldIndex.class, "field, field2");
         testIndex(db.getCollection("a_3").getIndexInfo(), new BasicDBObject("field", 1)
             .append("field2", 1));
     }

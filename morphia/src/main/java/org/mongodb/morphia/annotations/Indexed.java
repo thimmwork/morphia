@@ -28,58 +28,7 @@ public @interface Indexed {
     IndexOptions options() default @IndexOptions();
 
     /**
-     * Creates the index in the background if true
-     *
-     * @deprecated use the {@link IndexOptions} found in {@link #options()}
-     */
-    @Deprecated
-    boolean background() default false;
-
-    /**
-     * Tells the unique index to drop duplicates silently when creating; only the first will be kept
-     *
-     * @deprecated Support for this has been removed from the server.  This value is ignored.
-     */
-    @Deprecated
-    boolean dropDups() default false;
-
-    /**
-     * defines the time to live for documents in the collection
-     *
-     * @deprecated use the {@link IndexOptions} found in {@link #options()}
-     */
-    @Deprecated
-    int expireAfterSeconds() default -1;
-
-    /**
-     * The name of the index to create; default is to let the mongodb create a name (in the form of key1_1/-1_key2_1/-1...)
-     *
-     * @deprecated use the {@link IndexOptions} found in {@link #options()}
-     */
-    @Deprecated
-    String name() default "";
-
-    /**
-     * Create the index with the sparse option
-     *
-     * @deprecated use the {@link IndexOptions} found in {@link #options()}
-     */
-    @Deprecated
-    boolean sparse() default false;
-
-    /**
-     * Creates the index as a unique value index; inserting duplicates values in this field will cause errors
-     *
-     * @deprecated use the {@link IndexOptions} found in {@link #options()}
-     */
-    @Deprecated
-    boolean unique() default false;
-
-    /**
      * Indicates the type of the index (ascending, descending, geo2d); default is ascending
-     *
-     * @deprecated use the {@link IndexOptions} found in {@link #options()}
      */
-    @Deprecated
     IndexDirection value() default IndexDirection.ASC;
 }

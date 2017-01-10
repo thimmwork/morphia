@@ -2,10 +2,12 @@ package org.mongodb.morphia.query;
 
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBObject;
+import org.mongodb.morphia.AdvancedDatastore;
 import org.mongodb.morphia.geo.CoordinateReferenceSystem;
 import org.mongodb.morphia.geo.Geometry;
 import org.mongodb.morphia.geo.GeometryQueryConverter;
 import org.mongodb.morphia.geo.NamedCoordinateReferenceSystemConverter;
+import org.mongodb.morphia.internal.DatastoreImpl;
 
 import static org.mongodb.morphia.query.FilterOperator.NEAR;
 
@@ -24,12 +26,11 @@ class StandardGeoFieldCriteria extends FieldCriteria {
         this.crs = crs;
     }
 
-    @SuppressWarnings("deprecation")
     StandardGeoFieldCriteria(final QueryImpl<?> query, final String field, final FilterOperator operator, final Geometry value,
                              final Integer maxDistanceMeters) {
         super(query, field, operator, value);
         this.maxDistanceMeters = maxDistanceMeters;
-        GeometryQueryConverter geometryQueryConverter = new GeometryQueryConverter(query.getDatastore().getMapper());
+        GeometryQueryConverter geometryQueryConverter = new GeometryQueryConverter(((DatastoreImpl) query.getDatastore()).getMapper());
         geometryAsDBObject = (DBObject) geometryQueryConverter.encode(value, null);
     }
 

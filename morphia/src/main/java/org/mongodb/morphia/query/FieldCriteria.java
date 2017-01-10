@@ -3,6 +3,7 @@ package org.mongodb.morphia.query;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import org.mongodb.morphia.internal.DatastoreImpl;
 import org.mongodb.morphia.logging.Logger;
 import org.mongodb.morphia.logging.MorphiaLoggerFactory;
 import org.mongodb.morphia.mapping.MappedClass;
@@ -31,11 +32,10 @@ class FieldCriteria extends AbstractCriteria {
         this(query, field, op, value, false);
     }
 
-    @SuppressWarnings("deprecation")
     FieldCriteria(final QueryImpl<?> query, final String fieldName, final FilterOperator op, final Object value, final boolean not) {
         //validate might modify prop string to translate java field name to db field name
         final StringBuilder sb = new StringBuilder(fieldName);
-        final Mapper mapper = query.getDatastore().getMapper();
+        final Mapper mapper = ((DatastoreImpl) query.getDatastore()).getMapper();
         final MappedField mf = validateQuery(query.getEntityClass(),
                                              mapper,
                                              sb,

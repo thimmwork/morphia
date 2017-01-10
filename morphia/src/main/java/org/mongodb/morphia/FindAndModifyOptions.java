@@ -34,7 +34,36 @@ public final class FindAndModifyOptions {
     private DBCollectionFindAndModifyOptions options = new DBCollectionFindAndModifyOptions()
         .returnNew(true);
 
-    FindAndModifyOptions copy() {
+    /**
+     * Sets the bypassDocumentValidation
+     *
+     * @param bypassDocumentValidation the bypassDocumentValidation
+     * @return this
+     */
+    public FindAndModifyOptions bypassDocumentValidation(final Boolean bypassDocumentValidation) {
+        options.bypassDocumentValidation(bypassDocumentValidation);
+        return this;
+    }
+
+    /**
+     * Sets the collation
+     *
+     * @param collation the collation
+     * @return this
+     * @mongodb.server.release 3.4
+     */
+    public FindAndModifyOptions collation(final Collation collation) {
+        options.collation(collation);
+        return this;
+    }
+
+    /**
+     * Copies these options to a new instance
+     *
+     * @return a copy of this
+     * @since 2.0
+     */
+    public FindAndModifyOptions copy() {
         FindAndModifyOptions copy = new FindAndModifyOptions();
         copy.bypassDocumentValidation(getBypassDocumentValidation());
         copy.collation(getCollation());
@@ -49,7 +78,134 @@ public final class FindAndModifyOptions {
         return copy;
     }
 
-    DBCollectionFindAndModifyOptions getOptions() {
+    /**
+     * Returns the bypassDocumentValidation
+     *
+     * @return the bypassDocumentValidation
+     */
+    public Boolean getBypassDocumentValidation() {
+        return options.getBypassDocumentValidation();
+    }
+
+    /**
+     * Returns the collation options
+     *
+     * @return the collation options
+     * @mongodb.server.release 3.4
+     */
+    public Collation getCollation() {
+        return options.getCollation();
+    }
+
+    /**
+     * Gets the maximum execution time on the server for this operation.  The default is 0, which places no limit on the execution time.
+     *
+     * @param timeUnit the time unit to return the result in
+     * @return the maximum execution time in the given time unit
+     * @mongodb.driver.manual reference/method/cursor.maxTimeMS/#cursor.maxTimeMS Max Time
+     */
+    public long getMaxTime(final TimeUnit timeUnit) {
+        notNull("timeUnit", timeUnit);
+        return options.getMaxTime(timeUnit);
+    }
+
+    /**
+     * Returns the writeConcern
+     *
+     * @return the writeConcern
+     * @mongodb.server.release 3.2
+     */
+    public WriteConcern getWriteConcern() {
+        return options.getWriteConcern();
+    }
+
+    /**
+     * Returns the remove
+     *
+     * @return the remove
+     */
+    public boolean isRemove() {
+        return options.isRemove();
+    }
+
+    /**
+     * Returns the returnNew
+     *
+     * @return the returnNew
+     */
+    public boolean isReturnNew() {
+        return options.returnNew();
+    }
+
+    /**
+     * Returns the upsert
+     *
+     * @return the upsert
+     */
+    public boolean isUpsert() {
+        return options.isUpsert();
+    }
+
+    /**
+     * Sets the maximum execution time on the server for this operation.
+     *
+     * @param maxTime  the max time
+     * @param timeUnit the time unit, which may not be null
+     * @return this
+     * @mongodb.driver.manual reference/method/cursor.maxTimeMS/#cursor.maxTimeMS Max Time
+     */
+    public FindAndModifyOptions maxTime(final long maxTime, final TimeUnit timeUnit) {
+        options.maxTime(maxTime, timeUnit);
+        return this;
+    }
+
+    /**
+     * Indicates whether to remove the elements matching the query or not
+     *
+     * @param remove true if the matching elements should be deleted
+     * @return this
+     */
+    public FindAndModifyOptions remove(final boolean remove) {
+        options.remove(remove);
+        return this;
+    }
+
+    /**
+     * Sets the returnNew
+     *
+     * @param returnNew the returnNew
+     * @return this
+     */
+    public FindAndModifyOptions returnNew(final boolean returnNew) {
+        options.returnNew(returnNew);
+        return this;
+    }
+
+    /**
+     * Indicates that an upsert should be performed
+     *
+     * @param upsert the upsert
+     * @return this
+     * @mongodb.driver.manual reference/method/db.collection.update/#upsert-behavior upsert
+     */
+    public FindAndModifyOptions upsert(final boolean upsert) {
+        options.upsert(upsert);
+        return this;
+    }
+
+    /**
+     * Sets the writeConcern
+     *
+     * @param writeConcern the writeConcern
+     * @return this
+     * @mongodb.server.release 3.2
+     */
+    public FindAndModifyOptions writeConcern(final WriteConcern writeConcern) {
+        options.writeConcern(writeConcern);
+        return this;
+    }
+
+    public DBCollectionFindAndModifyOptions getOptions() {
         return copy().options;
     }
 
@@ -57,7 +213,7 @@ public final class FindAndModifyOptions {
         return options.getProjection();
     }
 
-    FindAndModifyOptions projection(final DBObject projection) {
+    public FindAndModifyOptions projection(final DBObject projection) {
         options.projection(projection);
         return this;
     }
@@ -77,28 +233,8 @@ public final class FindAndModifyOptions {
      * @param sort the sort
      * @return this
      */
-    FindAndModifyOptions sort(final DBObject sort) {
+    public FindAndModifyOptions sort(final DBObject sort) {
         options.sort(sort);
-        return this;
-    }
-
-    /**
-     * Returns the remove
-     *
-     * @return the remove
-     */
-    public boolean isRemove() {
-        return options.isRemove();
-    }
-
-    /**
-     * Indicates whether to remove the elements matching the query or not
-     *
-     * @param remove true if the matching elements should be deleted
-     * @return this
-     */
-    public FindAndModifyOptions remove(final boolean remove) {
-        options.remove(remove);
         return this;
     }
 
@@ -117,138 +253,8 @@ public final class FindAndModifyOptions {
      * @param update the update
      * @return this
      */
-    FindAndModifyOptions update(final DBObject update) {
+    public FindAndModifyOptions update(final DBObject update) {
         options.update(update);
-        return this;
-    }
-
-    /**
-     * Returns the upsert
-     *
-     * @return the upsert
-     */
-    public boolean isUpsert() {
-        return options.isUpsert();
-    }
-
-    /**
-     * Indicates that an upsert should be performed
-     *
-     * @param upsert the upsert
-     * @return this
-     * @mongodb.driver.manual reference/method/db.collection.update/#upsert-behavior upsert
-     */
-    public FindAndModifyOptions upsert(final boolean upsert) {
-        options.upsert(upsert);
-        return this;
-    }
-
-    /**
-     * Returns the returnNew
-     *
-     * @return the returnNew
-     */
-    public boolean isReturnNew() {
-        return options.returnNew();
-    }
-
-    /**
-     * Sets the returnNew
-     *
-     * @param returnNew the returnNew
-     * @return this
-     */
-    public FindAndModifyOptions returnNew(final boolean returnNew) {
-        options.returnNew(returnNew);
-        return this;
-    }
-
-    /**
-     * Returns the bypassDocumentValidation
-     *
-     * @return the bypassDocumentValidation
-     */
-    public Boolean getBypassDocumentValidation() {
-        return options.getBypassDocumentValidation();
-    }
-
-    /**
-     * Sets the bypassDocumentValidation
-     *
-     * @param bypassDocumentValidation the bypassDocumentValidation
-     * @return this
-     */
-    public FindAndModifyOptions bypassDocumentValidation(final Boolean bypassDocumentValidation) {
-        options.bypassDocumentValidation(bypassDocumentValidation);
-        return this;
-    }
-
-    /**
-     * Gets the maximum execution time on the server for this operation.  The default is 0, which places no limit on the execution time.
-     *
-     * @param timeUnit the time unit to return the result in
-     * @return the maximum execution time in the given time unit
-     * @mongodb.driver.manual reference/method/cursor.maxTimeMS/#cursor.maxTimeMS Max Time
-     */
-    public long getMaxTime(final TimeUnit timeUnit) {
-        notNull("timeUnit", timeUnit);
-        return options.getMaxTime(timeUnit);
-    }
-
-    /**
-     * Sets the maximum execution time on the server for this operation.
-     *
-     * @param maxTime  the max time
-     * @param timeUnit the time unit, which may not be null
-     * @return this
-     * @mongodb.driver.manual reference/method/cursor.maxTimeMS/#cursor.maxTimeMS Max Time
-     */
-    public FindAndModifyOptions maxTime(final long maxTime, final TimeUnit timeUnit) {
-        options.maxTime(maxTime, timeUnit);
-        return this;
-    }
-
-    /**
-     * Returns the writeConcern
-     *
-     * @return the writeConcern
-     * @mongodb.server.release 3.2
-     */
-    public WriteConcern getWriteConcern() {
-        return options.getWriteConcern();
-    }
-
-    /**
-     * Sets the writeConcern
-     *
-     * @param writeConcern the writeConcern
-     * @return this
-     * @mongodb.server.release 3.2
-     */
-    public FindAndModifyOptions writeConcern(final WriteConcern writeConcern) {
-        options.writeConcern(writeConcern);
-        return this;
-    }
-
-    /**
-     * Returns the collation options
-     *
-     * @return the collation options
-     * @mongodb.server.release 3.4
-     */
-    public Collation getCollation() {
-        return options.getCollation();
-    }
-
-    /**
-     * Sets the collation
-     *
-     * @param collation the collation
-     * @return this
-     * @mongodb.server.release 3.4
-     */
-    public FindAndModifyOptions collation(final Collation collation) {
-        options.collation(collation);
         return this;
     }
 }

@@ -253,7 +253,7 @@ public class MapReduceOptions<T> {
         return outputType;
     }
 
-    Query getQuery() {
+    public Query getQuery() {
         return query;
     }
 
@@ -261,10 +261,9 @@ public class MapReduceOptions<T> {
         return resultType;
     }
 
-    @SuppressWarnings("deprecation")
     MapReduceCommand toCommand(final Mapper mapper) {
-        if (query.getOffset() != 0 || query.getFieldsObject() != null) {
-            throw new QueryException("mapReduce does not allow the offset/retrievedFields query ");
+        if (query.getFieldsObject() != null) {
+            throw new QueryException("mapReduce does not allow projections");
         }
 
         final DBCollection dbColl = inputCollection != null ? getQuery().getCollection().getDB().getCollection(inputCollection)

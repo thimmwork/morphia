@@ -39,39 +39,6 @@ public class UpdateOpsImpl<T> implements UpdateOperations<T> {
     }
 
     @Override
-    @Deprecated
-    public UpdateOperations<T> add(final String field, final Object value) {
-        return addToSet(field, value);
-    }
-
-    @Override
-    @Deprecated
-    public UpdateOperations<T> add(final String field, final Object value, final boolean addDups) {
-        if (value == null) {
-            throw new QueryException("Value cannot be null.");
-        }
-
-        if (addDups) {
-            List<?> values = value instanceof List ? (List<?>) value : singletonList(value);
-            push(field, values);
-        } else {
-            List<?> values = value instanceof List ? (List<?>) value : singletonList(value);
-            addToSet(field, values);
-        }
-        return this;
-    }
-
-    @Override
-    @Deprecated
-    public UpdateOperations<T> addAll(final String field, final List<?> values, final boolean addDups) {
-        if (values == null || values.isEmpty()) {
-            throw new QueryException("Values cannot be null or empty.");
-        }
-
-        return (addDups) ? push(field, values) : addToSet(field, values);
-    }
-
-    @Override
     public UpdateOperations<T> addToSet(final String field, final Object value) {
         if (value == null) {
             throw new QueryException("Value cannot be null.");

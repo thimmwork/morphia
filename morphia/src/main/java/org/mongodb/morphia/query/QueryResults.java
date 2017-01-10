@@ -48,15 +48,6 @@ public interface QueryResults<T> extends Iterable<T> {
      * Count the total number of values in the result, ignoring limit and offset
      *
      * @return the count
-     * @deprecated use {@link #count()} instead
-     */
-    @Deprecated
-    long countAll();
-
-    /**
-     * Count the total number of values in the result, ignoring limit and offset
-     *
-     * @return the count
      * @since 1.3
      */
     long count();
@@ -154,28 +145,4 @@ public interface QueryResults<T> extends Iterable<T> {
      */
     Key<T> getKey(FindOptions options);
 
-    /**
-     * Calls {@code tail(true);}
-     *
-     * @return an Iterator.
-     * @see #tail(boolean)
-     * @deprecated set the CursorType on {@link FindOptions} and use {@link #fetch(FindOptions)} instead
-     *
-     */
-    @Deprecated
-    MorphiaIterator<T, T> tail();
-
-    /**
-     * Returns an tailing iterator over a set of elements of type T. If awaitData is true, this iterator blocks on hasNext() until new data
-     * is avail (or some amount of time has passed). Note that if no data is available at all, hasNext() might return immediately. You
-     * should wrap tail calls in a loop if you want this to be blocking.
-     *
-     * @param awaitData passes the awaitData to the cursor
-     * @return an Iterator.
-     * @see Bytes#QUERYOPTION_AWAITDATA
-     * @deprecated set the CursorType on {@link FindOptions}  and use {@link #fetch(FindOptions)} instead. This can be replicated using
-     * {@code findOptions.cursorType (awaitData ? TailableAwait : Tailable)}
-     */
-    @Deprecated
-    MorphiaIterator<T, T> tail(boolean awaitData);
 }

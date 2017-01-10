@@ -4,14 +4,6 @@ ext.majorVersion = major(version)
 
 ext.latest = gitVersion() == 'master' ? version : latest_release
 
-if (JavaVersion.current().isJava8Compatible()) {
-    allprojects {
-        tasks.withType(Javadoc) {
-            options.addStringOption('Xdoclint:none', '-quiet')
-        }
-    }
-}
-
 buildscript {
     repositories {
         mavenLocal()
@@ -27,7 +19,7 @@ buildscript {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.13'
+    gradleVersion = '3.3'
 }
 
 configure(subprojects.findAll { it.name != 'util' }) {
@@ -40,8 +32,8 @@ configure(subprojects.findAll { it.name != 'util' }) {
     apply plugin: 'optional-base'
 
     group = 'org.mongodb.morphia'
-    sourceCompatibility = JavaVersion.VERSION_1_6
-    targetCompatibility = JavaVersion.VERSION_1_6
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 
     evaluationDependsOn(':util')
 
@@ -57,10 +49,11 @@ configure(subprojects.findAll { it.name != 'util' }) {
 
     project.archivesBaseName = "morphia-${project.name}"
 
-    task listDependencies << {
-        configurations.compile.each { File file -> println file }
+    task listDependencies {
+        doLast {
+            configurations.compile.each { File file -> println file }
+        }
     }
-
     task testCoverage(dependsOn: check)
 
     checkstyle {
@@ -127,19 +120,15 @@ configure(subprojects.findAll { it.name != 'util' }) {
         options.author = true
         options.version = true
         options.tagletPath project(':util').sourceSets.main.output.classesDir
-        options.setTaglets([ 'taglets.ManualTaglet', 'taglets.ServerReleaseTaglet' ])
+        options.setTaglets(['taglets.ManualTaglet', 'taglets.ServerReleaseTaglet'])
         options.links 'http://docs.oracle.com/javase/6/docs/api/'
         options.links 'http://api.mongodb.org/java/3.0/'
         title "Morphia ${majorVersion} API"
         options.encoding = 'UTF-8'
         options.charSet 'UTF-8'
         options.docEncoding 'UTF-8'
+        options.addStringOption('Xdoclint:none', '-quiet')
     }
-}
-
-task clirrRootReport(type: org.kordamp.gradle.clirr.ClirrReportTask) << {
-    dependsOn = subprojects.tasks.clirr
-    reports = files((subprojects.findAll { it.clirr.enabled == true }).tasks.clirr.xmlReport)
 }
 
 def buildingWith(n) {
@@ -148,7 +137,7 @@ def buildingWith(n) {
 
 def major(fullVersion) {
     fullVersion.split('\\.').dropRight(1).join('.') +
-        (gitVersion() == 'master' && fullVersion.contains('-SNAPSHOT') ? '-SNAPSHOT' : '')
+    (gitVersion() == 'master' && fullVersion.contains('-SNAPSHOT') ? '-SNAPSHOT' : '')
 }
 
 def gitVersion() {
@@ -166,7 +155,7 @@ def find(executable) {
     def list = ['/usr/local/bin/', '/usr/bin/']
     list.findResult {
         def exec = file(it + executable)
-        if(exec.exists()) {
+        if (exec.exists()) {
             exec.absolutePath
         }
     } ?: executable

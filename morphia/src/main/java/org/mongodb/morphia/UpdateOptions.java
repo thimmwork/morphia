@@ -32,7 +32,7 @@ import com.mongodb.client.model.DBCollectionUpdateOptions;
 public class UpdateOptions {
     private DBCollectionUpdateOptions options = new DBCollectionUpdateOptions();
 
-    DBCollectionUpdateOptions getOptions() {
+    public DBCollectionUpdateOptions getOptions() {
         return options;
     }
 

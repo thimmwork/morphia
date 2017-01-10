@@ -7,7 +7,9 @@ import com.mongodb.Cursor;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.ReadPreference;
+import org.mongodb.morphia.AdvancedDatastore;
 import org.mongodb.morphia.geo.GeometryShapeConverter;
+import org.mongodb.morphia.internal.DatastoreImpl;
 import org.mongodb.morphia.logging.Logger;
 import org.mongodb.morphia.logging.MorphiaLoggerFactory;
 import org.mongodb.morphia.mapping.MappedField;
@@ -23,7 +25,6 @@ import java.util.List;
 /**
  * Implementation of an AggregationPipeline.
  */
-@SuppressWarnings("deprecation")
 public class AggregationPipelineImpl implements AggregationPipeline {
     private static final Logger LOG = MorphiaLoggerFactory.get(AggregationPipelineImpl.class);
 
@@ -31,7 +32,7 @@ public class AggregationPipelineImpl implements AggregationPipeline {
     private final Class source;
     private final List<DBObject> stages = new ArrayList<DBObject>();
     private final Mapper mapper;
-    private final org.mongodb.morphia.DatastoreImpl datastore;
+    private final org.mongodb.morphia.Datastore datastore;
     private boolean firstStage = false;
 
     /**
@@ -41,10 +42,11 @@ public class AggregationPipelineImpl implements AggregationPipeline {
      * @param collection the database collection on which to operate
      * @param source    the source type to aggregate
      */
-    public AggregationPipelineImpl(final org.mongodb.morphia.DatastoreImpl datastore, final DBCollection collection, final Class source) {
+    public AggregationPipelineImpl(final org.mongodb.morphia.Datastore datastore, final DBCollection collection, final Class source) {
         this.datastore = datastore;
         this.collection = collection;
-        mapper = datastore.getMapper();
+        // TODO: update for 2.0
+        mapper = ((DatastoreImpl) datastore).getMapper();
         this.source = source;
     }
 
@@ -83,7 +85,6 @@ public class AggregationPipelineImpl implements AggregationPipeline {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public AggregationPipeline geoNear(final GeoNear geoNear) {
         DBObject geo = new BasicDBObject();
         GeometryShapeConverter.PointConverter pointConverter = new GeometryShapeConverter.PointConverter();
@@ -100,7 +101,6 @@ public class AggregationPipelineImpl implements AggregationPipeline {
         putIfNull(geo, "spherical", geoNear.getSpherical());
         putIfNull(geo, "distanceMultiplier", geoNear.getDistanceMultiplier());
         putIfNull(geo, "includeLocs", geoNear.getIncludeLocations());
-        putIfNull(geo, "uniqueDocs", geoNear.getUniqueDocuments());
         stages.add(new BasicDBObject("$geoNear", geo));
 
         return this;

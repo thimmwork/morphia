@@ -87,7 +87,7 @@ public final class DeleteOptions {
         return this;
     }
 
-    DBCollectionRemoveOptions getOptions() {
+    public DBCollectionRemoveOptions getOptions() {
         return options;
     }
 }

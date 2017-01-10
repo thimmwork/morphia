@@ -26,12 +26,6 @@ public class TestMaxMin extends TestBase {
         getDs().ensureIndexes();
     }
 
-    @SuppressWarnings("deprecation")
-    @Test(expected = MongoException.class)
-    public void testExceptionForIndexMismatchOld() throws Exception {
-        getDs().find(IndexedEntity.class).lowerIndexBound(new BasicDBObject("doesNotExist", 1)).get();
-    }
-
     @Test(expected = MongoException.class)
     public void testExceptionForIndexMismatch() throws Exception {
         getDs().find(IndexedEntity.class).get(new FindOptions()
@@ -39,7 +33,6 @@ public class TestMaxMin extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testMax() {
         final IndexedEntity a = new IndexedEntity("a");
         final IndexedEntity b = new IndexedEntity("b");
@@ -53,18 +46,12 @@ public class TestMaxMin extends TestBase {
 
         Assert.assertEquals("last", b.id, ds.find(IndexedEntity.class)
                                             .order("-id")
-                                            .upperIndexBound(new BasicDBObject("testField", "c"))
-                                            .get()
-            .id);
-        Assert.assertEquals("last", b.id, ds.find(IndexedEntity.class)
-                                            .order("-id")
                                             .get(new FindOptions()
                                                      .modifier("$max", new BasicDBObject("testField", "c")))
             .id);
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testMaxCompoundIndex() {
         final IndexedEntity a1 = new IndexedEntity("a");
         final IndexedEntity a2 = new IndexedEntity("a");
@@ -83,21 +70,14 @@ public class TestMaxMin extends TestBase {
         ds.save(c2);
 
         List<IndexedEntity> l = ds.find(IndexedEntity.class).order("testField, id")
-                                  .upperIndexBound(new BasicDBObject("testField", "b").append("_id", b2.id)).asList();
-
-        Assert.assertEquals("size", 3, l.size());
-        Assert.assertEquals("item", b1.id, l.get(2).id);
-
-        l = ds.find(IndexedEntity.class).order("testField, id")
-              .asList(new FindOptions()
-                          .modifier("$max", new BasicDBObject("testField", "b").append("_id", b2.id)));
+                                  .asList(new FindOptions()
+                                              .modifier("$max", new BasicDBObject("testField", "b").append("_id", b2.id)));
 
         Assert.assertEquals("size", 3, l.size());
         Assert.assertEquals("item", b1.id, l.get(2).id);
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testMin() {
         final IndexedEntity a = new IndexedEntity("a");
         final IndexedEntity b = new IndexedEntity("b");
@@ -110,15 +90,11 @@ public class TestMaxMin extends TestBase {
         ds.save(c);
 
         Assert.assertEquals("last", b.id, ds.find(IndexedEntity.class).order("id")
-                                            .lowerIndexBound(new BasicDBObject("testField", "b")).get().id);
-
-        Assert.assertEquals("last", b.id, ds.find(IndexedEntity.class).order("id")
                                             .get(new FindOptions().modifier("$min", new BasicDBObject("testField", "b")))
             .id);
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testMinCompoundIndex() {
         final IndexedEntity a1 = new IndexedEntity("a");
         final IndexedEntity a2 = new IndexedEntity("a");
@@ -136,14 +112,9 @@ public class TestMaxMin extends TestBase {
         ds.save(c1);
         ds.save(c2);
 
-        List<IndexedEntity> l = ds.find(IndexedEntity.class).order("testField, id")
-                                  .lowerIndexBound(new BasicDBObject("testField", "b").append("_id", b1.id)).asList();
-
-        Assert.assertEquals("size", 4, l.size());
-        Assert.assertEquals("item", b1.id, l.get(0).id);
-
-        l = ds.find(IndexedEntity.class).order("testField, id")
-              .asList(new FindOptions().modifier("$min", new BasicDBObject("testField", "b").append("_id", b1.id)));
+        final List<IndexedEntity> l = ds.find(IndexedEntity.class).order("testField, id")
+                                        .asList(new FindOptions().modifier("$min",
+                                                                           new BasicDBObject("testField", "b").append("_id", b1.id)));
 
         Assert.assertEquals("size", 4, l.size());
         Assert.assertEquals("item", b1.id, l.get(0).id);

@@ -84,7 +84,7 @@ public final class QuickTour {
 }
 
 @Entity("employees")
-@Indexes(@Index(value = "salary", fields = @Field("salary")))
+@Indexes(@Index(fields = @Field("salary")))
 class Employee {
     @Id
     private ObjectId id;

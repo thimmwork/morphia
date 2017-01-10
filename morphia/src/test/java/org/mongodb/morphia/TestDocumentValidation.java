@@ -30,6 +30,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mongodb.morphia.annotations.Validation;
 import org.mongodb.morphia.entities.DocumentValidation;
+import org.mongodb.morphia.internal.DatastoreImpl;
+import org.mongodb.morphia.internal.ValidationBuilder;
 import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
@@ -299,7 +301,6 @@ public class TestDocumentValidation extends TestBase {
         return (Document) getValidation().get("validator");
     }
 
-    @SuppressWarnings("deprecation")
     private void updateValidation(final MappedClass mappedClass, final ValidationLevel level, final ValidationAction action) {
         ((DatastoreImpl) getDs()).process(mappedClass, new ValidationBuilder().value("{ jelly : { $ne : 'rhubarb' } }")
                                                                               .level(level)

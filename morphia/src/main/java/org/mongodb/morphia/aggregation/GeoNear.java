@@ -37,7 +37,6 @@ public final class GeoNear {
     private final Boolean spherical;
     private final Double distanceMultiplier;
     private final String includeLocations;
-    private final Boolean uniqueDocuments;
 
     private GeoNear(final GeoNearBuilder builder) {
         nearLegacy = builder.nearLegacy;
@@ -50,7 +49,6 @@ public final class GeoNear {
         spherical = builder.spherical;
         distanceMultiplier = builder.distanceMultiplier;
         includeLocations = builder.includeLocations;
-        uniqueDocuments = builder.uniqueDocuments;
     }
 
     /**
@@ -164,19 +162,6 @@ public final class GeoNear {
      */
     public Boolean getSpherical() {
         return spherical;
-    }
-
-    /**
-     * If this value is true, the query returns a matching document once, even if more than one of the document’s location fields match the
-     * query.
-     *
-     * @return true if returning only unique documents
-     * @deprecated since version MongoDB 2.6: Geospatial queries no longer return duplicate results. The $uniqueDocs operator has no impact
-     * on results.
-     */
-    @Deprecated
-    public Boolean getUniqueDocuments() {
-        return uniqueDocuments;
     }
 
     /**
@@ -320,21 +305,5 @@ public final class GeoNear {
             return this;
         }
 
-        /**
-         * If this value is true, the query returns a matching document once, even if more than one of the document's location fields match
-         * the query. If this value is false, the query returns a document multiple times if the document has multiple matching location
-         * fields. See $uniqueDocs for more information.
-         *
-         * @param uniqueDocuments true if only unique documents are required in the return value
-         * @return this builder
-         * @see <a href="http://docs.mongodb.org/master/reference/operator/query/uniqueDocs/#op._S_uniqueDocs">uniqueDocs</a>
-         * @deprecated Deprecated since server version 2.6: Geospatial queries no longer return duplicate results. The $uniqueDocs operator
-         * has no impact on results.
-         */
-        @Deprecated
-        public GeoNearBuilder setUniqueDocuments(final Boolean uniqueDocuments) {
-            this.uniqueDocuments = uniqueDocuments;
-            return this;
-        }
     }
 }

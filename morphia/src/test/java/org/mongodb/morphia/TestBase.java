@@ -6,13 +6,13 @@ import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
 
 import java.util.Iterator;
 
-@SuppressWarnings({"deprecation", "WeakerAccess"})
 public abstract class TestBase {
     protected static final String TEST_DB_NAME = "morphia_test";
     private final MongoClient mongoClient;
@@ -29,7 +29,7 @@ public abstract class TestBase {
         this.mongoClient = mongoClient;
         this.db = getMongoClient().getDB(TEST_DB_NAME);
         this.database = getMongoClient().getDatabase(TEST_DB_NAME);
-        this.ds = getMorphia().createDatastore(getMongoClient(), getDb().getName());
+        this.ds = getMorphia().createDatastore(getMongoClient(), getDatabase().getName());
     }
 
     protected static String getMongoURI() {
@@ -80,9 +80,9 @@ public abstract class TestBase {
     }
 
     protected void cleanup() {
-        DB db = getDb();
+        MongoDatabase db = getDatabase();
         if (db != null) {
-            db.dropDatabase();
+            db.runCommand(new Document("dropDatabase", 1));
         }
     }
 

@@ -79,24 +79,6 @@ public abstract class TypeConverter {
         this.mapper = mapper;
     }
 
-    /**
-     * @return an array of supported convertable types
-     * @deprecated use #getSupportedTypes()
-     */
-    @Deprecated
-    public Class[] getSupportTypes() {
-        return copy(supportedTypes);
-    }
-
-    /**
-     * @param supportTypes the types this converter supports
-     * @deprecated use #setSupportedTypes(Class[])
-     */
-    @Deprecated
-    public void setSupportTypes(final Class[] supportTypes) {
-        this.supportedTypes = copy(supportTypes);
-    }
-
     @Override
     public int hashCode() {
         return getClass().getName().hashCode();

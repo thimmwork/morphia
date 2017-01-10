@@ -125,32 +125,40 @@ public class TestUpdateOps extends TestBase {
         assertThat(getDs().get(cIntArray).values, is((new ContainsIntArray()).values));
 
         //add 4 to array
-        UpdateResults res = getDs().updateFirst(getDs().find(ContainsIntArray.class),
-                                                getDs().createUpdateOperations(ContainsIntArray.class)
-                                                       .addToSet("values", 4));
+        UpdateResults res = getDs().update(getDs().find(ContainsIntArray.class),
+                                           getDs().createUpdateOperations(ContainsIntArray.class)
+                                                  .addToSet("values", 4),
+                                           new UpdateOptions()
+                                               .multi(false));
         assertUpdated(res, 1);
 
         assertThat(getDs().get(cIntArray).values, is(new Integer[]{1, 2, 3, 4}));
 
-        res = getDs().updateFirst(getDs().find(ContainsIntArray.class),
-                                  getDs().createUpdateOperations(ContainsIntArray.class)
-                                         .addToSet("values", 4));
+        res = getDs().update(getDs().find(ContainsIntArray.class),
+                             getDs().createUpdateOperations(ContainsIntArray.class)
+                                    .addToSet("values", 4),
+                             new UpdateOptions()
+                                 .multi(false));
 
         assertUpdated(res, 1);
 
         final List<Integer> newValues = new ArrayList<Integer>();
         newValues.add(4);
         newValues.add(5);
-        res = getDs().updateFirst(getDs().find(ContainsIntArray.class),
-                                  getDs().createUpdateOperations(ContainsIntArray.class)
-                                         .addToSet("values", newValues));
+        res = getDs().update(getDs().find(ContainsIntArray.class),
+                             getDs().createUpdateOperations(ContainsIntArray.class)
+                                    .addToSet("values", newValues),
+                             new UpdateOptions()
+                                 .multi(false));
         assertUpdated(res, 1);
 
         assertThat(getDs().get(cIntArray).values, is(new Integer[]{1, 2, 3, 4, 5}));
 
-        res = getDs().updateFirst(getDs().find(ContainsIntArray.class),
-                                  getDs().createUpdateOperations(ContainsIntArray.class)
-                                         .addToSet("values", newValues));
+        res = getDs().update(getDs().find(ContainsIntArray.class),
+                             getDs().createUpdateOperations(ContainsIntArray.class)
+                                    .addToSet("values", newValues),
+                             new UpdateOptions()
+                                 .multi(false));
         assertUpdated(res, 1);
 
         assertThat(getDs().get(cIntArray).values, is(new Integer[]{1, 2, 3, 4, 5}));
@@ -162,8 +170,10 @@ public class TestUpdateOps extends TestBase {
         getDs().save(c);
         c = new Circle(12D);
         getDs().save(c);
-        UpdateResults res = getDs().updateFirst(getDs().find(Circle.class),
-                                                getDs().createUpdateOperations(Circle.class).inc("radius", 1D));
+        UpdateResults res = getDs().update(getDs().find(Circle.class),
+                                           getDs().createUpdateOperations(Circle.class).inc("radius", 1D),
+                                           new UpdateOptions()
+                                               .multi(false));
         assertUpdated(res, 1);
 
         res = getDs().update(getDs().find(Circle.class), getDs().createUpdateOperations(Circle.class).inc("radius"));
@@ -238,14 +248,17 @@ public class TestUpdateOps extends TestBase {
     @Test
     public void testInsertUpdate() throws Exception {
         final UpdateResults res = getDs().update(getDs().find(Circle.class).field("radius").equal(0),
-                                                 getDs().createUpdateOperations(Circle.class).inc("radius", 1D), true);
+                                                 getDs().createUpdateOperations(Circle.class).inc("radius", 1D), new UpdateOptions().upsert(true).multi(false));
         assertInserted(res);
     }
 
     @Test
     public void testInsertUpdatesUnsafe() throws Exception {
         getDs().update(getDs().find(Circle.class).field("radius").equal(0),
-                       getDs().createUpdateOperations(Circle.class).inc("radius", 1D), true, WriteConcern.UNACKNOWLEDGED);
+                       getDs().createUpdateOperations(Circle.class).inc("radius", 1D),
+                       new UpdateOptions()
+                           .upsert(true)
+                           .writeConcern(WriteConcern.UNACKNOWLEDGED));
         assertThat(getDs().getCount(Circle.class), is(1L));
     }
 
@@ -256,8 +269,11 @@ public class TestUpdateOps extends TestBase {
         final Key<Pic> picKey = getDs().save(pic);
 
         //test with Key<Pic>
-        UpdateResults res = getDs().updateFirst(getDs().find(ContainsPic.class).filter("name", "first").filter("pic", picKey),
-                                                getDs().createUpdateOperations(ContainsPic.class).set("name", "A"), true);
+        UpdateResults res = getDs().update(getDs().find(ContainsPic.class).filter("name", "first").filter("pic", picKey),
+                                                getDs().createUpdateOperations(ContainsPic.class).set("name", "A"),
+                                                new UpdateOptions()
+                                                    .upsert(true)
+                                                    .multi(false));
 
         assertInserted(res);
         assertThat(getDs().find(ContainsPic.class).count(), is(1L));
@@ -265,8 +281,11 @@ public class TestUpdateOps extends TestBase {
         getDs().delete(getDs().find(ContainsPic.class));
 
         //test with pic object
-        res = getDs().updateFirst(getDs().find(ContainsPic.class).filter("name", "first").filter("pic", pic),
-                                  getDs().createUpdateOperations(ContainsPic.class).set("name", "second"), true);
+        res = getDs().update(getDs().find(ContainsPic.class).filter("name", "first").filter("pic", pic),
+                                  getDs().createUpdateOperations(ContainsPic.class).set("name", "second"),
+                                                                                  new UpdateOptions()
+                                                                                      .upsert(true)
+                                                                                      .multi(false));
 
         assertInserted(res);
         assertThat(getDs().find(ContainsPic.class).count(), is(1L));
@@ -287,14 +306,20 @@ public class TestUpdateOps extends TestBase {
         // given
         final ObjectId id = new ObjectId();
         final double originalValue = 2D;
-        UpdateResults res = getDs().updateFirst(getDs().find(Circle.class).field("id").equal(id),
-                                                getDs().createUpdateOperations(Circle.class).setOnInsert("radius", originalValue), true);
+        UpdateResults res = getDs().update(getDs().find(Circle.class).field("id").equal(id),
+                                                getDs().createUpdateOperations(Circle.class).setOnInsert("radius", originalValue) ,
+                                                                                                new UpdateOptions()
+                                                                                                    .upsert(true)
+                                                                                                    .multi(false));
 
         assertInserted(res);
 
         // when
-        res = getDs().updateFirst(getDs().find(Circle.class).field("id").equal(id),
-                                  getDs().createUpdateOperations(Circle.class).max("radius", 1D), true);
+        res = getDs().update(getDs().find(Circle.class).field("id").equal(id),
+                                  getDs().createUpdateOperations(Circle.class).max("radius", 1D) ,
+                                                                                  new UpdateOptions()
+                                                                                      .upsert(true)
+                                                                                      .multi(false));
 
         // then
         assertUpdated(res, 1);
@@ -309,15 +334,21 @@ public class TestUpdateOps extends TestBase {
         checkMinServerVersion(2.6);
         // given
         final ObjectId id = new ObjectId();
-        UpdateResults res = getDs().updateFirst(getDs().find(Circle.class).field("id").equal(id),
-                                                getDs().createUpdateOperations(Circle.class).setOnInsert("radius", 1D), true);
+        UpdateResults res = getDs().update(getDs().find(Circle.class).field("id").equal(id),
+                                                getDs().createUpdateOperations(Circle.class).setOnInsert("radius", 1D) ,
+                                                                                                new UpdateOptions()
+                                                                                                    .upsert(true)
+                                                                                                    .multi(false));
 
         assertInserted(res);
 
         // when
         final double newHigherValue = 2D;
-        res = getDs().updateFirst(getDs().find(Circle.class).field("id").equal(id),
-                                  getDs().createUpdateOperations(Circle.class).max("radius", newHigherValue), true);
+        res = getDs().update(getDs().find(Circle.class).field("id").equal(id),
+                                  getDs().createUpdateOperations(Circle.class).max("radius", newHigherValue) ,
+                                                                                  new UpdateOptions()
+                                                                                      .upsert(true)
+                                                                                      .multi(false));
 
         // then
         assertUpdated(res, 1);
@@ -333,14 +364,20 @@ public class TestUpdateOps extends TestBase {
         // given
         final ObjectId id = new ObjectId();
         final double originalValue = 3D;
-        UpdateResults res = getDs().updateFirst(getDs().find(Circle.class).field("id").equal(id),
-                                                getDs().createUpdateOperations(Circle.class).setOnInsert("radius", originalValue), true);
+        UpdateResults res = getDs().update(getDs().find(Circle.class).field("id").equal(id),
+                                                getDs().createUpdateOperations(Circle.class).setOnInsert("radius", originalValue) ,
+                                                                                                new UpdateOptions()
+                                                                                                    .upsert(true)
+                                                                                                    .multi(false));
 
         assertInserted(res);
 
         // when
-        res = getDs().updateFirst(getDs().find(Circle.class).field("id").equal(id),
-                                  getDs().createUpdateOperations(Circle.class).min("radius", 5D), true);
+        res = getDs().update(getDs().find(Circle.class).field("id").equal(id),
+                                  getDs().createUpdateOperations(Circle.class).min("radius", 5D),
+                                  new UpdateOptions()
+                                      .upsert(true)
+                                      .multi(false));
 
         // then
         assertUpdated(res, 1);
@@ -355,15 +392,21 @@ public class TestUpdateOps extends TestBase {
         checkMinServerVersion(2.6);
         // given
         final ObjectId id = new ObjectId();
-        UpdateResults res = getDs().updateFirst(getDs().find(Circle.class).field("id").equal(id),
-                                                getDs().createUpdateOperations(Circle.class).setOnInsert("radius", 3D), true);
+        UpdateResults res = getDs().update(getDs().find(Circle.class).field("id").equal(id),
+                                                getDs().createUpdateOperations(Circle.class).setOnInsert("radius", 3D),
+                                                new UpdateOptions()
+                                                    .upsert(true)
+                                                    .multi(false));
 
         assertInserted(res);
 
         // when
         final double newLowerValue = 2D;
-        res = getDs().updateFirst(getDs().find(Circle.class).field("id").equal(id),
-                                  getDs().createUpdateOperations(Circle.class).min("radius", newLowerValue), true);
+        res = getDs().update(getDs().find(Circle.class).field("id").equal(id),
+                                  getDs().createUpdateOperations(Circle.class).min("radius", newLowerValue),
+                                  new UpdateOptions()
+                                      .upsert(true)
+                                      .multi(false));
 
         // then
         assertUpdated(res, 1);
@@ -381,36 +424,46 @@ public class TestUpdateOps extends TestBase {
         ContainsIntArray cIALoaded;
         assertThat(getDs().get(cIntArray).values, is((new ContainsIntArray()).values));
 
-        getDs().updateFirst(getDs().find(ContainsIntArray.class),
+        getDs().update(getDs().find(ContainsIntArray.class),
                             getDs().createUpdateOperations(ContainsIntArray.class)
-                                   .push("values", 4));
+                                   .push("values", 4),
+        new UpdateOptions()
+            .multi(false));
 
         assertThat(getDs().get(cIntArray).values, is(new Integer[]{1, 2, 3, 4}));
 
-        getDs().updateFirst(getDs().find(ContainsIntArray.class),
+        getDs().update(getDs().find(ContainsIntArray.class),
                             getDs().createUpdateOperations(ContainsIntArray.class)
-                                   .push("values", 4));
+                                   .push("values", 4),
+                                           new UpdateOptions()
+                                               .multi(false));
 
         assertThat(getDs().get(cIntArray).values, is(new Integer[]{1, 2, 3, 4, 4}));
 
-        getDs().updateFirst(getDs().find(ContainsIntArray.class),
+        getDs().update(getDs().find(ContainsIntArray.class),
                             getDs().createUpdateOperations(ContainsIntArray.class)
-                                   .push("values", asList(5, 6)));
+                                   .push("values", asList(5, 6)),
+                                           new UpdateOptions()
+                                               .multi(false));
 
         cIALoaded = getDs().get(cIntArray);
         assertThat(cIALoaded.values, is(new Integer[]{1, 2, 3, 4, 4, 5, 6}));
 
-        getDs().updateFirst(getDs().find(ContainsIntArray.class),
+        getDs().update(getDs().find(ContainsIntArray.class),
                             getDs().createUpdateOperations(ContainsIntArray.class)
-                                   .push("values", 12, options().position(2)));
+                                   .push("values", 12, options().position(2)),
+                                           new UpdateOptions()
+                                               .multi(false));
 
         cIALoaded = getDs().get(cIntArray);
         assertThat(cIALoaded.values, is(new Integer[]{1, 2, 12, 3, 4, 4, 5, 6}));
 
 
-        getDs().updateFirst(getDs().find(ContainsIntArray.class),
+        getDs().update(getDs().find(ContainsIntArray.class),
                             getDs().createUpdateOperations(ContainsIntArray.class)
-                                   .push("values", asList(99, 98, 97), options().position(4)));
+                                   .push("values", asList(99, 98, 97), options().position(4)),
+                                           new UpdateOptions()
+                                               .multi(false));
 
         cIALoaded = getDs().get(cIntArray);
         assertThat(cIALoaded.values, is(new Integer[]{1, 2, 12, 3, 99, 98, 97, 4, 4, 5, 6}));
@@ -502,15 +555,19 @@ public class TestUpdateOps extends TestBase {
         assertThat(cIALoaded.values, is((new ContainsIntArray()).values));
 
         //remove 1
-        UpdateResults res = getDs().updateFirst(getDs().find(ContainsIntArray.class),
-                                                getDs().createUpdateOperations(ContainsIntArray.class).removeFirst("values"));
+        UpdateResults res = getDs().update(getDs().find(ContainsIntArray.class),
+                                                getDs().createUpdateOperations(ContainsIntArray.class).removeFirst("values"),
+                                                        new UpdateOptions()
+                                                            .multi(false));
         assertUpdated(res, 1);
         cIALoaded = getDs().get(cIntArray);
         assertThat(cIALoaded.values, is(new Integer[]{2, 3}));
 
         //remove 3
-        res = getDs().updateFirst(getDs().find(ContainsIntArray.class),
-                                  getDs().createUpdateOperations(ContainsIntArray.class).removeLast("values"));
+        res = getDs().update(getDs().find(ContainsIntArray.class),
+                                  getDs().createUpdateOperations(ContainsIntArray.class).removeLast("values"),
+                                          new UpdateOptions()
+                                              .multi(false));
         assertUpdated(res, 1);
         cIALoaded = getDs().get(cIntArray);
         assertThat(cIALoaded.values, is(new Integer[]{2}));
@@ -520,8 +577,11 @@ public class TestUpdateOps extends TestBase {
     public void testSetOnInsertWhenInserting() throws Exception {
         checkMinServerVersion(2.4);
         ObjectId id = new ObjectId();
-        UpdateResults res = getDs().updateFirst(getDs().find(Circle.class).field("id").equal(id),
-                                                getDs().createUpdateOperations(Circle.class).setOnInsert("radius", 2D), true);
+        UpdateResults res = getDs().update(getDs().find(Circle.class).field("id").equal(id),
+                                                getDs().createUpdateOperations(Circle.class).setOnInsert("radius", 2D) ,
+                                                        new UpdateOptions()
+                                                            .upsert(true)
+                                               .multi(false));
 
         assertInserted(res);
 
@@ -535,13 +595,19 @@ public class TestUpdateOps extends TestBase {
     public void testSetOnInsertWhenUpdating() throws Exception {
         checkMinServerVersion(2.4);
         ObjectId id = new ObjectId();
-        UpdateResults res = getDs().updateFirst(getDs().find(Circle.class).field("id").equal(id),
-                                                getDs().createUpdateOperations(Circle.class).setOnInsert("radius", 1D), true);
+        UpdateResults res = getDs().update(getDs().find(Circle.class).field("id").equal(id),
+                                                getDs().createUpdateOperations(Circle.class).setOnInsert("radius", 1D),
+                                                new UpdateOptions()
+                                                    .upsert(true)
+                                                    .multi(false));
 
         assertInserted(res);
 
-        res = getDs().updateFirst(getDs().find(Circle.class).field("id").equal(id),
-                                  getDs().createUpdateOperations(Circle.class).setOnInsert("radius", 2D), true);
+        res = getDs().update(getDs().find(Circle.class).field("id").equal(id),
+                                  getDs().createUpdateOperations(Circle.class).setOnInsert("radius", 2D),
+                                  new UpdateOptions()
+                                      .upsert(true)
+                                      .multi(false));
 
         assertUpdated(res, 1);
 
@@ -556,14 +622,20 @@ public class TestUpdateOps extends TestBase {
         Datastore ds = getDs();
         final Key<Circle> key = ds.save(new Circle(1));
 
-        assertUpdated(ds.updateFirst(ds.find(Circle.class).filter("radius", 1D),
-                                     ds.createUpdateOperations(Circle.class).set("radius", 2D)), 1);
+        assertUpdated(ds.update(ds.find(Circle.class).filter("radius", 1D),
+                                ds.createUpdateOperations(Circle.class).set("radius", 2D),
+                                new UpdateOptions()
+                                    .multi(false)),
+                      1);
 
         assertThat(ds.getByKey(Circle.class, key).getRadius(), is(2D));
 
 
-        assertUpdated(ds.updateFirst(ds.find(Circle.class).filter("radius", 2D),
-                                     ds.createUpdateOperations(Circle.class).unset("radius")), 1);
+        assertUpdated(ds.update(ds.find(Circle.class).filter("radius", 2D),
+                                ds.createUpdateOperations(Circle.class).unset("radius"),
+                                new UpdateOptions()
+                                    .multi(false)),
+                      1);
 
         assertThat(ds.getByKey(Circle.class, key).getRadius(), is(0D));
 
@@ -593,29 +665,7 @@ public class TestUpdateOps extends TestBase {
         BasicDBObject object = new BasicDBObject("new", "value");
         updateOperations.set("raw", object);
 
-        getDs().updateFirst(query, updateOperations, false);
-
-        List<EntityLogs> list = getDs().find(EntityLogs.class).asList();
-        for (int i = 0; i < list.size(); i++) {
-            final EntityLogs entityLogs = list.get(i);
-            assertEquals(entityLogs.id.equals(logs1.id) ? object : logs.get(i).raw, entityLogs.raw);
-        }
-    }
-
-    @Test
-    public void testUpdateFirstNoCreateWithEntity() {
-        List<EntityLogs> logs = new ArrayList<EntityLogs>();
-        for (int i = 0; i < 100; i++) {
-            logs.add(createEntryLogs("name", "logs" + i));
-        }
-        EntityLogs logs1 = logs.get(0);
-
-        Query<EntityLogs> query = getDs().find(EntityLogs.class);
-        BasicDBObject object = new BasicDBObject("new", "value");
-        EntityLogs newLogs = new EntityLogs();
-        newLogs.raw = object;
-
-        getDs().updateFirst(query, newLogs, false);
+        getDs().update(query, updateOperations, new UpdateOptions().multi(false));
 
         List<EntityLogs> list = getDs().find(EntityLogs.class).asList();
         for (int i = 0; i < list.size(); i++) {
@@ -637,7 +687,7 @@ public class TestUpdateOps extends TestBase {
         BasicDBObject object = new BasicDBObject("new", "value");
         updateOperations.set("raw", object);
 
-        getDs().updateFirst(query, updateOperations, false);
+        getDs().update(query, updateOperations, new UpdateOptions().multi(false));
 
         List<EntityLogs> list = getDs().find(EntityLogs.class).asList();
         for (int i = 0; i < list.size(); i++) {
@@ -660,8 +710,10 @@ public class TestUpdateOps extends TestBase {
 
 
         //test with Key<Pic>
-        final UpdateResults res = getDs().updateFirst(getDs().find(ContainsPicKey.class).filter("name", cpk.name),
-                                                      getDs().createUpdateOperations(ContainsPicKey.class).set("pic", pic));
+        final UpdateResults res = getDs().update(getDs().find(ContainsPicKey.class).filter("name", cpk.name),
+                                                 getDs().createUpdateOperations(ContainsPicKey.class).set("pic", pic),
+                                                 new UpdateOptions()
+                                                     .multi(false));
 
         assertThat(res.getUpdatedCount(), is(1));
 
@@ -672,8 +724,10 @@ public class TestUpdateOps extends TestBase {
         assertThat(cpk2.pic, is(notNullValue()));
         assertThat(picKey, is(cpk2.pic));
 
-        getDs().updateFirst(getDs().find(ContainsPicKey.class).filter("name", cpk.name),
-                            getDs().createUpdateOperations(ContainsPicKey.class).set("pic", picKey));
+        getDs().update(getDs().find(ContainsPicKey.class).filter("name", cpk.name),
+                       getDs().createUpdateOperations(ContainsPicKey.class).set("pic", picKey),
+                       new UpdateOptions()
+                           .multi(false));
 
         //test reading the object.
         final ContainsPicKey cpk3 = getDs().find(ContainsPicKey.class).get();
@@ -698,8 +752,10 @@ public class TestUpdateOps extends TestBase {
         cpk.keys = singletonList(picKey);
 
         //test with Key<Pic>
-        final UpdateResults res = ds.updateFirst(ds.find(ContainsPicKey.class).filter("name", cpk.name),
-                                                 ds.createUpdateOperations(ContainsPicKey.class).set("keys", cpk.keys));
+        final UpdateResults res = ds.update(ds.find(ContainsPicKey.class).filter("name", cpk.name),
+                                                 ds.createUpdateOperations(ContainsPicKey.class).set("keys", cpk.keys),
+                                                 new UpdateOptions()
+                                                     .multi(false));
 
         assertThat(res.getUpdatedCount(), is(1));
 
@@ -723,8 +779,10 @@ public class TestUpdateOps extends TestBase {
 
 
         //test with Key<Pic>
-        final UpdateResults res = getDs().updateFirst(getDs().find(ContainsPic.class).filter("name", cp.getName()),
-                                                      getDs().createUpdateOperations(ContainsPic.class).set("pic", pic));
+        final UpdateResults res = getDs().update(getDs().find(ContainsPic.class).filter("name", cp.getName()),
+                                                      getDs().createUpdateOperations(ContainsPic.class).set("pic", pic),
+                                                                                                       new UpdateOptions()
+                                                                                                           .multi(false));
 
         assertThat(res.getUpdatedCount(), is(1));
 
@@ -736,8 +794,10 @@ public class TestUpdateOps extends TestBase {
         assertThat(cp2.getPic().getName(), is(notNullValue()));
         assertThat(pic.getName(), is(cp2.getPic().getName()));
 
-        getDs().updateFirst(getDs().find(ContainsPic.class).filter("name", cp.getName()),
-                            getDs().createUpdateOperations(ContainsPic.class).set("pic", picKey));
+        getDs().update(getDs().find(ContainsPic.class).filter("name", cp.getName()),
+                            getDs().createUpdateOperations(ContainsPic.class).set("pic", picKey),
+                                                                             new UpdateOptions()
+                                                                                 .multi(false));
 
         //test reading the object.
         final ContainsPic cp3 = getDs().find(ContainsPic.class).get();
@@ -754,8 +814,10 @@ public class TestUpdateOps extends TestBase {
         cInt.val = 21;
         getDs().save(cInt);
 
-        final UpdateResults res = getDs().updateFirst(getDs().find(ContainsInt.class),
-                                                      getDs().createUpdateOperations(ContainsInt.class).inc("val", 1.1D));
+        final UpdateResults res = getDs().update(getDs().find(ContainsInt.class),
+                                                      getDs().createUpdateOperations(ContainsInt.class).inc("val", 1.1D),
+                                                                                                       new UpdateOptions()
+                                                                                                           .multi(false));
         assertUpdated(res, 1);
 
         assertThat(getDs().find(ContainsInt.class).get().val, is(22));
@@ -765,7 +827,9 @@ public class TestUpdateOps extends TestBase {
     public void testValidationBadFieldName() throws Exception {
         getDs().update(getDs().find(Circle.class).field("radius").equal(0),
                        getDs().createUpdateOperations(Circle.class).inc("r", 1D),
-                       true, WriteConcern.ACKNOWLEDGED);
+                       new UpdateOptions()
+                           .upsert(true)
+                           .writeConcern(WriteConcern.ACKNOWLEDGED));
     }
 
     @Test
@@ -778,7 +842,9 @@ public class TestUpdateOps extends TestBase {
 
         getDs().update(getDs().find(Circle.class).field("radius").equal(0),
                        updates,
-                       true, WriteConcern.ACKNOWLEDGED);
+                       new UpdateOptions()
+                           .upsert(true)
+                           .writeConcern(WriteConcern.ACKNOWLEDGED));
     }
 
     private void assertInserted(final UpdateResults res) {

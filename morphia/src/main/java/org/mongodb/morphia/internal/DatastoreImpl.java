@@ -89,6 +89,7 @@ import static java.util.Collections.singletonList;
 /**
  * A generic (type-safe) wrapper around mongodb collections
  */
+@SuppressWarnings("CheckStyle")
 public class DatastoreImpl implements AdvancedDatastore {
     private static final Logger LOG = MorphiaLoggerFactory.get(DatastoreImpl.class);
 
@@ -653,7 +654,7 @@ public class DatastoreImpl implements AdvancedDatastore {
         if (clazz == null) {
             clazz = (Class<T>) mapper.getClassFromCollection(key.getCollection());
         }
-        return updateFirst(createQuery(clazz).disableValidation().filter(Mapper.ID_KEY, key.getId()), operations);
+        return update(createQuery(clazz).disableValidation().filter(Mapper.ID_KEY, key.getId()), operations, new UpdateOptions());
     }
 
     @Override
@@ -662,61 +663,6 @@ public class DatastoreImpl implements AdvancedDatastore {
             .upsert(false)
             .multi(true)
             .writeConcern(getWriteConcern(query.getEntityClass())));
-    }
-
-    @Override
-    public <T> UpdateResults update(final Query<T> query, final UpdateOperations<T> operations, final boolean createIfMissing) {
-        return update(query, operations, new UpdateOptions()
-            .upsert(createIfMissing)
-            .writeConcern(getWriteConcern(query.getEntityClass())));
-    }
-
-    @Override
-    public <T> UpdateResults update(final Query<T> query, final UpdateOperations<T> operations, final boolean createIfMissing,
-                                    final WriteConcern wc) {
-        return update(query, operations, new UpdateOptions()
-                    .upsert(createIfMissing)
-                    .multi(true)
-                    .writeConcern(wc));
-    }
-
-    @Override
-    public <T> UpdateResults updateFirst(final Query<T> query, final UpdateOperations<T> operations) {
-        return update(query, operations, new UpdateOptions());
-    }
-
-    @Override
-    public <T> UpdateResults updateFirst(final Query<T> query, final UpdateOperations<T> operations, final boolean createIfMissing) {
-        return update(query, operations, new UpdateOptions().upsert(createIfMissing));
-
-    }
-
-    @Override
-    public <T> UpdateResults updateFirst(final Query<T> query, final UpdateOperations<T> operations, final boolean createIfMissing,
-                                         final WriteConcern wc) {
-        return update(query, operations, new UpdateOptions()
-            .upsert(createIfMissing)
-            .writeConcern(wc));
-    }
-
-    @Override
-    public <T> UpdateResults updateFirst(final Query<T> query, final T entity, final boolean createIfMissing) {
-        if (getMapper().getMappedClass(entity).getMappedVersionField() != null) {
-            throw new UnsupportedOperationException("updateFirst() is not supported with versioned entities");
-        }
-
-        final LinkedHashMap<Object, DBObject> involvedObjects = new LinkedHashMap<Object, DBObject>();
-        final DBObject dbObj = mapper.toDBObject(entity, involvedObjects);
-
-        final UpdateResults res = update(query, dbObj, createIfMissing, false, getWriteConcern(entity));
-
-        // update _id field
-        if (res.getInsertedCount() > 0) {
-            dbObj.put(Mapper.ID_KEY, res.getNewId());
-        }
-
-        postSaveOperations(singletonList(entity), involvedObjects, getCollection(entity), false);
-        return res;
     }
 
     @Override

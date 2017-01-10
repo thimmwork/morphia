@@ -33,7 +33,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class TestVersionAnnotation extends TestBase {
 
@@ -147,17 +146,10 @@ public class TestVersionAnnotation extends TestBase {
         update.setName("Value 2");
 
         Query<Versioned> query = datastore.find(Versioned.class).field("name").equal("Value 1");
-        try {
-            datastore.updateFirst(
-                query,
-                update, true);
-            fail("This call should have been rejected");
-        } catch (UnsupportedOperationException ignored) {
-        }
 
-        datastore.updateFirst(
+        datastore.update(
             query,
-            datastore.createUpdateOperations(Versioned.class).inc("count"), true);
+            datastore.createUpdateOperations(Versioned.class).inc("count"), new UpdateOptions().upsert(true).multi(false));
         assertEquals(43, query.get().getCount());
     }
 
@@ -174,7 +166,7 @@ public class TestVersionAnnotation extends TestBase {
         query.field("_id").equal(version1.getId());
         UpdateOperations<Versioned> up = getDs().createUpdateOperations(Versioned.class).inc("count");
 
-        getDs().updateFirst(query, up, true);
+        getDs().update(query, up, new UpdateOptions().upsert(true).multi(false));
 
         final Versioned version2 = getDs().get(Versioned.class, version1.getId());
 
@@ -241,7 +233,7 @@ public class TestVersionAnnotation extends TestBase {
         query.filter("name", "Value 1");
         UpdateOperations<Versioned> ops = datastore.createUpdateOperations(Versioned.class);
         ops.set("name", "Value 3");
-        datastore.update(query, ops, true);
+        datastore.update(query, ops, new UpdateOptions().upsert(true));
 
         entity = datastore.find(Versioned.class).get();
         Assert.assertEquals("Value 3", entity.getName());

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mongodb.morphia.internal;
+package org.mongodb.morphia;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
@@ -34,15 +34,6 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.CreateCollectionOptions;
 import com.mongodb.client.model.DBCollectionUpdateOptions;
 import com.mongodb.client.model.ValidationOptions;
-import org.mongodb.morphia.AdvancedDatastore;
-import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.DeleteOptions;
-import org.mongodb.morphia.FindAndModifyOptions;
-import org.mongodb.morphia.InsertOptions;
-import org.mongodb.morphia.Key;
-import org.mongodb.morphia.MapReduceOptions;
-import org.mongodb.morphia.MapreduceResults;
-import org.mongodb.morphia.UpdateOptions;
 import org.mongodb.morphia.aggregation.AggregationPipeline;
 import org.mongodb.morphia.aggregation.AggregationPipelineImpl;
 import org.mongodb.morphia.annotations.CappedAt;
@@ -51,6 +42,7 @@ import org.mongodb.morphia.annotations.NotSaved;
 import org.mongodb.morphia.annotations.PostPersist;
 import org.mongodb.morphia.annotations.Validation;
 import org.mongodb.morphia.annotations.Version;
+import org.mongodb.morphia.internal.IndexHelper;
 import org.mongodb.morphia.logging.Logger;
 import org.mongodb.morphia.logging.MorphiaLoggerFactory;
 import org.mongodb.morphia.mapping.MappedClass;
@@ -88,6 +80,8 @@ import static java.util.Collections.singletonList;
 
 /**
  * A generic (type-safe) wrapper around mongodb collections
+ *
+ * This is an internal class and may change without notice.
  */
 @SuppressWarnings("CheckStyle")
 public class DatastoreImpl implements AdvancedDatastore {
@@ -110,7 +104,7 @@ public class DatastoreImpl implements AdvancedDatastore {
      * @param mongoClient the connection to the MongoDB instance
      * @param dbName      the name of the database for this data store.
      */
-    public DatastoreImpl(final Mapper mapper, final MongoClient mongoClient, final String dbName) {
+    DatastoreImpl(final Mapper mapper, final MongoClient mongoClient, final String dbName) {
         this(mapper, mongoClient, mongoClient.getDatabase(dbName));
     }
 
@@ -251,8 +245,7 @@ public class DatastoreImpl implements AdvancedDatastore {
         }
     }
 
-
-    public void process(final MappedClass mc, final Validation validation) {
+    void process(final MappedClass mc, final Validation validation) {
         if (validation != null) {
             String collectionName = mc.getCollectionName();
             CommandResult result = getDB()
@@ -596,11 +589,7 @@ public class DatastoreImpl implements AdvancedDatastore {
         Iterator<T> iterator = entities.iterator();
         return !iterator.hasNext()
                ? Collections.<Key<T>>emptyList()
-               : save(entities, getWriteConcern(iterator.next()));
-    }
-
-    public <T> Iterable<Key<T>> save(final Iterable<T> entities, final WriteConcern wc) {
-        return save(entities, new InsertOptions().writeConcern(wc));
+               : save(entities, new InsertOptions().writeConcern(getWriteConcern(iterator.next())));
     }
 
     @Override
@@ -798,11 +787,7 @@ public class DatastoreImpl implements AdvancedDatastore {
 
     @Override
     public <T> Key<T> insert(final T entity) {
-        return insert(entity, getWriteConcern(entity));
-    }
-
-    public <T> Key<T> insert(final T entity, final WriteConcern wc) {
-        return insert(entity, new InsertOptions().writeConcern(wc));
+        return insert(entity, new InsertOptions().writeConcern(getWriteConcern(entity)));
     }
 
     @Override
@@ -837,11 +822,7 @@ public class DatastoreImpl implements AdvancedDatastore {
     @Override
     public <T> Key<T> save(final String collection, final T entity) {
         final T unwrapped = ProxyHelper.unwrap(entity);
-        return save(collection, entity, getWriteConcern(unwrapped));
-    }
-
-    public <T> Key<T> save(final String collection, final T entity, final WriteConcern wc) {
-        return save(getCollection(collection), ProxyHelper.unwrap(entity), new InsertOptions().writeConcern(wc));
+        return save(collection, entity,  new InsertOptions().writeConcern(getWriteConcern(unwrapped)));
     }
 
     @Override
@@ -906,7 +887,7 @@ public class DatastoreImpl implements AdvancedDatastore {
         return postSaveOperations(singletonList(entity), involvedObjects, dbColl).get(0);
     }
 
-    public <T> FindAndModifyOptions enforceWriteConcern(final FindAndModifyOptions options, final Class<T> klass) {
+    <T> FindAndModifyOptions enforceWriteConcern(final FindAndModifyOptions options, final Class<T> klass) {
         if (options.getWriteConcern() == null) {
             return options
                 .copy()
@@ -915,7 +896,7 @@ public class DatastoreImpl implements AdvancedDatastore {
         return options;
     }
 
-    public <T> InsertOptions enforceWriteConcern(final InsertOptions options, final Class<T> klass) {
+    <T> InsertOptions enforceWriteConcern(final InsertOptions options, final Class<T> klass) {
         if (options.getWriteConcern() == null) {
             return options
                 .copy()
@@ -924,7 +905,7 @@ public class DatastoreImpl implements AdvancedDatastore {
         return options;
     }
 
-    public <T> UpdateOptions enforceWriteConcern(final UpdateOptions options, final Class<T> klass) {
+    <T> UpdateOptions enforceWriteConcern(final UpdateOptions options, final Class<T> klass) {
         if (options.getWriteConcern() == null) {
             return options
                 .copy()
@@ -933,7 +914,7 @@ public class DatastoreImpl implements AdvancedDatastore {
         return options;
     }
 
-    public <T> DeleteOptions enforceWriteConcern(final DeleteOptions options, final Class<T> klass) {
+    <T> DeleteOptions enforceWriteConcern(final DeleteOptions options, final Class<T> klass) {
         if (options.getWriteConcern() == null) {
             return options
                 .copy()

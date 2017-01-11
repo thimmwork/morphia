@@ -35,7 +35,6 @@ import org.mongodb.morphia.entities.IndexOnValue;
 import org.mongodb.morphia.entities.NamedIndexOnValue;
 import org.mongodb.morphia.entities.UniqueIndexOnValue;
 import org.mongodb.morphia.mapping.MappedClass;
-import org.mongodb.morphia.mapping.MappingException;
 import org.mongodb.morphia.utils.IndexDirection;
 import org.mongodb.morphia.utils.IndexType;
 

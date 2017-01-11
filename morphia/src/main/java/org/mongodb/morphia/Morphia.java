@@ -19,7 +19,6 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.internal.DatastoreImpl;
 import org.mongodb.morphia.logging.Logger;
 import org.mongodb.morphia.logging.MorphiaLoggerFactory;
 import org.mongodb.morphia.mapping.Mapper;

@@ -1,7 +1,6 @@
 package org.mongodb.morphia.query;
 
 
-import com.mongodb.Bytes;
 import org.mongodb.morphia.Key;
 
 import java.util.List;

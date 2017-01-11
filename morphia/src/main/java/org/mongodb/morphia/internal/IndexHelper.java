@@ -54,14 +54,14 @@ import static java.util.Collections.emptyList;
 import static org.mongodb.morphia.internal.AnnotationBuilder.toMap;
 import static org.mongodb.morphia.utils.IndexType.fromValue;
 
-final class IndexHelper {
+public final class IndexHelper {
     private static final Logger LOG = MorphiaLoggerFactory.get(IndexHelper.class);
     private static final EncoderContext ENCODER_CONTEXT = EncoderContext.builder().build();
 
     private final Mapper mapper;
     private final MongoDatabase database;
 
-    IndexHelper(final Mapper mapper, final MongoDatabase database) {
+    public IndexHelper(final Mapper mapper, final MongoDatabase database) {
         this.mapper = mapper;
         this.database = database;
     }
@@ -344,7 +344,7 @@ final class IndexHelper {
         return namePath;
     }
 
-    void createIndex(final MongoCollection collection, final MappedClass mc, final boolean background) {
+    public void createIndex(final MongoCollection collection, final MappedClass mc, final boolean background) {
         if (!mc.isInterface() && !mc.isAbstract()) {
             for (Index index : collectIndexes(mc, Collections.<MappedClass>emptyList())) {
                 createIndex(collection, mc, index, background);

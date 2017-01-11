@@ -21,7 +21,6 @@ import com.mongodb.CursorType;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.MongoQueryException;
-import com.mongodb.ReadPreference;
 import com.mongodb.client.model.CollationStrength;
 import org.bson.types.CodeWScope;
 import org.bson.types.ObjectId;

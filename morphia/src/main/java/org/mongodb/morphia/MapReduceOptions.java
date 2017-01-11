@@ -253,7 +253,7 @@ public class MapReduceOptions<T> {
         return outputType;
     }
 
-    public Query getQuery() {
+    Query getQuery() {
         return query;
     }
 

@@ -30,7 +30,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mongodb.morphia.annotations.Validation;
 import org.mongodb.morphia.entities.DocumentValidation;
-import org.mongodb.morphia.internal.DatastoreImpl;
 import org.mongodb.morphia.internal.ValidationBuilder;
 import org.mongodb.morphia.mapping.MappedClass;
 import org.mongodb.morphia.query.Query;

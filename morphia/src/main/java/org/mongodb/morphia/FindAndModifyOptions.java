@@ -205,7 +205,7 @@ public final class FindAndModifyOptions {
         return this;
     }
 
-    public DBCollectionFindAndModifyOptions getOptions() {
+    DBCollectionFindAndModifyOptions getOptions() {
         return copy().options;
     }
 
@@ -213,7 +213,7 @@ public final class FindAndModifyOptions {
         return options.getProjection();
     }
 
-    public FindAndModifyOptions projection(final DBObject projection) {
+    FindAndModifyOptions projection(final DBObject projection) {
         options.projection(projection);
         return this;
     }

@@ -2,12 +2,11 @@ package org.mongodb.morphia.query;
 
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBObject;
-import org.mongodb.morphia.AdvancedDatastore;
 import org.mongodb.morphia.geo.CoordinateReferenceSystem;
 import org.mongodb.morphia.geo.Geometry;
 import org.mongodb.morphia.geo.GeometryQueryConverter;
 import org.mongodb.morphia.geo.NamedCoordinateReferenceSystemConverter;
-import org.mongodb.morphia.internal.DatastoreImpl;
+import org.mongodb.morphia.DatastoreImpl;
 
 import static org.mongodb.morphia.query.FilterOperator.NEAR;
 

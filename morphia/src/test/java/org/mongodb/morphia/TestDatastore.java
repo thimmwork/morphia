@@ -32,7 +32,6 @@ import org.mongodb.morphia.annotations.Reference;
 import org.mongodb.morphia.annotations.Transient;
 import org.mongodb.morphia.generics.model.ChildEmbedded;
 import org.mongodb.morphia.generics.model.ChildEntity;
-import org.mongodb.morphia.internal.DatastoreImpl;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateException;

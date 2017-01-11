@@ -12,7 +12,7 @@ import org.bson.types.CodeWScope;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Key;
 import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.internal.DatastoreImpl;
+import org.mongodb.morphia.DatastoreImpl;
 import org.mongodb.morphia.logging.Logger;
 import org.mongodb.morphia.logging.MorphiaLoggerFactory;
 import org.mongodb.morphia.mapping.MappedClass;
@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.mongodb.CursorType.NonTailable;
-import static com.mongodb.CursorType.Tailable;
-import static com.mongodb.CursorType.TailableAwait;
 import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.mongodb.morphia.query.QueryValidator.validateQuery;

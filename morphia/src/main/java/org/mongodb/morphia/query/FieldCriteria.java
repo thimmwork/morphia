@@ -3,7 +3,7 @@ package org.mongodb.morphia.query;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import org.mongodb.morphia.internal.DatastoreImpl;
+import org.mongodb.morphia.DatastoreImpl;
 import org.mongodb.morphia.logging.Logger;
 import org.mongodb.morphia.logging.MorphiaLoggerFactory;
 import org.mongodb.morphia.mapping.MappedClass;

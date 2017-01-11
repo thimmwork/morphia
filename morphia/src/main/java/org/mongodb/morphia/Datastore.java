@@ -3,25 +3,21 @@ package org.mongodb.morphia;
 
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
-import com.mongodb.MapReduceCommand;
 import com.mongodb.MongoClient;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
-import com.mongodb.client.MongoCollection;
 import org.mongodb.morphia.aggregation.AggregationPipeline;
 import org.mongodb.morphia.annotations.Indexed;
 import org.mongodb.morphia.annotations.Indexes;
 import org.mongodb.morphia.annotations.Text;
 import org.mongodb.morphia.annotations.Validation;
 import org.mongodb.morphia.query.CountOptions;
-import org.mongodb.morphia.query.FindOptions;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.QueryFactory;
 import org.mongodb.morphia.query.UpdateOperations;
 import org.mongodb.morphia.query.UpdateResults;
 
 import java.util.List;
-import java.util.Map;
 
 
 /**

@@ -248,7 +248,10 @@ public class TestUpdateOps extends TestBase {
     @Test
     public void testInsertUpdate() throws Exception {
         final UpdateResults res = getDs().update(getDs().find(Circle.class).field("radius").equal(0),
-                                                 getDs().createUpdateOperations(Circle.class).inc("radius", 1D), new UpdateOptions().upsert(true).multi(false));
+                                                 getDs().createUpdateOperations(Circle.class).inc("radius", 1D),
+                                                 new UpdateOptions()
+                                                     .upsert(true)
+                                                     .multi(false));
         assertInserted(res);
     }
 
@@ -425,10 +428,10 @@ public class TestUpdateOps extends TestBase {
         assertThat(getDs().get(cIntArray).values, is((new ContainsIntArray()).values));
 
         getDs().update(getDs().find(ContainsIntArray.class),
-                            getDs().createUpdateOperations(ContainsIntArray.class)
-                                   .push("values", 4),
-        new UpdateOptions()
-            .multi(false));
+                       getDs().createUpdateOperations(ContainsIntArray.class)
+                              .push("values", 4),
+                       new UpdateOptions()
+                           .multi(false));
 
         assertThat(getDs().get(cIntArray).values, is(new Integer[]{1, 2, 3, 4}));
 

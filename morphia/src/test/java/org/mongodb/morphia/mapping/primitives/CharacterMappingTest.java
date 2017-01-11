@@ -137,9 +137,9 @@ public class CharacterMappingTest extends TestBase {
     public static class Characters {
         @Id
         private ObjectId id;
-        private List<Character[]> listWrapperArray = new ArrayList<Character[]>();
-        private List<char[]> listPrimitiveArray = new ArrayList<char[]>();
-        private List<Character> listWrapper = new ArrayList<Character>();
+        private List<Character[]> listWrapperArray = new ArrayList<>();
+        private List<char[]> listPrimitiveArray = new ArrayList<>();
+        private List<Character> listWrapper = new ArrayList<>();
         private char singlePrimitive;
         private Character singleWrapper;
         private char[] primitiveArray;

@@ -17,7 +17,7 @@ import java.util.List;
 @Embedded
 @Entity(noClassnameStored = true)
 public class Point implements Geometry {
-    private final List<Double> coordinates = new ArrayList<Double>();
+    private final List<Double> coordinates = new ArrayList<>();
 
     Point(final double latitude, final double longitude) {
         coordinates.add(longitude);

@@ -292,7 +292,7 @@ public class FieldEndImpl<T extends CriteriaContainerImpl> implements FieldEnd<T
     }
 
     private Map<String, Object> opts(final String s, final Object v) {
-        final Map<String, Object> opts = new HashMap<String, Object>();
+        final Map<String, Object> opts = new HashMap<>();
         opts.put(s, v);
         return opts;
     }

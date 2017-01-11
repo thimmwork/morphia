@@ -15,7 +15,7 @@ public class DefaultTypeValidatorTest {
     @Test
     public void shouldAllowTypesThatAreSuperclasses() {
         // given
-        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        List<ValidationFailure> validationFailures = new ArrayList<>();
         // when
         boolean validationApplied = DefaultTypeValidator.getInstance().apply(Map.class, new HashMap(), validationFailures);
         // then
@@ -26,7 +26,7 @@ public class DefaultTypeValidatorTest {
     @Test
     public void shouldAllowTypesThatMatchTheClassOfTheValue() {
         // given
-        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        List<ValidationFailure> validationFailures = new ArrayList<>();
         // expect
         assertThat(DefaultTypeValidator.getInstance().apply(String.class, "some String", validationFailures), is(true));
     }
@@ -34,7 +34,7 @@ public class DefaultTypeValidatorTest {
     @Test
     public void shouldAllowTypesThatTheRealTypeOfTheValue() {
         // given
-        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        List<ValidationFailure> validationFailures = new ArrayList<>();
         // given
         List<Integer> valueAsList = Arrays.asList(1);
         assertThat(DefaultTypeValidator.getInstance().apply(ArrayList.class, valueAsList, validationFailures), is(true));
@@ -43,7 +43,7 @@ public class DefaultTypeValidatorTest {
     @Test
     public void shouldRejectTypesAndValuesThatDoNotMatch() {
         // given
-        List<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        List<ValidationFailure> validationFailures = new ArrayList<>();
         // when
         boolean validationApplied = DefaultTypeValidator.getInstance().apply(String.class, 1, validationFailures);
         // then

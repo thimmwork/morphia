@@ -142,7 +142,7 @@ public class TestUpdateOps extends TestBase {
 
         assertUpdated(res, 1);
 
-        final List<Integer> newValues = new ArrayList<Integer>();
+        final List<Integer> newValues = new ArrayList<>();
         newValues.add(4);
         newValues.add(5);
         res = getDs().update(getDs().find(ContainsIntArray.class),
@@ -658,7 +658,7 @@ public class TestUpdateOps extends TestBase {
     @Test
     public void testUpdateFirstNoCreate() {
         getDs().delete(getDs().find(EntityLogs.class));
-        List<EntityLogs> logs = new ArrayList<EntityLogs>();
+        List<EntityLogs> logs = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             logs.add(createEntryLogs("name", "logs" + i));
         }
@@ -679,7 +679,7 @@ public class TestUpdateOps extends TestBase {
 
     @Test
     public void testUpdateFirstNoCreateWithWriteConcern() {
-        List<EntityLogs> logs = new ArrayList<EntityLogs>();
+        List<EntityLogs> logs = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             logs.add(createEntryLogs("name", "logs" + i));
         }
@@ -906,7 +906,7 @@ public class TestUpdateOps extends TestBase {
         @Indexed
         private String uuid;
         @Embedded
-        private List<EntityLog> logs = new ArrayList<EntityLog>();
+        private List<EntityLog> logs = new ArrayList<>();
         private DBObject raw;
 
         @PreLoad
@@ -962,7 +962,7 @@ public class TestUpdateOps extends TestBase {
 
     private static final class Parent {
         @Embedded
-        private final Set<Child> children = new HashSet<Child>();
+        private final Set<Child> children = new HashSet<>();
         @Id
         private ObjectId id;
     }

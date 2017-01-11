@@ -19,7 +19,7 @@ public class DuplicatedAttributeNames implements ClassConstraint {
 
     @Override
     public void check(final Mapper mapper, final MappedClass mc, final Set<ConstraintViolation> ve) {
-        final Set<String> foundNames = new HashSet<String>();
+        final Set<String> foundNames = new HashSet<>();
         for (final MappedField mappedField : mc.getPersistenceFields()) {
             for (final String name : mappedField.getLoadNames()) {
                 if (!foundNames.add(name)) {

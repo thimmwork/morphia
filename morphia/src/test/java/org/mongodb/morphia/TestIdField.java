@@ -109,7 +109,7 @@ public class TestIdField extends TestBase {
     @Entity
     private static class MapAsId {
         @Id
-        private final Map<String, String> id = new HashMap<String, String>();
+        private final Map<String, String> id = new HashMap<>();
     }
 
     @Entity(noClassnameStored = true)

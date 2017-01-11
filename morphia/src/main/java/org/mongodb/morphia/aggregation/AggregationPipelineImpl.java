@@ -29,7 +29,7 @@ public class AggregationPipelineImpl implements AggregationPipeline {
 
     private final DBCollection collection;
     private final Class source;
-    private final List<DBObject> stages = new ArrayList<DBObject>();
+    private final List<DBObject> stages = new ArrayList<>();
     private final Mapper mapper;
     private final org.mongodb.morphia.Datastore datastore;
     private boolean firstStage = false;
@@ -80,7 +80,7 @@ public class AggregationPipelineImpl implements AggregationPipeline {
         LOG.debug("stages = " + stages);
 
         Cursor cursor = collection.aggregate(stages, options, readPreference);
-        return new MorphiaIterator<U, U>(datastore, cursor, mapper, target, collectionName, mapper.createEntityCache());
+        return new MorphiaIterator<>(datastore, cursor, mapper, target, collectionName, mapper.createEntityCache());
     }
 
     @Override

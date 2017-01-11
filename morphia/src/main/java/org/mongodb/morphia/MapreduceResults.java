@@ -76,7 +76,7 @@ public class MapreduceResults<T> implements Iterable<T> {
      * @return the Iterator
      */
     public Iterator<T> getInlineResults() {
-        return new MorphiaIterator<T, T>(datastore, output.results().iterator(), mapper, clazz, null, cache);
+        return new MorphiaIterator<>(datastore, output.results().iterator(), mapper, clazz, null, cache);
     }
 
     /**

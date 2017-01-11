@@ -175,7 +175,7 @@ class ReferenceMapper implements CustomMapper {
             }
 
             final Map map = m;
-            new IterHelper<Object, Object>().loopMap(dbVal, new MapIterCallback<Object, Object>() {
+            new IterHelper<>().loopMap(dbVal, new MapIterCallback<Object, Object>() {
                 @Override
                 public void eval(final Object k, final Object val) {
 

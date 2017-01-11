@@ -109,8 +109,8 @@ public class TestSerializedFormat extends TestBase {
         entity.setReferenceType(new ReferenceType(42, "reference"));
         entity.setEmbeddedType(new EmbeddedReferenceType(18, "embedded"));
 
-        entity.setEmbeddedSet(new HashSet<EmbeddedReferenceType>(asList(new EmbeddedReferenceType(42, "Douglas Adams"),
-                                                                        new EmbeddedReferenceType(1, "Love"))));
+        entity.setEmbeddedSet(new HashSet<>(asList(new EmbeddedReferenceType(42, "Douglas Adams"),
+                                                   new EmbeddedReferenceType(1, "Love"))));
         entity.setEmbeddedList(asList(new EmbeddedReferenceType(42, "Douglas Adams"), new EmbeddedReferenceType(1, "Love")));
         entity.setEmbeddedArray(new EmbeddedReferenceType[]{new EmbeddedReferenceType(42, "Douglas Adams"),
             new EmbeddedReferenceType(1, "Love")});
@@ -122,17 +122,17 @@ public class TestSerializedFormat extends TestBase {
         entity.getMapOfList().put("second", asList(new EmbeddedReferenceType(1, "Love"), new EmbeddedReferenceType(42, "Douglas Adams")));
 
 
-        entity.getMapOfSet().put("first", new HashSet<EmbeddedReferenceType>(asList(new EmbeddedReferenceType(42, "Douglas Adams"),
-                                                                                    new EmbeddedReferenceType(1, "Love"))));
-        entity.getMapOfSet().put("second", new HashSet<EmbeddedReferenceType>(asList(new EmbeddedReferenceType(42, "Douglas Adams"),
-                                                                                     new EmbeddedReferenceType(1, "Love"))));
+        entity.getMapOfSet().put("first", new HashSet<>(asList(new EmbeddedReferenceType(42, "Douglas Adams"),
+                                                               new EmbeddedReferenceType(1, "Love"))));
+        entity.getMapOfSet().put("second", new HashSet<>(asList(new EmbeddedReferenceType(42, "Douglas Adams"),
+                                                                new EmbeddedReferenceType(1, "Love"))));
 
         entity.setSelfReference(entity);
         entity.setIdOnly(entity);
 
         entity.setReferenceArray(new ReferenceType[]{new ReferenceType(2, "text 2"), new ReferenceType(3, "text 3")});
         entity.setReferenceList(asList(new ReferenceType(2, "text 2"), new ReferenceType(3, "text 3")));
-        entity.setReferenceSet(new HashSet<ReferenceType>(asList(new ReferenceType(2, "text 2"), new ReferenceType(3, "text 3"))));
+        entity.setReferenceSet(new HashSet<>(asList(new ReferenceType(2, "text 2"), new ReferenceType(3, "text 3"))));
         entity.getReferenceMap().put("first", new ReferenceType(2, "text 2"));
         entity.getReferenceMap().put("second", new ReferenceType(3, "text 3"));
         entity.getReferenceMapOfList().put("first", asList(new ReferenceType(2, "text 2"), new ReferenceType(3, "text 3")));
@@ -140,8 +140,8 @@ public class TestSerializedFormat extends TestBase {
 
         entity.setMixedTypeArray(new ReferenceType[]{new ReferenceType(2, "text 2"), new ClassNameReferenceType(3, "text 3")});
         entity.setMixedTypeList(asList(new ReferenceType(2, "text 2"), new ClassNameReferenceType(3, "text 3")));
-        entity.setMixedTypeSet(new HashSet<ReferenceType>(asList(new ReferenceType(2, "text 2"),
-                                                                 new ClassNameReferenceType(3, "text 3"))));
+        entity.setMixedTypeSet(new HashSet<>(asList(new ReferenceType(2, "text 2"),
+                                                    new ClassNameReferenceType(3, "text 3"))));
         entity.getMixedTypeMap().put("first", new ReferenceType(2, "text 2"));
         entity.getMixedTypeMap().put("second", new ClassNameReferenceType(3, "text 3"));
         entity.getMixedTypeMapOfList().put("first", asList(new ReferenceType(2, "text 2"),
@@ -174,9 +174,9 @@ class ReferenceType {
     private EmbeddedReferenceType[] embeddedArray;
     private Set<EmbeddedReferenceType> embeddedSet;
     private List<EmbeddedReferenceType> embeddedList;
-    private Map<String, EmbeddedReferenceType> map = new TreeMap<String, EmbeddedReferenceType>();
-    private Map<String, List<EmbeddedReferenceType>> mapOfList = new TreeMap<String, List<EmbeddedReferenceType>>();
-    private Map<String, Set<EmbeddedReferenceType>> mapOfSet = new TreeMap<String, Set<EmbeddedReferenceType>>();
+    private Map<String, EmbeddedReferenceType> map = new TreeMap<>();
+    private Map<String, List<EmbeddedReferenceType>> mapOfList = new TreeMap<>();
+    private Map<String, Set<EmbeddedReferenceType>> mapOfSet = new TreeMap<>();
     @Reference
     private ReferenceType selfReference;
     @Reference(idOnly = true)
@@ -185,14 +185,14 @@ class ReferenceType {
     private ReferenceType[] referenceArray;
     private Set<ReferenceType> referenceSet;
     private List<ReferenceType> referenceList;
-    private Map<String, ReferenceType> referenceMap = new TreeMap<String, ReferenceType>();
-    private Map<String, List<ReferenceType>> referenceMapOfList = new TreeMap<String, List<ReferenceType>>();
+    private Map<String, ReferenceType> referenceMap = new TreeMap<>();
+    private Map<String, List<ReferenceType>> referenceMapOfList = new TreeMap<>();
 
     private ReferenceType[] mixedTypeArray;
     private Set<? extends ReferenceType> mixedTypeSet;
     private List<? extends ReferenceType> mixedTypeList;
-    private Map<String, ? super ReferenceType> mixedTypeMap = new TreeMap<String, ReferenceType>();
-    private Map<String, List<? extends ReferenceType>> mixedTypeMapOfList = new TreeMap<String, List<? extends ReferenceType>>();
+    private Map<String, ? super ReferenceType> mixedTypeMap = new TreeMap<>();
+    private Map<String, List<? extends ReferenceType>> mixedTypeMapOfList = new TreeMap<>();
 
     public ReferenceType() {
     }

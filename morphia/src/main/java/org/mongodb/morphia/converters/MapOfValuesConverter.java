@@ -21,7 +21,7 @@ public class MapOfValuesConverter extends TypeConverter {
 
 
         final Map values = getMapper().getOptions().getObjectFactory().createMap(mf);
-        new IterHelper<Object, Object>().loopMap(fromDBObject, new MapIterCallback<Object, Object>() {
+        new IterHelper<>().loopMap(fromDBObject, new MapIterCallback<Object, Object>() {
             @Override
             public void eval(final Object k, final Object val) {
                 final Object objKey = getMapper().getConverters().decode(mf.getMapKeyClass(), k, mf);
@@ -40,7 +40,7 @@ public class MapOfValuesConverter extends TypeConverter {
 
         final Map<?, ?> map = (Map<?, ?>) value;
         if (!map.isEmpty() || getMapper().getOptions().isStoreEmpties()) {
-            final Map<Object, Object> mapForDb = new LinkedHashMap<Object, Object>();
+            final Map<Object, Object> mapForDb = new LinkedHashMap<>();
             for (final Map.Entry<?, ?> entry : map.entrySet()) {
                 final String strKey = getMapper().getConverters().encode(entry.getKey()).toString();
                 mapForDb.put(strKey, getMapper().getConverters().encode(entry.getValue()));

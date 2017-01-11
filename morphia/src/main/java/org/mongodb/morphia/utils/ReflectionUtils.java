@@ -78,7 +78,7 @@ public final class ReflectionUtils {
      * @return an array of all declared and inherited fields
      */
     public static Field[] getDeclaredAndInheritedFields(final Class type, final boolean returnFinalFields) {
-        final List<Field> allFields = new ArrayList<Field>();
+        final List<Field> allFields = new ArrayList<>();
         allFields.addAll(getValidFields(type.getDeclaredFields(), returnFinalFields));
         Class parent = type.getSuperclass();
         while ((parent != null) && (parent != Object.class)) {
@@ -96,7 +96,7 @@ public final class ReflectionUtils {
      * @return the valid fields
      */
     public static List<Field> getValidFields(final Field[] fields, final boolean returnFinalFields) {
-        final List<Field> validFields = new ArrayList<Field>();
+        final List<Field> validFields = new ArrayList<>();
         // we ignore static and final fields
         for (final Field field : fields) {
             if (!Modifier.isStatic(field.getModifiers()) && (returnFinalFields || !Modifier.isFinal(field.getModifiers()))) {
@@ -113,7 +113,7 @@ public final class ReflectionUtils {
      * @return an array of all declared and inherited fields
      */
     public static List<Method> getDeclaredAndInheritedMethods(final Class type) {
-        return getDeclaredAndInheritedMethods(type, new ArrayList<Method>());
+        return getDeclaredAndInheritedMethods(type, new ArrayList<>());
     }
 
     private static List<Method> getDeclaredAndInheritedMethods(final Class type, final List<Method> methods) {
@@ -122,7 +122,7 @@ public final class ReflectionUtils {
         }
 
         final Class parent = type.getSuperclass();
-        final List<Method> list = getDeclaredAndInheritedMethods(parent, methods == null ? new ArrayList<Method>() : methods);
+        final List<Method> list = getDeclaredAndInheritedMethods(parent, methods == null ? new ArrayList<>() : methods);
 
         for (final Method m : type.getDeclaredMethods()) {
             if (!Modifier.isStatic(m.getModifiers())) {
@@ -438,7 +438,7 @@ public final class ReflectionUtils {
      */
     @SuppressWarnings("unchecked")
     public static <T> List<T> getAnnotations(final Class c, final Class<T> annotation) {
-        final List<T> found = new ArrayList<T>();
+        final List<T> found = new ArrayList<>();
         // TODO isn't that actually breaking the contract of @Inherited?
         if (c.isAnnotationPresent(annotation)) {
             found.add((T) c.getAnnotation(annotation));
@@ -532,7 +532,7 @@ public final class ReflectionUtils {
      */
     public static Set<Class<?>> getClasses(final ClassLoader loader, final String packageName, final boolean mapSubPackages) throws
             IOException, ClassNotFoundException {
-        final Set<Class<?>> classes = new HashSet<Class<?>>();
+        final Set<Class<?>> classes = new HashSet<>();
         final String path = packageName.replace('.', '/');
         final Enumeration<URL> resources = loader.getResources(path);
         if (resources != null) {
@@ -594,9 +594,8 @@ public final class ReflectionUtils {
      */
     public static Set<Class<?>> getFromJARFile(final ClassLoader loader, final String jar, final String packageName, final boolean
         mapSubPackages) throws IOException, ClassNotFoundException {
-        final Set<Class<?>> classes = new HashSet<Class<?>>();
-        final JarInputStream jarFile = new JarInputStream(new FileInputStream(jar));
-        try {
+        final Set<Class<?>> classes = new HashSet<>();
+        try (JarInputStream jarFile = new JarInputStream(new FileInputStream(jar))) {
             JarEntry jarEntry;
             do {
                 jarEntry = jarFile.getNextJarEntry();
@@ -611,8 +610,6 @@ public final class ReflectionUtils {
                     }
                 }
             } while (jarEntry != null);
-        } finally {
-            jarFile.close();
         }
         return classes;
     }
@@ -643,7 +640,7 @@ public final class ReflectionUtils {
      */
     public static Set<Class<?>> getFromDirectory(final ClassLoader loader, final File directory, final String packageName,
                                                             final boolean mapSubPackages) throws ClassNotFoundException {
-        final Set<Class<?>> classes = new HashSet<Class<?>>();
+        final Set<Class<?>> classes = new HashSet<>();
         if (directory.exists()) {
             for (final String file : getFileNames(directory, packageName, mapSubPackages)) {
                 if (file.endsWith(".class")) {
@@ -657,7 +654,7 @@ public final class ReflectionUtils {
     }
 
     private static Set<String> getFileNames(final File directory, final String packageName, final boolean mapSubPackages) {
-        Set<String> fileNames = new HashSet<String>();
+        Set<String> fileNames = new HashSet<>();
         for (File file: directory.listFiles()) {
             if (file.isFile()) {
                 fileNames.add(packageName + '.' + file.getName());
@@ -699,7 +696,7 @@ public final class ReflectionUtils {
             return null;
         }
 
-        final List<T> ar = new ArrayList<T>();
+        final List<T> ar = new ArrayList<>();
         for (final T o : it) {
             ar.add(o);
         }
@@ -765,7 +762,7 @@ public final class ReflectionUtils {
      * @deprecated this class is unused in morphia and will be removed in a future release
      */
     public static <T> List<Class<?>> getTypeArguments(final Class<T> baseClass, final Class<? extends T> childClass) {
-        final Map<Type, Type> resolvedTypes = new HashMap<Type, Type>();
+        final Map<Type, Type> resolvedTypes = new HashMap<>();
         Type type = childClass;
         // start walking up the inheritance hierarchy until we hit baseClass
         while (!getClass(type).equals(baseClass)) {
@@ -798,7 +795,7 @@ public final class ReflectionUtils {
         } else {
             actualTypeArguments = ((ParameterizedType) type).getActualTypeArguments();
         }
-        final List<Class<?>> typeArgumentsAsClasses = new ArrayList<Class<?>>();
+        final List<Class<?>> typeArgumentsAsClasses = new ArrayList<>();
         // resolve types by chasing down type variables.
         for (Type baseType : actualTypeArguments) {
             while (resolvedTypes.containsKey(baseType)) {
@@ -818,7 +815,7 @@ public final class ReflectionUtils {
      * @return the Class type
      */
     public static <T> Class<?> getTypeArgument(final Class<? extends T> clazz, final TypeVariable<? extends GenericDeclaration> tv) {
-        final Map<Type, Type> resolvedTypes = new HashMap<Type, Type>();
+        final Map<Type, Type> resolvedTypes = new HashMap<>();
         Type type = clazz;
         // start walking up the inheritance hierarchy until we hit the end
         while (type != null && !Object.class.equals(getClass(type))) {

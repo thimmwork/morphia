@@ -19,7 +19,7 @@ public class DefaultEntityCache implements EntityCache {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private final Map entityMap = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.WEAK);
     private final Map proxyMap = new ReferenceMap(ReferenceMap.WEAK, ReferenceMap.WEAK);
-    private final Map<Key, Boolean> existenceMap = new HashMap<Key, Boolean>();
+    private final Map<Key, Boolean> existenceMap = new HashMap<>();
     private final EntityCacheStatistics stats = new EntityCacheStatistics();
 
     @Override

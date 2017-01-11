@@ -1,4 +1,5 @@
 dependencies {
+    compile('com.google.guava:guava:19.0')
     compile('org.reflections:reflections:0.9.10') {
         'servlet-api:javax.servlet'
         'com.google.code.gson:gson'

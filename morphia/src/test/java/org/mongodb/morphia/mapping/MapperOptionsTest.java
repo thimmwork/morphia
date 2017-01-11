@@ -26,7 +26,7 @@ public class MapperOptionsTest extends TestBase {
     @Test
     public void emptyListStoredWithOptions() throws Exception {
         final HasList hl = new HasList();
-        hl.names = new ArrayList<String>();
+        hl.names = new ArrayList<>();
 
         //Test default behavior
         getMorphia().getMapper().getOptions().setStoreEmpties(false);
@@ -34,7 +34,7 @@ public class MapperOptionsTest extends TestBase {
 
         //Test default storing empty list/array with storeEmpties option
         getMorphia().getMapper().getOptions().setStoreEmpties(true);
-        shouldFindField(hl, new ArrayList<String>());
+        shouldFindField(hl, new ArrayList<>());
 
         //Test opposite from above
         getMorphia().getMapper().getOptions().setStoreEmpties(false);
@@ -57,7 +57,7 @@ public class MapperOptionsTest extends TestBase {
     @Test
     public void emptyMapStoredWithOptions() throws Exception {
         final HasMap hm = new HasMap();
-        hm.properties = new HashMap<String, String>();
+        hm.properties = new HashMap<>();
 
         //Test default behavior
         getMorphia().getMapper().getOptions().setStoreEmpties(false);
@@ -65,7 +65,7 @@ public class MapperOptionsTest extends TestBase {
 
         //Test default storing empty map with storeEmpties option
         getMorphia().getMapper().getOptions().setStoreEmpties(true);
-        shouldFindField(hm, new HashMap<String, String>());
+        shouldFindField(hm, new HashMap<>());
 
 
         //Test opposite from above
@@ -76,7 +76,7 @@ public class MapperOptionsTest extends TestBase {
     @Test
     public void emptyCollectionValuedMapStoredWithOptions() throws Exception {
         final HasCollectionValuedMap hm = new HasCollectionValuedMap();
-        hm.properties = new HashMap<String, Collection<String>>();
+        hm.properties = new HashMap<>();
 
         //Test default behavior
         getMorphia().getMapper().getOptions().setStoreEmpties(false);
@@ -84,7 +84,7 @@ public class MapperOptionsTest extends TestBase {
 
         //Test default storing empty map with storeEmpties option
         getMorphia().getMapper().getOptions().setStoreEmpties(true);
-        shouldFindField(hm, new HashMap<String, Collection<String>>());
+        shouldFindField(hm, new HashMap<>());
 
         //Test opposite from above
         getMorphia().getMapper().getOptions().setStoreEmpties(false);
@@ -94,7 +94,7 @@ public class MapperOptionsTest extends TestBase {
     @Test
     public void emptyComplexObjectValuedMapStoredWithOptions() throws Exception {
         final HasComplexObjectValuedMap hm = new HasComplexObjectValuedMap();
-        hm.properties = new HashMap<String, ComplexObject>();
+        hm.properties = new HashMap<>();
 
         //Test default behavior
         getMorphia().getMapper().getOptions().setStoreEmpties(false);
@@ -102,7 +102,7 @@ public class MapperOptionsTest extends TestBase {
 
         //Test default storing empty map with storeEmpties option
         getMorphia().getMapper().getOptions().setStoreEmpties(true);
-        shouldFindField(hm, new HashMap<String, ComplexObject>());
+        shouldFindField(hm, new HashMap<>());
 
         //Test opposite from above
         getMorphia().getMapper().getOptions().setStoreEmpties(false);

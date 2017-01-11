@@ -30,7 +30,7 @@ public class CompoundIdTest extends TestBase {
     @Test
     public void testFetchKey() {
         getDs().save(new ConfigEntry(new ConfigKey("env", "key", "subenv")));
-        BasicDAO<ConfigEntry, ConfigKey> innerDAO = new BasicDAO<ConfigEntry, ConfigKey>(ConfigEntry.class, getDs());
+        BasicDAO<ConfigEntry, ConfigKey> innerDAO = new BasicDAO<>(ConfigEntry.class, getDs());
         ConfigEntry entry = innerDAO.find().get();
         entry.setValue("something");
         innerDAO.save(entry);

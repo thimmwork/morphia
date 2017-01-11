@@ -53,7 +53,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -89,8 +88,8 @@ public class TestQuery extends TestBase {
     public void genericMultiKeyValueQueries() {
         getMorphia().map(GenericKeyValue.class);
         getDs().ensureIndexes(GenericKeyValue.class);
-        final GenericKeyValue<String> value = new GenericKeyValue<String>();
-        final List<Object> keys = Arrays.<Object>asList("key1", "key2");
+        final GenericKeyValue<String> value = new GenericKeyValue<>();
+        final List<Object> keys = Arrays.asList("key1", "key2");
         value.key = keys;
         getDs().save(value);
 
@@ -115,7 +114,7 @@ public class TestQuery extends TestBase {
         getMorphia().map(KeyValue.class);
         getDs().ensureIndexes(KeyValue.class);
         final KeyValue value = new KeyValue();
-        final List<Object> keys = Arrays.<Object>asList("key1", "key2");
+        final List<Object> keys = Arrays.asList("key1", "key2");
         value.key = keys;
         getDs().save(value);
 
@@ -396,7 +395,7 @@ public class TestQuery extends TestBase {
     public void testDBObjectOrQuery() {
         getDs().save(new PhotoWithKeywords("scott", "hernandez"));
 
-        final List<DBObject> orList = new ArrayList<DBObject>();
+        final List<DBObject> orList = new ArrayList<>();
         orList.add(new BasicDBObject("keywords.keyword", "scott"));
         orList.add(new BasicDBObject("keywords.keyword", "ralph"));
         final BasicDBObject orQuery = new BasicDBObject("$or", orList);
@@ -643,7 +642,7 @@ public class TestQuery extends TestBase {
         final Iterable<Key<FacebookUser>> fbKeys = getDs().save(asList(fbUser1, fbUser2, fbUser3, fbUser4));
         assertEquals(1, fbUser1.getId());
 
-        final List<Key<FacebookUser>> fbUserKeys = new ArrayList<Key<FacebookUser>>();
+        final List<Key<FacebookUser>> fbUserKeys = new ArrayList<>();
         for (final Key<FacebookUser> key : fbKeys) {
             fbUserKeys.add(key);
         }
@@ -674,7 +673,7 @@ public class TestQuery extends TestBase {
         final Iterable<Key<FacebookUser>> fbKeys = getDs().save(asList(fbUser1, fbUser2, fbUser3, fbUser4));
         assertEquals(1, fbUser1.getId());
 
-        final List<Key<FacebookUser>> fbUserKeys = new ArrayList<Key<FacebookUser>>();
+        final List<Key<FacebookUser>> fbUserKeys = new ArrayList<>();
         for (final Key<FacebookUser> key : fbKeys) {
             fbUserKeys.add(key);
         }
@@ -1029,6 +1028,24 @@ public class TestQuery extends TestBase {
     }
 
     @Test
+    public void testQueryUnmappedData() throws Exception {
+        getMorphia().map(Class1.class);
+        getDs().ensureIndexes(true);
+
+        getDs().getDB().getCollection("user").save(
+            new BasicDBObject()
+                .append("@class", Class1.class.getName())
+                .append("value1", "foo")
+                .append("someMap", new BasicDBObject("someKey", "value")));
+
+        Query<Class1> query = getDs().createQuery(Class1.class);
+        query.disableValidation().criteria("someMap.someKey").equal("value");
+        Class1 retrievedValue = query.get();
+        Assert.assertNotNull(retrievedValue);
+        Assert.assertEquals("foo", retrievedValue.value1);
+    }
+
+    @Test
     public void testRangeQuery() {
         getDs().save(asList(new Rectangle(1, 10), new Rectangle(4, 2), new Rectangle(6, 10), new Rectangle(8, 5), new Rectangle(10, 4)));
 
@@ -1090,7 +1107,7 @@ public class TestQuery extends TestBase {
         Pic foundItem = getDs().find(Pic.class)
                                .field("name").equal("pic2")
                                .get(new FindOptions()
-                                    .modifier("$returnKey", true));
+                                        .modifier("$returnKey", true));
         assertNotNull(foundItem);
         assertThat("Name should be populated", foundItem.getName(), is("pic2"));
         assertNull("ID should not be populated", foundItem.getId());
@@ -1158,17 +1175,13 @@ public class TestQuery extends TestBase {
         getMorphia().map(CappedPic.class);
         getDs().ensureCaps();
         final Query<CappedPic> query = getDs().find(CappedPic.class);
-        final List<CappedPic> found = new ArrayList<CappedPic>();
+        final List<CappedPic> found = new ArrayList<>();
         final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 
         assertEquals(0, query.count());
 
-        executorService.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                getDs().save(new CappedPic(System.currentTimeMillis() + ""));
-            }
-        }, 0, 500, TimeUnit.MILLISECONDS);
+        executorService.scheduleAtFixedRate(() -> getDs().save(new CappedPic(System.currentTimeMillis() + "")),
+                                            0, 500, TimeUnit.MILLISECONDS);
 
         final Iterator<CappedPic> tail = query
             .fetch(new FindOptions()
@@ -1177,15 +1190,12 @@ public class TestQuery extends TestBase {
             .await()
             .pollDelay(500, TimeUnit.MILLISECONDS)
             .atMost(10, TimeUnit.SECONDS)
-            .until(new Callable<Boolean>() {
-                @Override
-                public Boolean call() {
+            .until(() -> {
                     if (tail.hasNext()) {
                         found.add(tail.next());
                     }
                     return found.size() >= 10;
-                }
-            });
+                });
         executorService.shutdownNow();
         Assert.assertTrue(query.count() >= 10);
     }
@@ -1240,22 +1250,14 @@ public class TestQuery extends TestBase {
         getDs().find(PhotoWithKeywords.class).where(hasKeyword.getCode()).get();
     }
 
-    @Test
-    public void testQueryUnmappedData() throws Exception {
-        getMorphia().map(Class1.class);
-        getDs().ensureIndexes(true);
+    private int[] copy(final int[] array, final int start, final int count) {
+        return copyOfRange(array, start, start + count);
+    }
 
-        getDs().getDB().getCollection("user").save(
-            new BasicDBObject()
-                .append("@class", Class1.class.getName())
-                .append("value1", "foo")
-                .append("someMap", new BasicDBObject("someKey", "value")));
-
-        Query<Class1> query = getDs().createQuery(Class1.class);
-        query.disableValidation().criteria("someMap.someKey").equal("value");
-        Class1 retrievedValue = query.get();
-        Assert.assertNotNull(retrievedValue);
-        Assert.assertEquals("foo", retrievedValue.value1);
+    private void turnOffProfilingAndDropProfileCollection() {
+        getDb().command(new BasicDBObject("profile", 0));
+        DBCollection profileCollection = getDb().getCollection("system.profile");
+        profileCollection.drop();
     }
 
     @Entity(value = "user", noClassnameStored = true)
@@ -1265,16 +1267,6 @@ public class TestQuery extends TestBase {
 
         private String value1;
 
-    }
-
-    private int[] copy(final int[] array, final int start, final int count) {
-        return copyOfRange(array, start, start + count);
-    }
-
-    private void turnOffProfilingAndDropProfileCollection() {
-        getDb().command(new BasicDBObject("profile", 0));
-        DBCollection profileCollection = getDb().getCollection("system.profile");
-        profileCollection.drop();
     }
 
     @Entity
@@ -1295,13 +1287,13 @@ public class TestQuery extends TestBase {
         @Id
         private ObjectId id;
         @Embedded
-        private List<Keyword> keywords = new ArrayList<Keyword>();
+        private List<Keyword> keywords = new ArrayList<>();
 
         public PhotoWithKeywords() {
         }
 
         public PhotoWithKeywords(final String... words) {
-            keywords = new ArrayList<Keyword>(words.length);
+            keywords = new ArrayList<>(words.length);
             for (final String word : words) {
                 keywords.add(new Keyword(word));
             }
@@ -1657,7 +1649,7 @@ public class TestQuery extends TestBase {
 
     void compareLists(final List<Rectangle> list, final Query<Rectangle> query1, final Query<Rectangle> query2,
                       final Comparator<Rectangle> comparator) {
-        Collections.sort(list, comparator);
+        list.sort(comparator);
         assertEquals(query1.asList(), list);
         assertEquals(query2.asList(), list);
     }

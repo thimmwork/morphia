@@ -1,4 +1,4 @@
-apply plugin: 'org.kordamp.gradle.clirr'
+apply plugin: 'findbugs'
 
 archivesBaseName = 'morphia'
 
@@ -15,12 +15,21 @@ dependencies {
     testCompile "org.skyscreamer:jsonassert:${jsonAssertVersion}"
 
     testCompile "log4j:log4j:1.2.17"
-    testCompile "org.slf4j:slf4j-log4j12:1.7.2"
-    testCompile "org.slf4j:jul-to-slf4j:1.7.2"
+    testCompile "org.slf4j:slf4j-log4j12:${slf4jVersion}"
+    testCompile "org.slf4j:jul-to-slf4j:${slf4jVersion}"
 }
 
-clirr {
-    excludeFilter = new File("$configDir/clirr-exclude.yml")
-    baseline = ['org.mongodb.morphia:morphia:1.2.0'].join(':')
-    failOnErrors = false
+findbugs {
+    excludeFilter = new File("$configDir/findbugs-exclude.xml")
+    toolVersion = '3.0.0'
+    sourceSets = [sourceSets.main]
 }
+
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled = project.buildingWith('xmlReports.enabled')
+        html.enabled = !project.buildingWith('xmlReports.enabled')
+    }
+}
+
+

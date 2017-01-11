@@ -162,7 +162,7 @@ public class TestDatastore extends TestBase {
     @Test
     public void testGet() throws Exception {
         getMorphia().map(FacebookUser.class);
-        List<FacebookUser> fbUsers = new ArrayList<FacebookUser>();
+        List<FacebookUser> fbUsers = new ArrayList<>();
         fbUsers.add(new FacebookUser(1, "user 1"));
         fbUsers.add(new FacebookUser(2, "user 2"));
         fbUsers.add(new FacebookUser(3, "user 3"));
@@ -587,7 +587,7 @@ public class TestDatastore extends TestBase {
         private String username;
         private int loginCount;
         @Reference
-        private List<FacebookUser> friends = new ArrayList<FacebookUser>();
+        private List<FacebookUser> friends = new ArrayList<>();
 
         public FacebookUser(final long id, final String name) {
             this();

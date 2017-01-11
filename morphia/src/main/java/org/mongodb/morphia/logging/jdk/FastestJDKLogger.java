@@ -12,85 +12,105 @@ public class FastestJDKLogger implements org.mongodb.morphia.logging.Logger {
         logger = Logger.getLogger(className);
     }
 
+    @Override
     public void debug(final String msg) {
         log(Level.FINE, msg);
     }
 
+    @Override
     public void debug(final String format, final Object... arg) {
         log(Level.FINE, format, arg);
     }
 
+    @Override
     public void debug(final String msg, final Throwable t) {
         log(Level.FINE, msg, t);
 
     }
 
+    @Override
     public void error(final String msg) {
         log(Level.SEVERE, msg);
 
     }
 
+    @Override
     public void error(final String format, final Object... arg) {
         log(Level.SEVERE, format, arg);
 
     }
 
+    @Override
     public void error(final String msg, final Throwable t) {
         log(Level.SEVERE, msg, t);
     }
 
+    @Override
     public void info(final String msg) {
         log(Level.INFO, msg);
     }
 
+    @Override
     public void info(final String format, final Object... arg) {
         log(Level.INFO, format, arg);
     }
 
+    @Override
     public void info(final String msg, final Throwable t) {
         log(Level.INFO, msg, t);
     }
 
+    @Override
     public boolean isDebugEnabled() {
         return logger.isLoggable(Level.FINE);
     }
 
+    @Override
     public boolean isErrorEnabled() {
         return logger.isLoggable(Level.SEVERE);
     }
 
+    @Override
     public boolean isInfoEnabled() {
         return logger.isLoggable(Level.INFO);
     }
 
+    @Override
     public boolean isTraceEnabled() {
         return logger.isLoggable(Level.FINER);
     }
 
+    @Override
     public boolean isWarningEnabled() {
         return logger.isLoggable(Level.WARNING);
     }
 
+    @Override
     public void trace(final String msg) {
         log(Level.FINER, msg);
     }
 
+    @Override
     public void trace(final String format, final Object... arg) {
         log(Level.FINER, format, arg);
     }
 
+    @Override
     public void trace(final String msg, final Throwable t) {
         log(Level.FINER, msg, t);
     }
 
+    @Override
     public void warning(final String msg) {
         log(Level.WARNING, msg);
     }
 
+    @Override
     public void warning(final String format, final Object... arg) {
         log(Level.WARNING, format, arg);
     }
 
+    @Override
     public void warning(final String msg, final Throwable t) {
         log(Level.WARNING, msg, t);
     }

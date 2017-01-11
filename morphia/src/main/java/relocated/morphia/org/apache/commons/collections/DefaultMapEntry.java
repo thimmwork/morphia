@@ -56,6 +56,7 @@ public class DefaultMapEntry implements Map.Entry {
      *
      * @return the key
      */
+    @Override
     public Object getKey() {
         return key;
     }
@@ -65,6 +66,7 @@ public class DefaultMapEntry implements Map.Entry {
      *
      * @return the value
      */
+    @Override
     public Object getValue() {
         return value;
     }
@@ -79,6 +81,7 @@ public class DefaultMapEntry implements Map.Entry {
      * @param value the new value
      * @return the old value of the value
      */
+    @Override
     public Object setValue(final Object value) {
         final Object answer = this.value;
         this.value = value;

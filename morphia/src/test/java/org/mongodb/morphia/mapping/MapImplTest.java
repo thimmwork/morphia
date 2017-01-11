@@ -110,13 +110,13 @@ public class MapImplTest extends TestBase {
 
     private static class ContainsMapOfEmbeddedInterfaces {
         @Embedded
-        private final Map<String, Serializable> values = new HashMap<String, Serializable>();
+        private final Map<String, Serializable> values = new HashMap<>();
         @Id
         private ObjectId id;
     }
 
     private static class ContainsMapOfEmbeddedGoos {
-        private final Map<String, Goo> values = new HashMap<String, Goo>();
+        private final Map<String, Goo> values = new HashMap<>();
         @Id
         private ObjectId id;
     }

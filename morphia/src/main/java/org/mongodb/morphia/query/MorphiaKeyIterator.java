@@ -34,6 +34,6 @@ public class MorphiaKeyIterator<T> extends MorphiaIterator<T, Key<T>> {
             Class type = getMapper().getMappedClass(getClazz()).getMappedIdField().getType();
             id = getMapper().fromDBObject(getDatastore(), type, (DBObject) id, getMapper().createEntityCache());
         }
-        return new Key<T>(getClazz(), getCollection(), id);
+        return new Key<>(getClazz(), getCollection(), id);
     }
 }

@@ -505,9 +505,8 @@ public class ReferenceMap extends AbstractMap {
             @SuppressWarnings("unchecked")
             public Object[] toArray(final Object[] arr) {
                 final List list = new ArrayList();
-                final Iterator iterator = iterator();
-                while (iterator.hasNext()) {
-                    final Entry e = (Entry) iterator.next();
+                for (final Object o : this) {
+                    final Entry e = (Entry) o;
                     list.add(new DefaultMapEntry(e.getKey(), e.getValue()));
                 }
                 return list.toArray(arr);
@@ -725,6 +724,7 @@ public class ReferenceMap extends AbstractMap {
             this.next = next;
         }
 
+        @Override
         public Object getKey() {
             return (keyType > HARD) ? ((Reference) key).get() : key;
         }        public int hashCode() {
@@ -732,10 +732,12 @@ public class ReferenceMap extends AbstractMap {
             return hash ^ ((v == null) ? 0 : v.hashCode());
         }
 
+        @Override
         public Object getValue() {
             return (valueType > HARD) ? ((Reference) value).get() : value;
         }
 
+        @Override
         public Object setValue(final Object object) {
             final Object old = getValue();
             if (valueType > HARD) {
@@ -815,6 +817,7 @@ public class ReferenceMap extends AbstractMap {
         }
 
 
+        @Override
         public boolean hasNext() {
             checkMod();
             while (nextNull()) {
@@ -840,10 +843,12 @@ public class ReferenceMap extends AbstractMap {
             return true;
         }
 
+        @Override
         public Object next() {
             return nextEntry();
         }
 
+        @Override
         public void remove() {
             checkMod();
             if (previous == null) {

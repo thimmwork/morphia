@@ -29,7 +29,7 @@ public class MapObjectReference extends AbstractReference implements ProxiedEnti
 
         super(datastore, referenceObjClass, ignoreMissing);
         object = mapToProxy;
-        keyMap = new LinkedHashMap<Object, Key<?>>();
+        keyMap = new LinkedHashMap<>();
     }
 
     //CHECKSTYLE:OFF

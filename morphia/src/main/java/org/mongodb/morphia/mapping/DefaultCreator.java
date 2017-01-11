@@ -25,7 +25,7 @@ public class DefaultCreator implements ObjectFactory {
 
     private static final Logger LOG = MorphiaLoggerFactory.get(DefaultCreator.class);
 
-    private Map<String, Class> classNameCache = new ConcurrentHashMap<String, Class>();
+    private Map<String, Class> classNameCache = new ConcurrentHashMap<>();
 
     private MapperOptions options = null;
 
@@ -139,7 +139,7 @@ public class DefaultCreator implements ObjectFactory {
      * @return the cache of classnames
      */
     public Map<String, Class> getClassNameCache() {
-        HashMap<String, Class> copy = new HashMap<String, Class>();
+        HashMap<String, Class> copy = new HashMap<>();
         copy.putAll(classNameCache);
         return copy;
     }

@@ -54,11 +54,11 @@ public class ByteMappingTest extends TestBase {
     }
 
     private static class Bytes {
-        private final List<Byte[]> listWrapperArray = new ArrayList<Byte[]>();
-        private final List<byte[]> listPrimitiveArray = new ArrayList<byte[]>();
+        private final List<Byte[]> listWrapperArray = new ArrayList<>();
+        private final List<byte[]> listPrimitiveArray = new ArrayList<>();
         @Id
         private ObjectId id;
-        private List<Byte> listWrapper = new ArrayList<Byte>();
+        private List<Byte> listWrapper = new ArrayList<>();
         private byte singlePrimitive;
         private Byte singleWrapper;
         private byte[] primitiveArray;

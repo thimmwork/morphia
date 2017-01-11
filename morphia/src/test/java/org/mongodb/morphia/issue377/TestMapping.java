@@ -45,7 +45,7 @@ public class TestMapping extends TestBase {
 
     @Test
     public void testMapping() {
-        final BasicDAO<User, ObjectId> messageDAO = new BasicDAO<User, ObjectId>(User.class, getDs());
+        final BasicDAO<User, ObjectId> messageDAO = new BasicDAO<>(User.class, getDs());
         Assert.assertNotNull(messageDAO);
 
         Mapper mapper = new Mapper();
@@ -96,7 +96,7 @@ public class TestMapping extends TestBase {
 
         ListEntity user = new ListEntity();
         user.id = 1;
-        List<Object> list = new ArrayList<Object>();
+        List<Object> list = new ArrayList<>();
         list.add("value");
         user.list = list;
 

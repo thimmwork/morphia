@@ -90,11 +90,11 @@ public class Mapper {
     /**
      * Set of classes that registered by this mapper
      */
-    private final Map<String, MappedClass> mappedClasses = new ConcurrentHashMap<String, MappedClass>();
-    private final ConcurrentHashMap<String, Set<MappedClass>> mappedClassesByCollection = new ConcurrentHashMap<String, Set<MappedClass>>();
+    private final Map<String, MappedClass> mappedClasses = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Set<MappedClass>> mappedClassesByCollection = new ConcurrentHashMap<>();
 
     //EntityInterceptors; these are called after EntityListeners and lifecycle methods on an Entity, for all Entities
-    private final List<EntityInterceptor> interceptors = new LinkedList<EntityInterceptor>();
+    private final List<EntityInterceptor> interceptors = new LinkedList<>();
 
     //A general cache of instances of classes; used by MappedClass for EntityListener(s)
     private final Map<Class, Object> instanceCache = new ConcurrentHashMap();
@@ -203,7 +203,7 @@ public class Mapper {
      * @since 1.3
      */
     public List<MappedClass> getSubTypes(final MappedClass mc) {
-        List<MappedClass> subtypes = new ArrayList<MappedClass>();
+        List<MappedClass> subtypes = new ArrayList<>();
         for (MappedClass mappedClass : getMappedClasses()) {
             if (mappedClass.isSubType(mc)) {
                 subtypes.add(mappedClass);
@@ -394,7 +394,7 @@ public class Mapper {
 
         final Object id = getId(unwrapped);
         final Class<T> aClass = (Class<T>) unwrapped.getClass();
-        return id == null ? null : new Key<T>(aClass, getCollectionName(aClass), id);
+        return id == null ? null : new Key<>(aClass, getCollectionName(aClass), id);
     }
 
     /**
@@ -419,7 +419,7 @@ public class Mapper {
 
         final Object id = getId(unwrapped);
         final Class<T> aClass = (Class<T>) unwrapped.getClass();
-        return id == null ? null : new Key<T>(aClass, collection, id);
+        return id == null ? null : new Key<>(aClass, collection, id);
     }
 
     /**
@@ -432,9 +432,9 @@ public class Mapper {
      */
     public <T> List<Key<T>> getKeysByManualRefs(final Class<T> clazz, final List<Object> refs) {
         final String collection = getCollectionName(clazz);
-        final List<Key<T>> keys = new ArrayList<Key<T>>(refs.size());
+        final List<Key<T>> keys = new ArrayList<>(refs.size());
         for (final Object ref : refs) {
-            keys.add(this.<T>manualRefToKey(collection, ref));
+            keys.add(this.manualRefToKey(collection, ref));
         }
 
         return keys;
@@ -448,7 +448,7 @@ public class Mapper {
      * @return the list of Keys
      */
     public <T> List<Key<T>> getKeysByRefs(final List<DBRef> refs) {
-        final List<Key<T>> keys = new ArrayList<Key<T>>(refs.size());
+        final List<Key<T>> keys = new ArrayList<>(refs.size());
         for (final DBRef ref : refs) {
             final Key<T> testKey = refToKey(ref);
             keys.add(testKey);
@@ -492,7 +492,7 @@ public class Mapper {
      * @return collection of MappedClasses
      */
     public Collection<MappedClass> getMappedClasses() {
-        return new ArrayList<MappedClass>(mappedClasses.values());
+        return new ArrayList<>(mappedClasses.values());
     }
 
     /**
@@ -554,7 +554,7 @@ public class Mapper {
      * @return the Key
      */
     public <T> Key<T> manualRefToKey(final Class<T> type, final Object id) {
-        return id == null ? null : new Key<T>(type, getCollectionName(type), id);
+        return id == null ? null : new Key<>(type, getCollectionName(type), id);
     }
 
     /**
@@ -565,8 +565,8 @@ public class Mapper {
      * @return the Key
      */
     public <T> Key<T> refToKey(final DBRef ref) {
-        return ref == null ? null : new Key<T>((Class<? extends T>) getClassFromCollection(ref.getCollectionName()),
-                                               ref.getCollectionName(), ref.getId());
+        return ref == null ? null : new Key<>((Class<? extends T>) getClassFromCollection(ref.getCollectionName()),
+                                              ref.getCollectionName(), ref.getId());
     }
 
     /**
@@ -780,7 +780,7 @@ public class Mapper {
 
         Set<MappedClass> mcs = mappedClassesByCollection.get(mc.getCollectionName());
         if (mcs == null) {
-            mcs = new CopyOnWriteArraySet<MappedClass>();
+            mcs = new CopyOnWriteArraySet<>();
             final Set<MappedClass> temp = mappedClassesByCollection.putIfAbsent(mc.getCollectionName(), mcs);
             if (temp != null) {
                 mcs = temp;
@@ -797,7 +797,7 @@ public class Mapper {
     }
 
     private Object getDBRefs(final MappedField field, final Iterable value) {
-        final List<Object> refs = new ArrayList<Object>();
+        final List<Object> refs = new ArrayList<>();
         Reference annotation = field.getAnnotation(Reference.class);
         boolean idOnly = annotation != null && annotation.idOnly();
         for (final Object o : value) {
@@ -878,7 +878,7 @@ public class Mapper {
     }
 
     <T> Key<T> manualRefToKey(final String collection, final Object id) {
-        return id == null ? null : new Key<T>((Class<? extends T>) getClassFromCollection(collection), collection, id);
+        return id == null ? null : new Key<>((Class<? extends T>) getClassFromCollection(collection), collection, id);
     }
 
     Object keyToId(final Key key) {
@@ -995,7 +995,7 @@ public class Mapper {
     }
 
     <T> Key<T> createKey(final Class<T> clazz, final Serializable id) {
-        return new Key<T>(clazz, getCollectionName(clazz), id);
+        return new Key<>(clazz, getCollectionName(clazz), id);
     }
 
     <T> Key<T> createKey(final Class<T> clazz, final Object id) {
@@ -1005,7 +1005,7 @@ public class Mapper {
 
         //TODO: cache the encoders, maybe use the pool version of the buffer that the driver does.
         final BSONEncoder enc = new BasicBSONEncoder();
-        return new Key<T>(clazz, getCollectionName(clazz), enc.encode(toDBObject(id)));
+        return new Key<>(clazz, getCollectionName(clazz), enc.encode(toDBObject(id)));
     }
 
 }

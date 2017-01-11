@@ -93,7 +93,7 @@ class Employee {
     @Reference
     private Employee manager;
     @Reference
-    private List<Employee> directReports = new ArrayList<Employee>();
+    private List<Employee> directReports = new ArrayList<>();
     @Property("wage")
     private Double salary;
 

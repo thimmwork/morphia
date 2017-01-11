@@ -24,9 +24,9 @@ public abstract class Converters {
     private static final Logger LOG = MorphiaLoggerFactory.get(Converters.class);
 
     private final Mapper mapper;
-    private final List<TypeConverter> untypedTypeEncoders = new LinkedList<TypeConverter>();
-    private final Map<Class, List<TypeConverter>> tcMap = new ConcurrentHashMap<Class, List<TypeConverter>>();
-    private final List<Class<? extends TypeConverter>> registeredConverterClasses = new ArrayList<Class<? extends TypeConverter>>();
+    private final List<TypeConverter> untypedTypeEncoders = new LinkedList<>();
+    private final Map<Class, List<TypeConverter>> tcMap = new ConcurrentHashMap<>();
+    private final List<Class<? extends TypeConverter>> registeredConverterClasses = new ArrayList<>();
 
     /**
      * Creates a bundle with a particular Mapper.
@@ -286,7 +286,7 @@ public abstract class Converters {
             tcMap.get(type).add(0, tc);
             LOG.warning("Added duplicate converter for " + type + " ; " + tcMap.get(type));
         } else {
-            final List<TypeConverter> values = new ArrayList<TypeConverter>();
+            final List<TypeConverter> values = new ArrayList<>();
             values.add(tc);
             tcMap.put(type, values);
         }

@@ -55,10 +55,10 @@ public class TestReferenceCollection extends ProxyTestBase {
 
     public static class Origin extends TestEntity {
         @Reference
-        private final List<Endpoint> list = new ArrayList<Endpoint>();
+        private final List<Endpoint> list = new ArrayList<>();
 
         @Reference(lazy = true)
-        private final List<Endpoint> lazyList = new ArrayList<Endpoint>();
+        private final List<Endpoint> lazyList = new ArrayList<>();
 
     }
 

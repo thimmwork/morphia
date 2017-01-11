@@ -24,13 +24,13 @@ public class ContainsEmbeddedWithId implements ClassConstraint {
 
     @Override
     public void check(final Mapper mapper, final MappedClass mc, final Set<ConstraintViolation> ve) {
-        final Set<Class<?>> classesToInspect = new HashSet<Class<?>>();
+        final Set<Class<?>> classesToInspect = new HashSet<>();
         for (final Field field : ReflectionUtils.getDeclaredAndInheritedFields(mc.getClazz(), true)) {
             if (isFieldToInspect(field) && !field.isAnnotationPresent(Id.class)) {
                 classesToInspect.add(field.getType());
             }
         }
-        checkRecursivelyHasNoIdAnnotationPresent(classesToInspect, new HashSet<Class<?>>(), mc, ve);
+        checkRecursivelyHasNoIdAnnotationPresent(classesToInspect, new HashSet<>(), mc, ve);
     }
 
     private void checkRecursivelyHasNoIdAnnotationPresent(final Set<Class<?>> classesToInspect,
@@ -47,7 +47,7 @@ public class ContainsEmbeddedWithId implements ClassConstraint {
                                                "You cannot use @Id on any field of an Embedded/Property object"));
             }
             alreadyInspectedClasses.add(clazz);
-            final Set<Class<?>> extraClassesToInspect = new HashSet<Class<?>>();
+            final Set<Class<?>> extraClassesToInspect = new HashSet<>();
             for (final Field field : ReflectionUtils.getDeclaredAndInheritedFields(clazz, true)) {
                 if (isFieldToInspect(field)) {
                     extraClassesToInspect.add(field.getType());

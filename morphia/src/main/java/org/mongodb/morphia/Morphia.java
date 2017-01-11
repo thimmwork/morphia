@@ -44,7 +44,7 @@ public class Morphia {
      * Creates a Morphia instance with a default Mapper and an empty class set.
      */
     public Morphia() {
-        this(new Mapper(), Collections.<Class>emptySet());
+        this(new Mapper(), Collections.emptySet());
     }
 
     /**
@@ -66,7 +66,7 @@ public class Morphia {
      * @param mapper the Mapper to use
      */
     public Morphia(final Mapper mapper) {
-        this(mapper, Collections.<Class>emptySet());
+        this(mapper, Collections.emptySet());
     }
 
     /**
@@ -222,9 +222,7 @@ public class Morphia {
                 }
             }
             return this;
-        } catch (IOException e) {
-            throw new MappingException("Could not get map classes from package " + packageName, e);
-        } catch (ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             throw new MappingException("Could not get map classes from package " + packageName, e);
         }
     }

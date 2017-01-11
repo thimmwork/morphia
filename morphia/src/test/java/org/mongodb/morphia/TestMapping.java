@@ -302,7 +302,7 @@ public class TestMapping extends TestBase {
     @Ignore("need to add this feature")
     @SuppressWarnings("unchecked")
     public void testGenericKeyedMap() throws Exception {
-        final ContainsXKeyMap<Integer> map = new ContainsXKeyMap<Integer>();
+        final ContainsXKeyMap<Integer> map = new ContainsXKeyMap<>();
         map.values.put(1, "I'm 1");
         map.values.put(2, "I'm 2");
 
@@ -852,7 +852,7 @@ public class TestMapping extends TestBase {
     }
 
     private static final class ContainsCollection {
-        private final Collection<String> coll = new ArrayList<String>();
+        private final Collection<String> coll = new ArrayList<>();
         @Id
         private ObjectId id;
 
@@ -864,8 +864,8 @@ public class TestMapping extends TestBase {
 
     private static class ContainsPrimitiveMap {
         @Embedded
-        private final Map<String, Long> embeddedValues = new HashMap<String, Long>();
-        private final Map<String, Long> values = new HashMap<String, Long>();
+        private final Map<String, Long> embeddedValues = new HashMap<>();
+        private final Map<String, Long> values = new HashMap<>();
         @Id
         private ObjectId id;
     }
@@ -880,7 +880,7 @@ public class TestMapping extends TestBase {
 
     private static class ContainsMapWithEmbeddedInterface {
         @Embedded
-        private final Map<String, Foo> embeddedValues = new HashMap<String, Foo>();
+        private final Map<String, Foo> embeddedValues = new HashMap<>();
         @Id
         private ObjectId id;
     }
@@ -896,20 +896,20 @@ public class TestMapping extends TestBase {
     private static class ContainsIntegerList {
         @Id
         private ObjectId id;
-        private List<Integer> intList = new ArrayList<Integer>();
+        private List<Integer> intList = new ArrayList<>();
     }
 
     private static class ContainsIntegerListNewAndOld {
         @Id
         private ObjectId id;
-        private List<Integer> intList = new ArrayList<Integer>();
-        private List<Integer> integers = new ArrayList<Integer>();
+        private List<Integer> intList = new ArrayList<>();
+        private List<Integer> integers = new ArrayList<>();
     }
 
     @Entity(value = "cil", noClassnameStored = true)
     private static class ContainsIntegerListNew {
         @AlsoLoad("intList")
-        private final List<Integer> integers = new ArrayList<Integer>();
+        private final List<Integer> integers = new ArrayList<>();
         @Id
         private ObjectId id;
     }
@@ -928,34 +928,34 @@ public class TestMapping extends TestBase {
     }
 
     private static class ContainsEnum1KeyMap {
-        private final Map<Enum1, String> values = new HashMap<Enum1, String>();
+        private final Map<Enum1, String> values = new HashMap<>();
         @Embedded
-        private final Map<Enum1, String> embeddedValues = new HashMap<Enum1, String>();
+        private final Map<Enum1, String> embeddedValues = new HashMap<>();
         @Id
         private ObjectId id;
     }
 
     private static class ContainsIntKeyMap {
-        private final Map<Integer, String> values = new HashMap<Integer, String>();
+        private final Map<Integer, String> values = new HashMap<>();
         @Id
         private ObjectId id;
     }
 
     private static class ContainsIntKeySetStringMap {
         @Embedded
-        private final Map<Integer, Set<String>> values = new HashMap<Integer, Set<String>>();
+        private final Map<Integer, Set<String>> values = new HashMap<>();
         @Id
         private ObjectId id;
     }
 
     private static class ContainsObjectIdKeyMap {
-        private final Map<ObjectId, String> values = new HashMap<ObjectId, String>();
+        private final Map<ObjectId, String> values = new HashMap<>();
         @Id
         private ObjectId id;
     }
 
     private static class ContainsXKeyMap<T> {
-        private final Map<T, String> values = new HashMap<T, String>();
+        private final Map<T, String> values = new HashMap<>();
         @Id
         private ObjectId id;
     }

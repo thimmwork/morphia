@@ -34,7 +34,7 @@ public class CollectionObjectReference<T> extends AbstractReference implements P
         super(datastore, referenceObjClass, ignoreMissing);
 
         object = type;
-        listOfKeys = new ArrayList<Key<?>>();
+        listOfKeys = new ArrayList<>();
     }
 
     @Override
@@ -79,7 +79,7 @@ public class CollectionObjectReference<T> extends AbstractReference implements P
         // (List) __getKeysAsList());
 
         // so we do it the lousy way: FIXME
-        final List<T> retrievedEntities = new ArrayList<T>(listOfKeys.size());
+        final List<T> retrievedEntities = new ArrayList<>(listOfKeys.size());
         for (final Key<?> k : listOfKeys) {
             T entity = (T) getDatastore().getByKey(referenceObjClass, k);
             if (entity != null) {

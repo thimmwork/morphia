@@ -24,7 +24,7 @@ public class GeometryCollection {
 
     @SuppressWarnings("UnusedDeclaration") // needed by morphia
     private GeometryCollection() {
-        geometries = new ArrayList<Geometry>();
+        geometries = new ArrayList<>();
     }
 
     GeometryCollection(final List<Geometry> geometries) {

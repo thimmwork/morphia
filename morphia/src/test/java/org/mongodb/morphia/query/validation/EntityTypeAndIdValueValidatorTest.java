@@ -17,7 +17,7 @@ public class EntityTypeAndIdValueValidatorTest {
     @Test
     public void shouldAllowTypeThatIsAMappedEntityAndAValueWithSameClassAsIdOfMappedEntity() {
         // given
-        ArrayList<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        ArrayList<ValidationFailure> validationFailures = new ArrayList<>();
         // when
         MappedClass mappedClass = new MappedClass(SimpleEntity.class, new Mapper());
         MappedField mappedField = mappedClass.getMappedField("_id");
@@ -32,7 +32,7 @@ public class EntityTypeAndIdValueValidatorTest {
     @Test
     public void shouldNotValidateIfEntityHasNoIdField() {
         // given
-        ArrayList<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        ArrayList<ValidationFailure> validationFailures = new ArrayList<>();
         // when
         MappedClass mappedClass = new MappedClass(EntityWithNoId.class, new Mapper());
         MappedField mappedField = mappedClass.getMappedField("_id");
@@ -46,7 +46,7 @@ public class EntityTypeAndIdValueValidatorTest {
     @Test
     public void shouldRejectValueWithATypeThatDoesNotMatchTheEntityIdFieldType() {
         // given
-        ArrayList<ValidationFailure> validationFailures = new ArrayList<ValidationFailure>();
+        ArrayList<ValidationFailure> validationFailures = new ArrayList<>();
         // when
         MappedClass mappedClass = new MappedClass(SimpleEntity.class, new Mapper());
         MappedField mappedField = mappedClass.getMappedField("_id");

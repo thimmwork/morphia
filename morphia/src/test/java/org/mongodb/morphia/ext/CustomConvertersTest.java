@@ -109,7 +109,7 @@ public class CustomConvertersTest extends TestBase {
         // then check CharEntity can be decoded from the database
         final CharEntity ce = getDs().find(CharEntity.class).get();
         assertThat(ce.c, is(notNullValue()));
-        assertThat(ce.c.charValue(), is('a'));
+        assertThat(ce.c, is('a'));
     }
 
     /**
@@ -160,7 +160,7 @@ public class CustomConvertersTest extends TestBase {
         @Override
         public Object encode(final Object value, final MappedField optionalExtraInfo) {
             final Character c = (Character) value;
-            return (int) c.charValue();
+            return (int) c;
         }
     }
 
@@ -354,7 +354,7 @@ public class CustomConvertersTest extends TestBase {
         public Object decode(final Class<?> targetClass, final Object fromDBObject, final MappedField optionalExtraInfo) {
             if (fromDBObject != null) {
                 Map<String, Object> map = (Map<String, Object>) fromDBObject;
-                List<Object> list = new ArrayList<Object>(map.size());
+                List<Object> list = new ArrayList<>(map.size());
                 for (Entry<String, Object> entry : map.entrySet()) {
                     list.add(Integer.parseInt(entry.getKey()), entry.getValue());
                 }
@@ -367,7 +367,7 @@ public class CustomConvertersTest extends TestBase {
         @Override
         public Object encode(final Object value, final MappedField optionalExtraInfo) {
             if (value != null) {
-                Map<String, Object> map = new LinkedHashMap<String, Object>();
+                Map<String, Object> map = new LinkedHashMap<>();
                 List<Object> list = (List<Object>) value;
                 for (int i = 0; i < list.size(); i++) {
                     map.put(i + "", list.get(i));

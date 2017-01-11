@@ -52,7 +52,7 @@ public class CalendarConverter extends TypeConverter implements SimpleValueConve
         //   . timeZone.getOffset(millis) - timeZone.getOffset(newMillis)  may not be 0 (if we're close to DST limits)
         //   . and it's like that inside GregorianCalendar => more natural
         final Date utcDate = new Date(millis);
-        final List<Object> values = new ArrayList<Object>();
+        final List<Object> values = new ArrayList<>();
         values.add(utcDate);
         values.add(calendar.getTimeZone().getID());
         return values;

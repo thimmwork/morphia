@@ -50,11 +50,11 @@ public class CollectionOfValuesTest extends TestBase {
     @SuppressWarnings("unchecked")
     public void testCreateEntityWithBasicDBList() throws Exception {
         BasicDAO<TestEntity, ObjectId> dao;
-        dao = new BasicDAO<TestEntity, ObjectId>(TestEntity.class, getDs());
+        dao = new BasicDAO<>(TestEntity.class, getDs());
 
         TestEntity entity = new TestEntity();
 
-        List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> data = new ArrayList<>();
         data.add(new BasicDBObject("type", "text")
                      .append("data", new BasicDBObject("text", "sometext")));
 
@@ -71,10 +71,10 @@ public class CollectionOfValuesTest extends TestBase {
         getDs().delete(getDs().find(ContainsListOfList.class));
         final ContainsListOfList entity = new ContainsListOfList();
 
-        entity.strings = new ArrayList<List<String>>();
+        entity.strings = new ArrayList<>();
         entity.strings.add(Arrays.asList("element1", "element2"));
         entity.strings.add(Collections.singletonList("element3"));
-        entity.integers = new ArrayList<List<Integer>>();
+        entity.integers = new ArrayList<>();
         entity.integers.add(Arrays.asList(1, 2));
         entity.integers.add(Collections.singletonList(3));
         getDs().save(entity);

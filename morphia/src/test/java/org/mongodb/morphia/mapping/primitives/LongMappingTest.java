@@ -44,9 +44,9 @@ public class LongMappingTest extends TestBase {
     }
 
     private static class Longs {
-        private final List<Long[]> listWrapperArray = new ArrayList<Long[]>();
-        private final List<long[]> listPrimitiveArray = new ArrayList<long[]>();
-        private final List<Long> listWrapper = new ArrayList<Long>();
+        private final List<Long[]> listWrapperArray = new ArrayList<>();
+        private final List<long[]> listPrimitiveArray = new ArrayList<>();
+        private final List<Long> listWrapper = new ArrayList<>();
         @Id
         private ObjectId id;
         private long singlePrimitive;

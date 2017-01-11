@@ -36,7 +36,7 @@ public class TravelAgency extends TestEntity {
     private List<Hotel> hotels;
 
     public TravelAgency() {
-        hotels = new ArrayList<Hotel>();
+        hotels = new ArrayList<>();
     }
 
     public List<Hotel> getHotels() {

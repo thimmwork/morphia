@@ -23,7 +23,7 @@ import static java.util.Collections.singletonList;
 public class UpdateOpsImpl<T> implements UpdateOperations<T> {
     private final Mapper mapper;
     private final Class<T> clazz;
-    private Map<String, Map<String, Object>> ops = new HashMap<String, Map<String, Object>>();
+    private Map<String, Map<String, Object>> ops = new HashMap<>();
     private boolean validateNames = true;
     private boolean isolated;
 
@@ -265,7 +265,7 @@ public class UpdateOpsImpl<T> implements UpdateOperations<T> {
         final String opString = op.val();
 
         if (!ops.containsKey(opString)) {
-            ops.put(opString, new LinkedHashMap<String, Object>());
+            ops.put(opString, new LinkedHashMap<>());
         }
         ops.get(opString).put(fieldName, val);
     }
@@ -276,7 +276,7 @@ public class UpdateOpsImpl<T> implements UpdateOperations<T> {
     }
 
     protected List<Object> toDBObjList(final MappedField mf, final List<?> values) {
-        final List<Object> list = new ArrayList<Object>(values.size());
+        final List<Object> list = new ArrayList<>(values.size());
         for (final Object obj : values) {
             list.add(mapper.toMongoObject(mf, null, obj));
         }

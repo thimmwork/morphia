@@ -41,7 +41,7 @@ public class TestAsListPerf extends TestBase {
     @Test
     public void compareDriverAndMorphiaQueryingMultithreaded() throws InterruptedException {
         final Result mongoQueryThreadsResult = new Result(nbOfTasks);
-        final List<MongoQueryThread> mongoThreads = new ArrayList<MongoQueryThread>(nbOfTasks);
+        final List<MongoQueryThread> mongoThreads = new ArrayList<>(nbOfTasks);
         for (int i = 0; i < nbOfTasks; i++) {
             mongoThreads.add(new MongoQueryThread(mongoQueryThreadsResult, nbOfAddresses));
         }
@@ -54,7 +54,7 @@ public class TestAsListPerf extends TestBase {
         mongoPool.awaitTermination(30, TimeUnit.SECONDS);
 
         final Result morphiaQueryThreadsResult = new Result(nbOfTasks);
-        final List<MorphiaQueryThread> morphiaThreads = new ArrayList<MorphiaQueryThread>(nbOfTasks);
+        final List<MorphiaQueryThread> morphiaThreads = new ArrayList<>(nbOfTasks);
         for (int i = 0; i < nbOfTasks; i++) {
             morphiaThreads.add(new MorphiaQueryThread(morphiaQueryThreadsResult, nbOfAddresses));
         }
@@ -81,7 +81,7 @@ public class TestAsListPerf extends TestBase {
     @Test
     public void compareMorphiaAndDriverQueryingMultithreaded() throws InterruptedException {
         final Result morphiaQueryThreadsResult = new Result(nbOfTasks);
-        final List<MorphiaQueryThread> morphiaThreads = new ArrayList<MorphiaQueryThread>(nbOfTasks);
+        final List<MorphiaQueryThread> morphiaThreads = new ArrayList<>(nbOfTasks);
         for (int i = 0; i < nbOfTasks; i++) {
             morphiaThreads.add(new MorphiaQueryThread(morphiaQueryThreadsResult, nbOfAddresses));
         }
@@ -94,7 +94,7 @@ public class TestAsListPerf extends TestBase {
         morphiaPool.awaitTermination(30, TimeUnit.SECONDS);
 
         final Result mongoQueryThreadsResult = new Result(nbOfTasks);
-        final List<MongoQueryThread> mongoThreads = new ArrayList<MongoQueryThread>(nbOfTasks);
+        final List<MongoQueryThread> mongoThreads = new ArrayList<>(nbOfTasks);
         for (int i = 0; i < nbOfTasks; i++) {
             mongoThreads.add(new MongoQueryThread(mongoQueryThreadsResult, nbOfAddresses));
         }
@@ -118,7 +118,7 @@ public class TestAsListPerf extends TestBase {
                                            .sort(new BasicDBObject("name", 1))
                                            .toArray();
         final EntityCache entityCache = new DefaultEntityCache();
-        final List<Address> resultList = new LinkedList<Address>();
+        final List<Address> resultList = new LinkedList<>();
         for (final DBObject dbObject : list) {
             final Address address = getMorphia().fromDBObject(getDs(), Address.class, dbObject, entityCache);
             resultList.add(address);
@@ -131,7 +131,7 @@ public class TestAsListPerf extends TestBase {
     @Test
     public void driverQueryingMultithreaded() throws InterruptedException {
         final Result mongoQueryThreadsResult = new Result(nbOfTasks);
-        final List<MongoQueryThread> mongoThreads = new ArrayList<MongoQueryThread>(nbOfTasks);
+        final List<MongoQueryThread> mongoThreads = new ArrayList<>(nbOfTasks);
         for (int i = 0; i < nbOfTasks; i++) {
             mongoThreads.add(new MongoQueryThread(mongoQueryThreadsResult, nbOfAddresses));
         }
@@ -161,7 +161,7 @@ public class TestAsListPerf extends TestBase {
     @Test
     public void morphiaQueryingMultithreaded() throws InterruptedException {
         final Result morphiaQueryThreadsResult = new Result(nbOfTasks);
-        final List<MorphiaQueryThread> morphiaThreads = new ArrayList<MorphiaQueryThread>(nbOfTasks);
+        final List<MorphiaQueryThread> morphiaThreads = new ArrayList<>(nbOfTasks);
         for (int i = 0; i < nbOfTasks; i++) {
             morphiaThreads.add(new MorphiaQueryThread(morphiaQueryThreadsResult, nbOfAddresses));
         }
@@ -201,7 +201,7 @@ public class TestAsListPerf extends TestBase {
         private final Vector<Double> results;
 
         public Result(final int nbOfHits) {
-            results = new Vector<Double>(nbOfHits);
+            results = new Vector<>(nbOfHits);
         }
 
         public double getAverageTime() {

@@ -120,23 +120,31 @@ public class IndexHelperTest extends TestBase {
         assertEquals("Should have 6 indexes", 6, indexInfo.size());
         for (DBObject dbObject : indexInfo) {
             String name = dbObject.get("name").toString();
-            if (name.equals("latitude_1")) {
-                assertEquals(parse("{ 'latitude' : 1 }"), dbObject.get("key"));
-            } else if (name.equals("behind_interface")) {
-                assertEquals(parse("{ 'nest.name' : -1} "), dbObject.get("key"));
-                assertEquals(parse("{ 'locale' : 'en' , 'caseLevel' : false , 'caseFirst' : 'off' , 'strength' : 2 , 'numericOrdering' :"
-                                       + " false , 'alternate' : 'non-ignorable' , 'maxVariable' : 'punct' , 'normalization' : false , "
-                                       + "'backwards' : false , 'version' : '57.1'}"), dbObject.get("collation"));
-            } else if (name.equals("nest.name_1")) {
-                assertEquals(parse("{ 'nest.name' : 1} "), dbObject.get("key"));
-            } else if (name.equals("searchme")) {
-                assertEquals(parse("{ 'text' : 10 }"), dbObject.get("weights"));
-            } else if (name.equals("indexName_1")) {
-                assertEquals(parse("{'indexName': 1 }"), dbObject.get("key"));
-            } else {
-                if (!"_id_".equals(dbObject.get("name"))) {
-                    throw new MappingException("Found an index I wasn't expecting:  " + dbObject);
-                }
+            switch (name) {
+                case "latitude_1":
+                    assertEquals(parse("{ 'latitude' : 1 }"), dbObject.get("key"));
+                    break;
+                case "behind_interface":
+                    assertEquals(parse("{ 'nest.name' : -1} "), dbObject.get("key"));
+                    assertEquals(parse("{ 'locale' : 'en' , 'caseLevel' : false , 'caseFirst' : 'off' , 'strength' : 2 , "
+                                           + "'numericOrdering' : false , 'alternate' : 'non-ignorable' , 'maxVariable' : 'punct' , "
+                                           + "'normalization' : false , 'backwards' : false , 'version' : '57.1'}"),
+                                 dbObject.get("collation"));
+                    break;
+                case "nest.name_1":
+                    assertEquals(parse("{ 'nest.name' : 1} "), dbObject.get("key"));
+                    break;
+                case "searchme":
+                    assertEquals(parse("{ 'text' : 10 }"), dbObject.get("weights"));
+                    break;
+                case "indexName_1":
+                    assertEquals(parse("{'indexName': 1 }"), dbObject.get("key"));
+                    break;
+                default:
+                    if (!"_id_".equals(dbObject.get("name"))) {
+                        throw new MappingException("Found an index I wasn't expecting:  " + dbObject);
+                    }
+                    break;
             }
         }
 

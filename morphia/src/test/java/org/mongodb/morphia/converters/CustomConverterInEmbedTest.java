@@ -81,11 +81,11 @@ public class CustomConverterInEmbedTest extends TestBase {
     //FIXME issue 101
 
     public static class E1 extends TestEntity {
-        private final List<Foo> foo = new LinkedList<Foo>();
+        private final List<Foo> foo = new LinkedList<>();
     }
 
     public static class E2 extends TestEntity {
-        private final Map<String, Foo> foo = new HashMap<String, Foo>();
+        private final Map<String, Foo> foo = new HashMap<>();
     }
 
     // unknown type to convert

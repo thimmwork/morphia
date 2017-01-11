@@ -19,7 +19,7 @@ public class NameValuePairTest extends TestBase {
     public void testNameValuePairWithDoubleIn() throws Exception {
         getMorphia().map(NameValuePairContainer.class);
         final NameValuePairContainer container = new NameValuePairContainer();
-        container.pair = new NameValuePair<SimpleEnum, Double>(SimpleEnum.FOO, 1.2d);
+        container.pair = new NameValuePair<>(SimpleEnum.FOO, 1.2d);
         getDs().save(container);
 
         getDs().get(container);

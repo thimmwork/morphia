@@ -47,9 +47,9 @@ public class IntegerMappingTest extends TestBase {
     }
 
     private static class Integers {
-        private final List<Integer[]> listWrapperArray = new ArrayList<Integer[]>();
-        private final List<int[]> listPrimitiveArray = new ArrayList<int[]>();
-        private final List<Integer> listWrapper = new ArrayList<Integer>();
+        private final List<Integer[]> listWrapperArray = new ArrayList<>();
+        private final List<int[]> listPrimitiveArray = new ArrayList<>();
+        private final List<Integer> listWrapper = new ArrayList<>();
         @Id
         private ObjectId id;
         private int singlePrimitive;

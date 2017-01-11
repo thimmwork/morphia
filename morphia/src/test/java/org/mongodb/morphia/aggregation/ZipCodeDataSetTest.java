@@ -127,7 +127,7 @@ public class ZipCodeDataSetTest extends TestBase {
 
         Iterator<State> iterator = pipeline.aggregate(State.class);
         try {
-            Map<String, State> states = new HashMap<String, State>();
+            Map<String, State> states = new HashMap<>();
             while (iterator.hasNext()) {
                 State state = iterator.next();
                 states.put(state.getState(), state);
@@ -148,17 +148,12 @@ public class ZipCodeDataSetTest extends TestBase {
 
     private void download(final URL url, final File file) throws IOException {
         LOG.info("Downloading zip data set to " + file);
-        InputStream inputStream = url.openStream();
-        FileOutputStream outputStream = new FileOutputStream(file);
-        try {
+        try (InputStream inputStream = url.openStream(); FileOutputStream outputStream = new FileOutputStream(file)) {
             byte[] read = new byte[49152];
             int count;
             while ((count = inputStream.read(read)) != -1) {
                 outputStream.write(read, 0, count);
             }
-        } finally {
-            inputStream.close();
-            outputStream.close();
         }
     }
 

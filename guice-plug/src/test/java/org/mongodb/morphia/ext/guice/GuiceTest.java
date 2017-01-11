@@ -135,7 +135,7 @@ public class GuiceTest extends TestBase {
         @Id
         private ObjectId id;
 
-        private MyList<Integer> l = new MyList<Integer>(new Bar());
+        private MyList<Integer> l = new MyList<>(new Bar());
 
         private String s = "";
 

@@ -68,6 +68,6 @@ public class LazyWithNoProxiesTest extends ProxyTestBase {
         private OtherEntity otherEntity;
 
         @Reference(lazy = true)
-        private List<OtherEntity> list = new ArrayList<OtherEntity>();
+        private List<OtherEntity> list = new ArrayList<>();
     }
 }

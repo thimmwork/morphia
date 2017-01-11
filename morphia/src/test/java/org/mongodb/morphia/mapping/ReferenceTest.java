@@ -110,8 +110,8 @@ public class ReferenceTest extends ProxyTestBase {
         }
         assertEquals(refs.get(0), unwrap(retrieved.getLazySingleRef()));
 
-        final List<Ref> expectedRefList = new ArrayList<Ref>();
-        final Map<Integer, Ref> expectedRefMap = new LinkedHashMap<Integer, Ref>();
+        final List<Ref> expectedRefList = new ArrayList<>();
+        final Map<Integer, Ref> expectedRefMap = new LinkedHashMap<>();
 
         for (int i = 0; i < refs.size(); i++) {
             expectedRefList.add(refs.get(i));
@@ -246,8 +246,8 @@ public class ReferenceTest extends ProxyTestBase {
             lazySingleRef = refs.get(0);
             collectionRef = refs;
             lazyCollectionRef = refs;
-            mapRef = new LinkedHashMap<Integer, Ref>();
-            lazyMapRef = new LinkedHashMap<Integer, Ref>();
+            mapRef = new LinkedHashMap<>();
+            lazyMapRef = new LinkedHashMap<>();
 
             for (int i = 0; i < refs.size(); i++) {
                 mapRef.put(i, refs.get(i));
@@ -338,7 +338,7 @@ public class ReferenceTest extends ProxyTestBase {
         @Id
         private ObjectId id;
         @Reference(lazy = true)
-        private List<Child> children = new ArrayList<Child>();
+        private List<Child> children = new ArrayList<>();
 
     }
 
@@ -350,10 +350,10 @@ public class ReferenceTest extends ProxyTestBase {
         private Complex complex;
 
         @Reference
-        private List<Complex> list = new ArrayList<Complex>();
+        private List<Complex> list = new ArrayList<>();
 
         @Reference(lazy = true)
-        private List<Complex> lazyList = new ArrayList<Complex>();
+        private List<Complex> lazyList = new ArrayList<>();
 
         public ObjectId getId() {
             return id;

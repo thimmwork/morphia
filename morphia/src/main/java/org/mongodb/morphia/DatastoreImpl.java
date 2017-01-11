@@ -139,7 +139,7 @@ public class DatastoreImpl implements AdvancedDatastore {
 
     @Override
     public <T> UpdateOperations<T> createUpdateOperations(final Class<T> clazz) {
-        return new UpdateOpsImpl<T>(clazz, getMapper());
+        return new UpdateOpsImpl<>(clazz, getMapper());
     }
 
     @Override
@@ -389,8 +389,8 @@ public class DatastoreImpl implements AdvancedDatastore {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public <T> List<T> getByKeys(final Class<T> clazz, final Iterable<Key<T>> keys) {
 
-        final Map<String, List<Key>> kindMap = new HashMap<String, List<Key>>();
-        final List<T> entities = new ArrayList<T>();
+        final Map<String, List<Key>> kindMap = new HashMap<>();
+        final List<T> entities = new ArrayList<>();
         // String clazzKind = (clazz==null) ? null :
         // getMapper().getCollectionName(clazz);
         for (final Key<?> key : keys) {
@@ -404,13 +404,13 @@ public class DatastoreImpl implements AdvancedDatastore {
             if (kindMap.containsKey(key.getCollection())) {
                 kindMap.get(key.getCollection()).add(key);
             } else {
-                kindMap.put(key.getCollection(), new ArrayList<Key>(singletonList((Key) key)));
+                kindMap.put(key.getCollection(), new ArrayList<>(singletonList((Key) key)));
             }
         }
         for (final Map.Entry<String, List<Key>> entry : kindMap.entrySet()) {
             final List<Key> kindKeys = entry.getValue();
 
-            final List<Object> objIds = new ArrayList<Object>();
+            final List<Object> objIds = new ArrayList<>();
             for (final Key key : kindKeys) {
                 objIds.add(key.getId());
             }
@@ -542,7 +542,7 @@ public class DatastoreImpl implements AdvancedDatastore {
     @SuppressWarnings("unchecked")
     public <T> Key<T> merge(final T entity, final WriteConcern wc) {
         T unwrapped = entity;
-        final LinkedHashMap<Object, DBObject> involvedObjects = new LinkedHashMap<Object, DBObject>();
+        final LinkedHashMap<Object, DBObject> involvedObjects = new LinkedHashMap<>();
         final DBObject dbObj = mapper.toDBObject(unwrapped, involvedObjects);
         final Key<T> key = mapper.getKey(unwrapped);
         unwrapped = ProxyHelper.unwrap(unwrapped);
@@ -588,13 +588,13 @@ public class DatastoreImpl implements AdvancedDatastore {
     public <T> Iterable<Key<T>> save(final Iterable<T> entities) {
         Iterator<T> iterator = entities.iterator();
         return !iterator.hasNext()
-               ? Collections.<Key<T>>emptyList()
+               ? Collections.emptyList()
                : save(entities, new InsertOptions().writeConcern(getWriteConcern(iterator.next())));
     }
 
     @Override
     public <T> Iterable<Key<T>> save(final Iterable<T> entities, final InsertOptions options) {
-        final List<Key<T>> savedKeys = new ArrayList<Key<T>>();
+        final List<Key<T>> savedKeys = new ArrayList<>();
         for (final T ent : entities) {
             savedKeys.add(save(ent, options));
         }
@@ -800,7 +800,7 @@ public class DatastoreImpl implements AdvancedDatastore {
     public <T> Iterable<Key<T>> insert(final Iterable<T> entities, final InsertOptions options) {
         Iterator<T> iterator = entities.iterator();
         return !iterator.hasNext()
-               ? Collections.<Key<T>>emptyList()
+               ? Collections.emptyList()
                : insert(getCollection(iterator.next()), entities, options);
     }
 
@@ -880,7 +880,7 @@ public class DatastoreImpl implements AdvancedDatastore {
     }
 
     protected <T> Key<T> insert(final DBCollection dbColl, final T entity, final InsertOptions options) {
-        final LinkedHashMap<Object, DBObject> involvedObjects = new LinkedHashMap<Object, DBObject>();
+        final LinkedHashMap<Object, DBObject> involvedObjects = new LinkedHashMap<>();
         dbColl.insert(singletonList(entityToDBObj(entity, involvedObjects)), enforceWriteConcern(options, entity.getClass())
             .getOptions());
 
@@ -935,7 +935,7 @@ public class DatastoreImpl implements AdvancedDatastore {
         }
 
         // involvedObjects is used not only as a cache but also as a list of what needs to be called for life-cycle methods at the end.
-        final LinkedHashMap<Object, DBObject> involvedObjects = new LinkedHashMap<Object, DBObject>();
+        final LinkedHashMap<Object, DBObject> involvedObjects = new LinkedHashMap<>();
         final DBObject document = entityToDBObj(entity, involvedObjects);
 
         // try to do an update if there is a @Version field
@@ -1024,8 +1024,8 @@ public class DatastoreImpl implements AdvancedDatastore {
             return Collections.emptyList();
         }
 
-        final Map<Object, DBObject> involvedObjects = new LinkedHashMap<Object, DBObject>();
-        final List<DBObject> list = new ArrayList<DBObject>();
+        final Map<Object, DBObject> involvedObjects = new LinkedHashMap<>();
+        final List<DBObject> list = new ArrayList<>();
         com.mongodb.InsertOptions insertOptions = options.getOptions();
         for (final T entity : entities) {
             if (options.getWriteConcern() == null) {
@@ -1068,7 +1068,7 @@ public class DatastoreImpl implements AdvancedDatastore {
     @SuppressWarnings("unchecked")
     private <T> List<Key<T>> postSaveOperations(final Iterable<T> entities, final Map<Object, DBObject> involvedObjects,
                                                 final DBCollection collection, final boolean fetchKeys) {
-        List<Key<T>> keys = new ArrayList<Key<T>>();
+        List<Key<T>> keys = new ArrayList<>();
         for (final T entity : entities) {
             final DBObject dbObj = involvedObjects.remove(entity);
 
@@ -1077,7 +1077,7 @@ public class DatastoreImpl implements AdvancedDatastore {
                     throw new MappingException(format("Missing _id after save on %s", entity.getClass().getName()));
                 }
                 mapper.updateKeyAndVersionInfo(this, dbObj, createCache(), entity);
-                keys.add(new Key<T>((Class<? extends T>) entity.getClass(), collection.getName(), mapper.getId(entity)));
+                keys.add(new Key<>((Class<? extends T>) entity.getClass(), collection.getName(), mapper.getId(entity)));
             }
             mapper.getMappedClass(entity).callLifecycleMethods(PostPersist.class, entity, dbObj, mapper);
         }
@@ -1094,7 +1094,7 @@ public class DatastoreImpl implements AdvancedDatastore {
     private <T> Query<T> queryByExample(final DBCollection coll, final T example) {
         // TODO: think about remove className from baseQuery param below.
         final Class<T> type = (Class<T>) example.getClass();
-        final DBObject query = entityToDBObj(example, new HashMap<Object, DBObject>());
+        final DBObject query = entityToDBObj(example, new HashMap<>());
         return newQuery(type, coll, query);
     }
 

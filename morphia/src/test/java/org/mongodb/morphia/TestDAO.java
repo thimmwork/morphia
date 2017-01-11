@@ -154,7 +154,7 @@ public class TestDAO extends TestBase {
     public void testNewDAO() throws Exception {
         getMorphia().map(Hotel.class);
 
-        final DAO<Hotel, ObjectId> hotelDAO = new BasicDAO<Hotel, ObjectId>(Hotel.class, getMongoClient(), getMorphia(), "morphia_test");
+        final DAO<Hotel, ObjectId> hotelDAO = new BasicDAO<>(Hotel.class, getMongoClient(), getMorphia(), "morphia_test");
 
         final Hotel borg = new Hotel();
         borg.setName("Hotel Borg");

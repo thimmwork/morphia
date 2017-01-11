@@ -31,7 +31,7 @@ public class GeometryShapeConverter extends TypeConverter implements SimpleValue
     GeometryShapeConverter(final GeoJsonType... geoJsonTypes) {
         super(geoJsonTypes[0].getTypeClass());
         geoJsonType = geoJsonTypes[0];
-        this.factories = Arrays.<GeometryFactory>asList(geoJsonTypes);
+        this.factories = Arrays.asList(geoJsonTypes);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class GeometryShapeConverter extends TypeConverter implements SimpleValue
             // This should be the last list, so no need to decode further
             return factory.createGeometry(mongoDBGeometry);
         } else {
-            List<Geometry> decodedObjects = new ArrayList<Geometry>();
+            List<Geometry> decodedObjects = new ArrayList<>();
             for (final Object objectThatNeedsDecoding : mongoDBGeometry) {
                 // MongoDB geometries are lists of lists of lists...
                 decodedObjects.add(decodeObject((List) objectThatNeedsDecoding,
@@ -71,7 +71,7 @@ public class GeometryShapeConverter extends TypeConverter implements SimpleValue
     }
 
     private Object encodeObjects(final List value) {
-        List<Object> encodedObjects = new ArrayList<Object>();
+        List<Object> encodedObjects = new ArrayList<>();
         for (final Object object : value) {
             if (object instanceof Geometry) {
                 //iterate through the list of geometry objects recursively until you find the lowest-level

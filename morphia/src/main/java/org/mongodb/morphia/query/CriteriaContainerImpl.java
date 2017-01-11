@@ -28,7 +28,7 @@ public class CriteriaContainerImpl extends AbstractCriteria implements CriteriaC
 
     protected CriteriaContainerImpl(final CriteriaJoin joinMethod) {
         this.joinMethod = joinMethod;
-        children = new ArrayList<Criteria>();
+        children = new ArrayList<>();
     }
 
     @Override
@@ -46,7 +46,7 @@ public class CriteriaContainerImpl extends AbstractCriteria implements CriteriaC
 
     @Override
     public FieldEnd<? extends CriteriaContainer> criteria(final String name) {
-        return new FieldEndImpl<CriteriaContainerImpl>(query, name, this);
+        return new FieldEndImpl<>(query, name, this);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class CriteriaContainerImpl extends AbstractCriteria implements CriteriaC
     @Override
     public void addTo(final DBObject obj) {
         if (joinMethod == CriteriaJoin.AND) {
-            final Set<String> fields = new HashSet<String>();
+            final Set<String> fields = new HashSet<>();
             int nonNullFieldNames = 0;
             for (final Criteria child : children) {
                 if (null != child.getFieldName()) {

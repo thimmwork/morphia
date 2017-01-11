@@ -28,7 +28,7 @@ public class TestLazyCollectionReference extends ProxyTestBase {
         final ReferencedEntity referenced2 = new ReferencedEntity();
         referenced2.setFoo("bar2");
 
-        List<ReferencedEntity> references = new ArrayList<ReferencedEntity>();
+        List<ReferencedEntity> references = new ArrayList<>();
         references.add(referenced1);
         references.add(referenced2);
         root.references = references;

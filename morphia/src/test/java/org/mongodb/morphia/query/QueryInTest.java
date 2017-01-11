@@ -32,7 +32,7 @@ public class QueryInTest extends TestBase {
     @Test
     public void testAddEmpty() {
         Query<Data> query = getDs().find(Data.class);
-        List<ObjectId> memberships = new ArrayList<ObjectId>();
+        List<ObjectId> memberships = new ArrayList<>();
 
         query.or(
             query.criteria("id").hasAnyOf(memberships),
@@ -51,7 +51,7 @@ public class QueryInTest extends TestBase {
         getDs().save(b);
 
         HasIdOnly has = new HasIdOnly();
-        has.list = new ArrayList<ReferencedEntity>();
+        has.list = new ArrayList<>();
         has.list.add(b);
         has.entity = b;
         getDs().save(has);
@@ -74,7 +74,7 @@ public class QueryInTest extends TestBase {
         // this works
         getDs().find(Doc.class).field("_id").equal(1).asList();
 
-        final List<Long> idList = new ArrayList<Long>();
+        final List<Long> idList = new ArrayList<>();
         idList.add(1L);
         // this causes an NPE
         getDs().find(Doc.class).field("_id").in(idList).asList();
@@ -101,13 +101,13 @@ public class QueryInTest extends TestBase {
     public void testInQueryByKey() throws Exception {
         checkMinServerVersion(2.5);
         final HasRef hr = new HasRef();
-        List<Key<ReferencedEntity>> refs = new ArrayList<Key<ReferencedEntity>>();
+        List<Key<ReferencedEntity>> refs = new ArrayList<>();
         for (int x = 0; x < 10; x++) {
             final ReferencedEntity re = new ReferencedEntity("" + x);
             getDs().save(re);
-            refs.add(new Key<ReferencedEntity>(ReferencedEntity.class,
-                                               getMorphia().getMapper().getCollectionName(ReferencedEntity.class),
-                                               re.getId()));
+            refs.add(new Key<>(ReferencedEntity.class,
+                               getMorphia().getMapper().getCollectionName(ReferencedEntity.class),
+                               re.getId()));
         }
         hr.ref = refs.get(0);
 
@@ -146,7 +146,7 @@ public class QueryInTest extends TestBase {
         private Set<ObjectId> otherIds;
 
         public Data() {
-            otherIds = new HashSet<ObjectId>();
+            otherIds = new HashSet<>();
         }
     }
 
@@ -163,7 +163,7 @@ public class QueryInTest extends TestBase {
         @Id
         private ObjectId id = new ObjectId();
         @Reference
-        private List<ReferencedEntity> refs = new ArrayList<ReferencedEntity>();
+        private List<ReferencedEntity> refs = new ArrayList<>();
     }
 
     @Entity

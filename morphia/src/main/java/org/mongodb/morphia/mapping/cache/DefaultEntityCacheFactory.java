@@ -10,6 +10,7 @@ public class DefaultEntityCacheFactory implements EntityCacheFactory {
      *
      * @return the cache
      */
+    @Override
     public EntityCache createCache() {
         return new DefaultEntityCache();
     }

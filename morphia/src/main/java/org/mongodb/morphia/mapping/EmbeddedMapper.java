@@ -168,7 +168,7 @@ class EmbeddedMapper implements CustomMapper {
             final EphemeralMappedField ephemeralMappedField = isMapOrCollection(mf)
                                                               ? new EphemeralMappedField((ParameterizedType) mf.getSubType(), mf, mapper)
                                                               : null;
-            new IterHelper<Object, Object>().loopMap(dbObj, new MapIterCallback<Object, Object>() {
+            new IterHelper<>().loopMap(dbObj, new MapIterCallback<Object, Object>() {
                 @Override
                 public void eval(final Object k, final Object val) {
                     Object newEntity = null;
@@ -224,7 +224,7 @@ class EmbeddedMapper implements CustomMapper {
         }
 
         if (coll != null) {
-            final List<Object> values = new ArrayList<Object>();
+            final List<Object> values = new ArrayList<>();
             for (final Object o : coll) {
                 if (null == o) {
                     values.add(null);

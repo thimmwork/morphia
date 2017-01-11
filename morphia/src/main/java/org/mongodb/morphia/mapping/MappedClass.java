@@ -72,7 +72,7 @@ public class MappedClass {
      *
      * @see #addInterestingAnnotation
      */
-    private static final List<Class<? extends Annotation>> INTERESTING_ANNOTATIONS = new ArrayList<Class<? extends Annotation>>();
+    private static final List<Class<? extends Annotation>> INTERESTING_ANNOTATIONS = new ArrayList<>();
     /**
      * Annotations interesting for life-cycle events
      */
@@ -99,16 +99,16 @@ public class MappedClass {
      * Annotations we were interested in, and found.
      */
     private final Map<Class<? extends Annotation>, List<Annotation>> foundAnnotations =
-        new HashMap<Class<? extends Annotation>, List<Annotation>>();
+        new HashMap<>();
     /**
      * Methods which are life-cycle events
      */
     private final Map<Class<? extends Annotation>, List<ClassMethodPair>> lifecycleMethods =
-        new HashMap<Class<? extends Annotation>, List<ClassMethodPair>>();
+        new HashMap<>();
     /**
      * a list of the fields to map
      */
-    private final List<MappedField> persistenceFields = new ArrayList<MappedField>();
+    private final List<MappedField> persistenceFields = new ArrayList<>();
     /**
      * the type we are mapping to/from
      */
@@ -124,7 +124,7 @@ public class MappedClass {
     private Embedded embeddedAn;
     private MapperOptions mapperOptions;
     private MappedClass superClass;
-    private List<MappedClass> interfaces = new ArrayList<MappedClass>();
+    private List<MappedClass> interfaces = new ArrayList<>();
 
     /**
      * Creates a MappedClass instance
@@ -227,7 +227,7 @@ public class MappedClass {
         }
 
         if (!foundAnnotations.containsKey(clazz)) {
-            foundAnnotations.put(clazz, new ArrayList<Annotation>());
+            foundAnnotations.put(clazz, new ArrayList<>());
         }
 
         foundAnnotations.get(clazz).add(ann);
@@ -250,7 +250,7 @@ public class MappedClass {
         try {
             Object tempObj;
             if (methodPairs != null) {
-                final HashMap<Class<?>, Object> toCall = new HashMap<Class<?>, Object>((int) (methodPairs.size() * 1.3));
+                final HashMap<Class<?>, Object> toCall = new HashMap<>((int) (methodPairs.size() * 1.3));
                 for (final ClassMethodPair cm : methodPairs) {
                     toCall.put(cm.clazz, null);
                 }
@@ -290,9 +290,7 @@ public class MappedClass {
             }
 
             callGlobalInterceptors(event, entity, dbObj, mapper);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
 
@@ -370,7 +368,7 @@ public class MappedClass {
      * @return the list of fields
      */
     public List<MappedField> getFieldsAnnotatedWith(final Class<? extends Annotation> clazz) {
-        final List<MappedField> results = new ArrayList<MappedField>();
+        final List<MappedField> results = new ArrayList<>();
         for (final MappedField mf : persistenceFields) {
             if (mf.getAnnotations().containsKey(clazz)) {
                 results.add(mf);
@@ -546,7 +544,7 @@ public class MappedClass {
             interfaces.add(mapper.getMappedClass(aClass));
         }
 
-        final List<Class<?>> lifecycleClasses = new ArrayList<Class<?>>();
+        final List<Class<?>> lifecycleClasses = new ArrayList<>();
         lifecycleClasses.add(clazz);
 
         final EntityListeners entityLisAnn = (EntityListeners) getAnnotation(EntityListeners.class);
@@ -607,7 +605,7 @@ public class MappedClass {
         if (lifecycleMethods.containsKey(lceClazz)) {
             lifecycleMethods.get(lceClazz).add(cm);
         } else {
-            final List<ClassMethodPair> methods = new ArrayList<ClassMethodPair>();
+            final List<ClassMethodPair> methods = new ArrayList<>();
             methods.add(cm);
             lifecycleMethods.put(lceClazz, methods);
         }

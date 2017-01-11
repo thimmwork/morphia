@@ -44,9 +44,9 @@ public class DoubleMappingTest extends TestBase {
     }
 
     private static class Doubles {
-        private final List<Double[]> listWrapperArray = new ArrayList<Double[]>();
-        private final List<double[]> listPrimitiveArray = new ArrayList<double[]>();
-        private final List<Double> listWrapper = new ArrayList<Double>();
+        private final List<Double[]> listWrapperArray = new ArrayList<>();
+        private final List<double[]> listPrimitiveArray = new ArrayList<>();
+        private final List<Double> listWrapper = new ArrayList<>();
         @Id
         private ObjectId id;
         private double singlePrimitive;

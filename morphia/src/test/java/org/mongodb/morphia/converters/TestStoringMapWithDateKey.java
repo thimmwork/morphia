@@ -57,7 +57,7 @@ public class TestStoringMapWithDateKey extends TestBase {
 
 @Entity
 class User extends TestEntity {
-    private final Map<Date, Double> userMap = new HashMap<Date, Double>();
+    private final Map<Date, Double> userMap = new HashMap<>();
 
     public void addValue(final Date date, final Double value) {
         userMap.put(date, value);

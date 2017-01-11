@@ -90,7 +90,7 @@ public class Accumulator implements AggregationElement {
     public DBObject toDBObject() {
         BasicDBObject dbObject = new BasicDBObject();
         if (value instanceof List) {
-            List<Object> dbValue = new ArrayList<Object>();
+            List<Object> dbValue = new ArrayList<>();
             for (Object o : (List) value) {
                 if (o instanceof AggregationElement) {
                     dbValue.add(((AggregationElement) o).toDBObject());

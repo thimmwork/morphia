@@ -42,7 +42,7 @@ public class TestEmbeddedValidation extends TestBase {
     @SuppressWarnings("unchecked")
     public void testCreateEntityWithBasicDBList() throws Exception {
         getMorphia().map(TestEntity.class);
-        BasicDAO<TestEntity, ObjectId> dao = new BasicDAO<TestEntity, ObjectId>(TestEntity.class, getDs());
+        BasicDAO<TestEntity, ObjectId> dao = new BasicDAO<>(TestEntity.class, getDs());
         TestEntity entity = new TestEntity();
 
         Map<String, Object> map = mapOf("type", "text");
@@ -116,7 +116,7 @@ public class TestEmbeddedValidation extends TestBase {
     }
 
     private Map<String, Object> mapOf(final String key, final Object value) {
-        HashMap<String, Object> map = new HashMap<String, Object>();
+        HashMap<String, Object> map = new HashMap<>();
         map.put(key, value);
         return map;
     }
@@ -133,7 +133,7 @@ public class TestEmbeddedValidation extends TestBase {
         }
 
         public void setData(final List<Map<String, Object>> data) {
-            this.data = new ArrayList<Map<String, Object>>();
+            this.data = new ArrayList<>();
             this.data.addAll(data);
         }
 

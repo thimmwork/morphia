@@ -46,8 +46,8 @@ public class Hotel extends TestEntity {
     private List<PhoneNumber> phoneNumbers;
 
     public Hotel() {
-        tags = new HashSet<String>();
-        phoneNumbers = new Vector<PhoneNumber>();
+        tags = new HashSet<>();
+        phoneNumbers = new Vector<>();
     }
 
     public Address getAddress() {

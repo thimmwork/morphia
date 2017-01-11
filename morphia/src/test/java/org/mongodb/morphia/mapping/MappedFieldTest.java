@@ -96,7 +96,7 @@ public class MappedFieldTest extends TestBase {
                                                       new DefaultEntityCache());
         final List<String> strings = asList("a", "b", "c");
         final List<String> strings1 = asList("d", "e", "f");
-        final List<List<String>> expected = new ArrayList<List<String>>();
+        final List<List<String>> expected = new ArrayList<>();
         expected.add(strings);
         expected.add(strings1);
         Assert.assertEquals(expected, entity.listOfListOfString);

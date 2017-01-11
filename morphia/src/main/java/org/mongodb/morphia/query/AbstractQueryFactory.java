@@ -15,6 +15,6 @@ public abstract class AbstractQueryFactory implements QueryFactory {
 
     @Override
     public <T> Query<T> createQuery(final Datastore datastore) {
-        return new QueryImpl<T>(null, null, datastore);
+        return new QueryImpl<>(null, null, datastore);
     }
 }

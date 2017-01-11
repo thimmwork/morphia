@@ -112,9 +112,9 @@ final class QueryValidator {
             }
 
             if (validateTypes && mf != null) {
-                List<ValidationFailure> typeValidationFailures = new ArrayList<ValidationFailure>();
+                List<ValidationFailure> typeValidationFailures = new ArrayList<>();
                 boolean compatibleForType = isCompatibleForOperator(mc, mf, mf.getType(), op, val, typeValidationFailures);
-                List<ValidationFailure> subclassValidationFailures = new ArrayList<ValidationFailure>();
+                List<ValidationFailure> subclassValidationFailures = new ArrayList<>();
                 boolean compatibleForSubclass = isCompatibleForOperator(mc, mf, mf.getSubClass(), op, val, subclassValidationFailures);
 
                 if ((mf.isSingleValue() && !compatibleForType)

@@ -169,7 +169,7 @@ public class LazyInEmbeddedTest extends TestBase {
     @Entity
     public static class ContainerWithRefList extends TestEntity {
         @Embedded
-        private final List<EmbedWithRef> embedWithRef = new ArrayList<EmbedWithRef>();
+        private final List<EmbedWithRef> embedWithRef = new ArrayList<>();
     }
 
     @Entity

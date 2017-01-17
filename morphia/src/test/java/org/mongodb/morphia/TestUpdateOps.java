@@ -126,41 +126,34 @@ public class TestUpdateOps extends TestBase {
         assertThat(getDs().get(cIntArray).values, is((new ContainsIntArray()).values));
 
         //add 4 to array
-        UpdateResults res = getDs().update(getDs().find(ContainsIntArray.class),
-                                           getDs().createUpdateOperations(ContainsIntArray.class)
+        assertUpdated(getDs().update(getDs().find(ContainsIntArray.class),
+                                     getDs().createUpdateOperations(ContainsIntArray.class)
                                                   .addToSet("values", 4),
-                                           new UpdateOptions()
-                                               .multi(false));
-        assertUpdated(res, 1);
+                                     new UpdateOptions()
+                                               .multi(false)), 1);
 
         assertThat(getDs().get(cIntArray).values, is(new Integer[]{1, 2, 3, 4}));
 
-        res = getDs().update(getDs().find(ContainsIntArray.class),
-                             getDs().createUpdateOperations(ContainsIntArray.class)
+        assertUpdated(getDs().update(getDs().find(ContainsIntArray.class),
+                                     getDs().createUpdateOperations(ContainsIntArray.class)
                                     .addToSet("values", 4),
-                             new UpdateOptions()
-                                 .multi(false));
+                                     new UpdateOptions()
+                                 .multi(false)), 1);
 
-        assertUpdated(res, 1);
-
-        final List<Integer> newValues = new ArrayList<>();
-        newValues.add(4);
-        newValues.add(5);
-        res = getDs().update(getDs().find(ContainsIntArray.class),
-                             getDs().createUpdateOperations(ContainsIntArray.class)
+        final List<Integer> newValues = asList(4, 5);
+        assertUpdated(getDs().update(getDs().find(ContainsIntArray.class),
+                                     getDs().createUpdateOperations(ContainsIntArray.class)
                                     .addToSet("values", newValues),
-                             new UpdateOptions()
-                                 .multi(false));
-        assertUpdated(res, 1);
+                                     new UpdateOptions()
+                                 .multi(false)), 1);
 
         assertThat(getDs().get(cIntArray).values, is(new Integer[]{1, 2, 3, 4, 5}));
 
-        res = getDs().update(getDs().find(ContainsIntArray.class),
-                             getDs().createUpdateOperations(ContainsIntArray.class)
+        assertUpdated(getDs().update(getDs().find(ContainsIntArray.class),
+                                     getDs().createUpdateOperations(ContainsIntArray.class)
                                     .addToSet("values", newValues),
-                             new UpdateOptions()
-                                 .multi(false));
-        assertUpdated(res, 1);
+                                     new UpdateOptions()
+                                 .multi(false)), 1);
 
         assertThat(getDs().get(cIntArray).values, is(new Integer[]{1, 2, 3, 4, 5}));
     }

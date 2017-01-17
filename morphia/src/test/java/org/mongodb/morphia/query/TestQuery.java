@@ -1038,7 +1038,7 @@ public class TestQuery extends TestBase {
                 .append("value1", "foo")
                 .append("someMap", new BasicDBObject("someKey", "value")));
 
-        Query<Class1> query = getDs().createQuery(Class1.class);
+        Query<Class1> query = getDs().find(Class1.class);
         query.disableValidation().criteria("someMap.someKey").equal("value");
         Class1 retrievedValue = query.get();
         Assert.assertNotNull(retrievedValue);

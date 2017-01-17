@@ -550,7 +550,7 @@ public class TestUpdateOps extends TestBase {
         assertThat(getDs().get(ContainsIntArray.class, id).values, arrayContaining(1, 2, 3));
 
         // do patch
-        Query<ContainsIntArray> q = getDs().createQuery(ContainsIntArray.class)
+        Query<ContainsIntArray> q = getDs().find(ContainsIntArray.class)
                 .filter("id", id)
                 .filter("values", 2);
 

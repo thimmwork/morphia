@@ -165,7 +165,7 @@ public class DatastoreImpl implements AdvancedDatastore {
 
     @Override
     public <T, V> WriteResult delete(final Class<T> clazz, final V id, final DeleteOptions options) {
-        return delete(createQuery(clazz).filter(Mapper.ID_KEY, id), options);
+        return delete(find(clazz).filter(Mapper.ID_KEY, id), options);
     }
 
     @Override
@@ -277,7 +277,7 @@ public class DatastoreImpl implements AdvancedDatastore {
 
     @Override
     public <T> Query<T> find(final Class<T> clazz) {
-        return createQuery(clazz);
+        return newQuery(clazz, getCollection(clazz));
     }
 
     @Override
@@ -564,8 +564,11 @@ public class DatastoreImpl implements AdvancedDatastore {
         wr = tryVersionedUpdate(dbColl, unwrapped, dbObj, idValue, new InsertOptions().writeConcern(wc), mc);
 
         if (wr == null) {
-            final Query<T> query = (Query<T>) createQuery(unwrapped.getClass()).filter(Mapper.ID_KEY, id);
-            wr = update(query, new BasicDBObject("$set", dbObj), false, false, wc).getWriteResult();
+            final Query<T> query = (Query<T>) find(unwrapped.getClass()).filter(Mapper.ID_KEY, id);
+            wr = update(query, new BasicDBObject("$set", dbObj), new UpdateOptions()
+                .upsert(false)
+                .multi(false)
+                .writeConcern(wc)).getWriteResult();
         }
 
         final UpdateResults res = new UpdateResults(wr);
@@ -625,7 +628,7 @@ public class DatastoreImpl implements AdvancedDatastore {
         }
 
         final MappedClass mc = mapper.getMappedClass(entity);
-        Query<?> query = createQuery(mapper.getMappedClass(entity).getClazz())
+        Query<?> query = find(mapper.getMappedClass(entity).getClazz())
             .disableValidation()
             .filter(Mapper.ID_KEY, mapper.getId(entity));
         if (!mc.getFieldsAnnotatedWith(Version.class).isEmpty()) {
@@ -643,7 +646,7 @@ public class DatastoreImpl implements AdvancedDatastore {
         if (clazz == null) {
             clazz = (Class<T>) mapper.getClassFromCollection(key.getCollection());
         }
-        return update(createQuery(clazz).disableValidation().filter(Mapper.ID_KEY, key.getId()), operations, new UpdateOptions());
+        return update(find(clazz).disableValidation().filter(Mapper.ID_KEY, key.getId()), operations, new UpdateOptions());
     }
 
     @Override
@@ -1145,15 +1148,6 @@ public class DatastoreImpl implements AdvancedDatastore {
         return new UpdateResults(dbColl.update(queryObject, update,
                                                enforceWriteConcern(options, query.getEntityClass())
                                                    .getOptions()));
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> UpdateResults update(final Query<T> query, final DBObject update, final boolean createIfMissing, final boolean multi,
-                                     final WriteConcern wc) {
-        return  update(query, update, new UpdateOptions()
-                      .upsert(createIfMissing)
-                      .multi(multi)
-                      .writeConcern(wc));
     }
 
     @SuppressWarnings("unchecked")

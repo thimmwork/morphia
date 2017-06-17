@@ -794,7 +794,13 @@ public class Mapper {
     }
 
     private Object extractFirstElement(final Object value) {
-        return value.getClass().isArray() ? Array.get(value, 0) : ((Iterable) value).iterator().next();
+        if (value.getClass().isArray()) {
+            return Array.get(value, 0);
+        } else if (value instanceof Iterable) {
+            return ((Iterable) value).iterator().next();
+        } else {
+            return value;
+        }
     }
 
     private Object getDBRefs(final MappedField field, final Iterable value) {
